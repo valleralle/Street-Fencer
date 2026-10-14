@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
+import { stil } from '../schrift.js';
 
 const ZEILEN = [
   ['', 'Rot (links)', 'Grün (rechts)'],
-  ['Bewegen', 'A / D', '← / →'],
+  ['Bewegen', 'A / D', 'Pfeil links / rechts'],
   ['Stoß', 'F', 'K'],
   ['Parade', 'G', 'L'],
   ['Tiefstoß', 'S', '↓'],
@@ -20,11 +21,11 @@ export default class SteuerungSzene extends Phaser.Scene {
 
   create() {
     this.registry.set('steuerungGezeigt', true);
-    const schrift = { fontFamily: 'sans-serif', fontSize: '22px', color: '#ffffff' };
+    const schrift = stil(24);
 
     this.add.text(480, 50, 'Steuerung', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
 
-    const spalten = [300, 520, 700];
+    const spalten = [250, 480, 720];
     const farben = ['#9aa3b5', '#e03b3b', '#2fbf4f'];
     ZEILEN.forEach((zeile, z) => {
       zeile.forEach((zelle, s) => {

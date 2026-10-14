@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
+import { stil } from '../schrift.js';
 
 export default class TitelSzene extends Phaser.Scene {
   constructor() {
@@ -8,10 +9,10 @@ export default class TitelSzene extends Phaser.Scene {
 
   create() {
     this.add
-      .text(480, 120, 'game_pilot', { fontFamily: 'sans-serif', fontSize: '64px', color: '#ffffff' })
+      .text(480, 120, 'game_pilot', stil(72))
       .setOrigin(0.5);
     this.add
-      .text(480, 180, 'Degenfechten', { fontFamily: 'sans-serif', fontSize: '24px', color: '#9aa3b5' })
+      .text(480, 185, 'Degenfechten', stil(28, '#9aa3b5'))
       .setOrigin(0.5);
 
     erzeugeMenue(this, 480, 280, [
@@ -21,7 +22,7 @@ export default class TitelSzene extends Phaser.Scene {
     ]);
 
     this.add
-      .text(480, 500, '↑ / ↓ wählen · Enter bestätigen', { fontFamily: 'sans-serif', fontSize: '16px', color: '#5d6578' })
+      .text(480, 500, '↑ / ↓ wählen · Enter bestätigen', stil(18, '#5d6578'))
       .setOrigin(0.5);
   }
 

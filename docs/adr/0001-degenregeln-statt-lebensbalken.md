@@ -4,6 +4,6 @@ Ursprünglich war game_pilot als Kampfspiel „wie Tekken, nur mit Fechten“ ge
 
 ## Bewusste Abweichungen vom echten Degenfechten
 
-- An den Enden der Fechtbahn ist eine Wand; wer hinten über die Grenze tritt, bekommt keinen Treffer gegen sich.
+- An den Endlinien geht es einfach nicht weiter; wer sie erreicht, bekommt keinen Treffer gegen sich.
 - Das Zeitfenster für einen Doppeltreffer ist großzügiger als in echt, weil Tastendrücke ungenauer sind als echte Stöße.
 - Die Fechter haben eine einzige Farbe (Rot oder Grün) für Schuhe, Trefferanzeige und Punktestand.

@@ -27,7 +27,7 @@ Ein Treffer, mit dem das Gefecht entschieden wäre – beim Stand von 4:4 oder i
 _Vermeiden_: Matchball, Siegtreffer
 
 **Trefferanzeige**:
-Die zwei Lampen über der Fechtbahn in den Farben der Fechter, von denen jede mit einem Signalton den Treffer eines Fechters meldet; bei einem Doppeltreffer leuchten beide.
+Die zwei Lampen im Meldegerät in den Farben der Fechter, von denen jede mit einem Signalton den Treffer eines Fechters meldet; bei einem Doppeltreffer leuchten beide.
 _Vermeiden_: Anzeige, Lampe (allein), Scoreboard
 
 ### Aktionen
@@ -105,5 +105,21 @@ Ein neues Gefecht derselben Fechter direkt nach dem Ende des vorherigen.
 _Vermeiden_: Rematch, Neustart
 
 **Fechtbahn**:
-Die gerade Fläche, auf der gefochten wird. Die Fechter bewegen sich nur vor und zurück darauf; an beiden Enden ist eine Wand.
+Die lange, schmale Metallbahn, auf der gefochten wird. Die Fechter stehen mittig auf ihr und bewegen sich nur vor und zurück; an den Endlinien geht es nicht weiter.
 _Vermeiden_: Arena, Level, Bühne, Piste
+
+**Mittellinie**:
+Die Markierung quer über die Mitte der Fechtbahn.
+_Vermeiden_: Mittelstrich
+
+**Endlinie**:
+Die Markierung an jedem Ende der Fechtbahn, über die kein Fechter hinauskommt. Wer sie erreicht, bekommt keinen Treffer gegen sich.
+_Vermeiden_: Wand, Bande, Grenze
+
+**Warnzone**:
+Der farbig markierte Abschnitt vor jeder Endlinie, der anzeigt, dass das Ende der Fechtbahn nah ist. Er hat keine Regelwirkung.
+_Vermeiden_: Gefahrenzone
+
+**Meldegerät**:
+Der Kasten neben der Fechtbahn, der Trefferanzeige, Punktestand und Uhr enthält.
+_Vermeiden_: Scoreboard, Anzeigetafel, HUD

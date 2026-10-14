@@ -17,6 +17,14 @@ const SCHRITTLAENGE = 14;
 // Höhe des vorderen Fußes, der beim Ausfall zur Trefffläche gehört
 const FUSS_HOEHE = 20;
 
+// Für jede Pose die äußersten Spalten der Schuhe – dort liegt der Schatten
+const SCHUH_SPALTEN = Object.fromEntries(
+  Object.entries(POSEN).map(([pose, { pixel }]) => {
+    const spalten = pixel.flatMap((zeile) => [...zeile].flatMap((z, x) => (z === 'S' ? [x] : [])));
+    return [pose, [Math.min(...spalten), Math.max(...spalten) + 1]];
+  }),
+);
+
 // Höhen, auf die die Degenspitze zielt
 const HOCH = BODEN_Y - 70;
 const MITTEL = BODEN_Y - 40; // Stoß gegen einen Gegner, der schon geduckt ist
@@ -48,6 +56,7 @@ export default class Fechter {
 
     // Grün ist das gespiegelte Bild von Rot; die Rumpfmitte bleibt dabei über x
     const mitte = (MITTE_X + 0.5) / BILD_BREITE;
+    this.schatten = szene.add.graphics();
     this.bild = szene.add
       .image(x, BODEN_Y, texturName(name, 'grundstellung'))
       .setOrigin(richtung > 0 ? mitte : 1 - mitte, 1)
@@ -243,6 +252,13 @@ export default class Fechter {
 
   zeichne() {
     this.bild.setPosition(this.x, BODEN_Y).setTexture(texturName(this.name, this.pose));
+
+    // Schatten auf der Fechtbahn: ein flaches Oval unter den Schuhen
+    const [von, bis] = SCHUH_SPALTEN[this.pose].map((s) => this.x + this.richtung * this.bildAbstand(s));
+    const links = Math.min(von, bis) - 4;
+    const breite = Math.abs(bis - von) + 8;
+    this.schatten.clear().fillStyle(0x000000, 0.35);
+    this.schatten.fillRect(links + 4, BODEN_Y - 4, breite - 8, 2).fillRect(links, BODEN_Y - 2, breite, 4).fillRect(links + 4, BODEN_Y + 2, breite - 8, 2);
 
     // Degen im Pixelstil: von der Hand bis zur Spitze aus Quadraten mit Bildpixelgröße
     const g = this.klinge;

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
+import { stil } from '../schrift.js';
 
 const TEXTFARBEN = { rot: '#e03b3b', gruen: '#2fbf4f' };
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
@@ -19,18 +20,10 @@ export default class SiegerSzene extends Phaser.Scene {
   create() {
     this.add.rectangle(480, 270, 960, 540, 0x10141c, 0.88);
     this.add
-      .text(480, 150, `${NAMEN[this.sieger]} gewinnt!`, {
-        fontFamily: 'sans-serif',
-        fontSize: '56px',
-        color: TEXTFARBEN[this.sieger],
-      })
+      .text(480, 150, `${NAMEN[this.sieger]} gewinnt!`, stil(64, TEXTFARBEN[this.sieger]))
       .setOrigin(0.5);
     this.add
-      .text(480, 215, `${this.stand.rot} : ${this.stand.gruen}`, {
-        fontFamily: 'sans-serif',
-        fontSize: '32px',
-        color: '#ffffff',
-      })
+      .text(480, 215, `${this.stand.rot} : ${this.stand.gruen}`, stil(36))
       .setOrigin(0.5);
 
     erzeugeMenue(this, 480, 310, [

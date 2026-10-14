@@ -1,3 +1,5 @@
+import { stil } from './schrift.js';
+
 const FARBE = '#ffffff';
 const AUSWAHL = '#ffd166';
 const INAKTIV = '#5d6578';
@@ -7,14 +9,14 @@ const INAKTIV = '#5d6578';
 export default function erzeugeMenue(szene, x, y, eintraege, abstand = 46) {
   let index = eintraege.findIndex((e) => e.aktion);
   const texte = eintraege.map((e, i) =>
-    szene.add.text(x, y + i * abstand, e.text, { fontFamily: 'sans-serif', fontSize: '26px' }).setOrigin(0.5),
+    szene.add.text(x, y + i * abstand, e.text, stil(28)).setOrigin(0.5),
   );
 
   const zeige = () => {
     texte.forEach((t, i) => {
       const e = eintraege[i];
       const gewaehlt = i === index;
-      t.setText(gewaehlt ? `▸ ${e.text} ◂` : e.text);
+      t.setText(gewaehlt ? `> ${e.text} <` : e.text);
       t.setColor(!e.aktion ? INAKTIV : gewaehlt ? AUSWAHL : FARBE);
     });
   };

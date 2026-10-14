@@ -2,14 +2,12 @@ import Phaser from 'phaser';
 import Fechter, { BODEN_Y, BREITE } from '../Fechter.js';
 import Gefecht from '../Gefecht.js';
 import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
+import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
+import Meldegeraet from '../Meldegeraet.js';
+import { stil } from '../schrift.js';
 
-const WAND_LINKS = 30;
-const WAND_RECHTS = 930;
-const STARTLINIE_ROT = 352;
-const STARTLINIE_GRUEN = 608;
 const MIN_ABSTAND = BREITE + 10;
 
-const FARBEN = { rot: 0xe03b3b, gruen: 0x2fbf4f };
 const TEXTFARBEN = { rot: '#e03b3b', gruen: '#2fbf4f' };
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
@@ -21,7 +19,6 @@ const PAUSE_NACH_TREFFER = 1500;
 const ZEITLUPE_TEMPO = 0.25;
 const ZEITLUPE_NACHLAUF = 700;
 
-const LAMPE_AUS = { rot: 0x4a2326, gruen: 0x1d4027 };
 const SIGNALTON_HZ = 880;
 const SIGNALTON_DAUER = 0.7;
 
@@ -41,12 +38,7 @@ export default class KampfSzene extends Phaser.Scene {
   }
 
   create() {
-    // Fechtbahn mit Wänden und Startlinien
-    this.add.rectangle(480, BODEN_Y + 4, WAND_RECHTS - WAND_LINKS, 8, 0xdddddd);
-    this.add.rectangle(WAND_LINKS - 5, BODEN_Y - 60, 10, 140, 0x59627a);
-    this.add.rectangle(WAND_RECHTS + 5, BODEN_Y - 60, 10, 140, 0x59627a);
-    this.add.rectangle(STARTLINIE_ROT, BODEN_Y + 14, 4, 12, 0xdddddd);
-    this.add.rectangle(STARTLINIE_GRUEN, BODEN_Y + 14, 4, 12, 0xdddddd);
+    zeichneHalle(this);
 
     erzeugeFechterTexturen(this, 'rot', TEXTFARBEN.rot);
     erzeugeFechterTexturen(this, 'gruen', TEXTFARBEN.gruen);
@@ -75,25 +67,11 @@ export default class KampfSzene extends Phaser.Scene {
     this.events.on('resume', nachPause);
     this.events.once('shutdown', () => this.events.off('resume', nachPause));
 
-    const schrift = { fontFamily: 'sans-serif', color: '#ffffff' };
-    this.add.text(950, 12, 'Esc: Pause', { ...schrift, fontSize: '14px', color: '#5d6578' }).setOrigin(1, 0);
+    this.add.text(950, 10, 'Esc: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
 
-    // Punktestand und Uhr
-    this.punkteRot = this.add.text(450, 80, '0', { ...schrift, fontSize: '56px', color: TEXTFARBEN.rot }).setOrigin(1, 0);
-    this.add.text(480, 80, ':', { ...schrift, fontSize: '56px' }).setOrigin(0.5, 0);
-    this.punkteGruen = this.add.text(510, 80, '0', { ...schrift, fontSize: '56px', color: TEXTFARBEN.gruen }).setOrigin(0, 0);
-    this.uhr = this.add.text(480, 150, '', { ...schrift, fontSize: '24px' }).setOrigin(0.5, 0);
-    this.hinweis = this.add.text(480, 182, '', { ...schrift, fontSize: '18px', color: '#c8ccd4' }).setOrigin(0.5, 0);
-
-    this.meldung = this.add.text(480, 250, '', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
-
-    // Trefferanzeige: links die rote, rechts die grüne Lampe, jeweils mit Lichtschein
-    this.lampen = {};
-    for (const [farbe, x] of [['rot', 340], ['gruen', 620]]) {
-      const schein = this.add.circle(x, 112, 34, FARBEN[farbe], 0.25).setVisible(false);
-      const lampe = this.add.circle(x, 112, 20, LAMPE_AUS[farbe]);
-      this.lampen[farbe] = { schein, lampe };
-    }
+    this.meldegeraet = new Meldegeraet(this);
+    this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
+    this.meldung = this.add.text(480, 260, '', stil(48)).setOrigin(0.5);
 
     this.spielZeit = 0;
     this.zeitlupe = false;
@@ -213,9 +191,7 @@ export default class KampfSzene extends Phaser.Scene {
   }
 
   schalteLampe(farbe, an) {
-    const { schein, lampe } = this.lampen[farbe];
-    lampe.setFillStyle(an ? FARBEN[farbe] : LAMPE_AUS[farbe]);
-    schein.setVisible(an);
+    this.meldegeraet.schalteLampe(farbe, an);
   }
 
   signalton() {
@@ -259,18 +235,14 @@ export default class KampfSzene extends Phaser.Scene {
 
   zeigeStand() {
     const { stand, restzeit, verlaengerung, vorteil } = this.gefecht;
-    this.punkteRot.setText(String(stand.rot));
-    this.punkteGruen.setText(String(stand.gruen));
-
     const sekunden = Math.ceil(restzeit / 1000);
-    const uhrzeit = `${Math.floor(sekunden / 60)}:${String(sekunden % 60).padStart(2, '0')}`;
-    this.uhr.setText(verlaengerung ? `Verlängerung ${uhrzeit}` : uhrzeit);
+    this.meldegeraet.zeige(stand, `${Math.floor(sekunden / 60)}:${String(sekunden % 60).padStart(2, '0')}`);
     if (verlaengerung) {
-      this.hinweis.setColor(TEXTFARBEN[vorteil]).setText(`Vorteil ${NAMEN[vorteil]}`);
+      this.hinweis.setColor(TEXTFARBEN[vorteil]).setText(`Verlängerung · Vorteil ${NAMEN[vorteil]}`);
     }
   }
 
-  // Die Fechter können nicht durcheinander hindurch und nicht durch die Wände
+  // Die Fechter können nicht durcheinander hindurch und nicht über die Endlinien
   halteAbstand() {
     const rot = this.fechterRot;
     const gruen = this.fechterGruen;
@@ -279,7 +251,7 @@ export default class KampfSzene extends Phaser.Scene {
       rot.x -= ueberlappung / 2;
       gruen.x += ueberlappung / 2;
     }
-    rot.x = Phaser.Math.Clamp(rot.x, WAND_LINKS + BREITE / 2, WAND_RECHTS - BREITE / 2 - MIN_ABSTAND);
-    gruen.x = Phaser.Math.Clamp(gruen.x, rot.x + MIN_ABSTAND, WAND_RECHTS - BREITE / 2);
+    rot.x = Phaser.Math.Clamp(rot.x, ENDLINIE_LINKS + BREITE / 2, ENDLINIE_RECHTS - BREITE / 2 - MIN_ABSTAND);
+    gruen.x = Phaser.Math.Clamp(gruen.x, rot.x + MIN_ABSTAND, ENDLINIE_RECHTS - BREITE / 2);
   }
 }
