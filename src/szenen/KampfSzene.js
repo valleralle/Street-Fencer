@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Fechter, { BODEN_Y, BREITE } from '../Fechter.js';
 import Gefecht from '../Gefecht.js';
+import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 
 const WAND_LINKS = 30;
 const WAND_RECHTS = 930;
@@ -47,17 +48,20 @@ export default class KampfSzene extends Phaser.Scene {
     this.add.rectangle(STARTLINIE_ROT, BODEN_Y + 14, 4, 12, 0xdddddd);
     this.add.rectangle(STARTLINIE_GRUEN, BODEN_Y + 14, 4, 12, 0xdddddd);
 
+    erzeugeFechterTexturen(this, 'rot', TEXTFARBEN.rot);
+    erzeugeFechterTexturen(this, 'gruen', TEXTFARBEN.gruen);
+
     const tasten = (belegung) => this.input.keyboard.addKeys(belegung);
     this.fechterRot = new Fechter(this, {
       x: STARTLINIE_ROT,
       richtung: 1,
-      farbe: FARBEN.rot,
+      name: 'rot',
       tasten: tasten({ links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S' }),
     });
     this.fechterGruen = new Fechter(this, {
       x: STARTLINIE_GRUEN,
       richtung: -1,
-      farbe: FARBEN.gruen,
+      name: 'gruen',
       tasten: tasten({ links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
     });
     this.escTaste = this.input.keyboard.addKey('ESC');

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pixelart": "node werkzeuge/pixelart-export.mjs"
   },
   "dependencies": {
     "phaser": "^4.2.1"

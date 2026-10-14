@@ -36,6 +36,9 @@ Bisher eingebaut: das komplette Spiel zu zweit – Titel, Steuerungsübersicht, 
 - `src/Fechter.js` – ein Fechter mit seinen Aktionen
 - `src/Gefecht.js` – Regeln eines Gefechts (Punkte, Zeit, Verlängerung)
 - `src/Menue.js` – Menü für Titel, Pause und Sieger
+- `src/pixelart/fechterPosen.js` – die Pixelbilder der Fechter als Textraster (hier kannst du jeden Pixel ändern)
+- `grafik/` – daraus erzeugte PNGs; neu erzeugen mit `npm run pixelart`
+- `werkzeuge/` – Hilfsskripte
 - `CONTEXT.md` – Glossar der Fachbegriffe
 - `docs/adr/` – Entscheidungsnotizen
 
@@ -47,5 +50,5 @@ Bisher eingebaut: das komplette Spiel zu zweit – Titel, Steuerungsübersicht, 
 4. Trefferanzeige mit Lampen, Signalton und Zeitlupe ✅
 5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche ✅
 6. Computergegner (leicht, mittel, schwer)
-7. Grafik: weiße Fechter mit roten/grünen Schuhen; Klingengeräusche
-8. Später: Flèche, Pixelart, Sprachansagen
+7. Grafik: Fechter als Pixelart ✅ · Klingengeräusche
+8. Später: Flèche, Fechtbahn/Lampen/Schrift als Pixelart, Getroffen- und Jubelpose, Sprachansagen

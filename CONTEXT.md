@@ -15,7 +15,7 @@ Ein gültiger Stoß mit der Degenspitze auf den Gegner; er bringt dem Stoßenden
 _Vermeiden_: Schaden, Hit, Schlag
 
 **Trefffläche**:
-Der Bereich des Gegners, auf dem ein Treffer zählt – beim Degen der ganze Körper vom Kopf bis zum Fuß.
+Der Bereich des Gegners, auf dem ein Treffer zählt – beim Degen der ganze Körper vom Kopf bis zum Fuß, beim Ausfall also auch der weit vorgestellte vordere Fuß.
 _Vermeiden_: Hitbox (als Fachbegriff im Spiel)
 
 **Doppeltreffer**:
@@ -31,6 +31,14 @@ Die zwei Lampen über der Fechtbahn in den Farben der Fechter, von denen jede mi
 _Vermeiden_: Anzeige, Lampe (allein), Scoreboard
 
 ### Aktionen
+
+**Grundstellung**:
+Die Fechtstellung, in der ein Fechter steht, wenn er gerade keine Aktion ausführt – leicht in den Knien, Degen nach vorn.
+_Vermeiden_: Idle, Ruhestellung, En garde (das ist das Kommando)
+
+**Offen**:
+Der kurze Zustand nach einer gegnerischen Parade, in dem ein Fechter keine Aktion beginnen kann und für eine Riposte ungeschützt ist.
+_Vermeiden_: Betäubt, Stun
 
 **Stoß**:
 Ein schneller Angriff mit der Degenspitze aus dem Stand, mit kurzer Reichweite.

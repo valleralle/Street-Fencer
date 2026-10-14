@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { BREITE as BILD_BREITE, HOEHE as BILD_HOEHE, MITTE_X, POSEN } from './pixelart/fechterPosen.js';
+import { texturName } from './pixelart/texturen.js';
 
 export const BODEN_Y = 440;
 export const BREITE = 36;
@@ -7,6 +9,13 @@ const HOEHE_STEHEND = 100;
 const HOEHE_GEDUCKT = 60;
 const TEMPO = 220;
 const KLINGE_RUHE = 45;
+
+// Die Pixelbilder werden 2-fach vergrößert; ein Bildpixel sind also 2 Bildschirmpixel
+const MASSSTAB = 2;
+// Beim Gehen wechselt das Bild alle so viele Bildschirmpixel
+const SCHRITTLAENGE = 14;
+// Höhe des vorderen Fußes, der beim Ausfall zur Trefffläche gehört
+const FUSS_HOEHE = 20;
 
 // Höhen, auf die die Degenspitze zielt
 const HOCH = BODEN_Y - 70;
@@ -29,13 +38,22 @@ const OFFEN_DAUER = 500;
 const RIPOSTE_FENSTER = 400;
 
 export default class Fechter {
-  constructor(szene, { x, richtung, farbe, tasten }) {
+  // name = 'rot' oder 'gruen' (für die Texturen)
+  constructor(szene, { x, richtung, name, tasten }) {
     this.startX = x;
     this.richtung = richtung; // 1 = schaut nach rechts, -1 = nach links
-    this.farbe = farbe;
+    this.name = name;
     this.tasten = tasten;
-    this.grafik = szene.add.graphics();
     this.jetzt = 0;
+
+    // Grün ist das gespiegelte Bild von Rot; die Rumpfmitte bleibt dabei über x
+    const mitte = (MITTE_X + 0.5) / BILD_BREITE;
+    this.bild = szene.add
+      .image(x, BODEN_Y, texturName(name, 'grundstellung'))
+      .setOrigin(richtung > 0 ? mitte : 1 - mitte, 1)
+      .setScale(MASSSTAB)
+      .setFlipX(richtung < 0);
+    this.klinge = szene.add.graphics();
     this.zuruecksetzen();
   }
 
@@ -47,6 +65,7 @@ export default class Fechter {
     this.verbraucht = false;
     this.offenBis = 0;
     this.riposteBis = 0;
+    this.geht = false;
   }
 
   get phase() {
@@ -71,13 +90,49 @@ export default class Fechter {
     return this.jetzt < this.offenBis;
   }
 
-  get treffflaeche() {
+  // Liste von Rechtecken: der Körper und beim Ausfall zusätzlich der vordere Fuß
+  get treffflaechen() {
     const hoehe = this.geduckt ? HOEHE_GEDUCKT : HOEHE_STEHEND;
-    return {
-      links: this.x - BREITE / 2,
-      rechts: this.x + BREITE / 2,
-      oben: BODEN_Y - hoehe,
+    const koerper = { links: this.x - BREITE / 2, rechts: this.x + BREITE / 2, oben: BODEN_Y - hoehe, unten: BODEN_Y };
+    if (this.aktion !== 'ausfall') return [koerper];
+
+    const fussX = this.x + this.richtung * this.bildAbstand(POSEN.ausfall.vordererFuss + 1);
+    const fuss = {
+      links: Math.min(this.x, fussX),
+      rechts: Math.max(this.x, fussX),
+      oben: BODEN_Y - FUSS_HOEHE,
       unten: BODEN_Y,
+    };
+    return [koerper, fuss];
+  }
+
+  // Abstand einer Bildspalte von der Rumpfmitte in Bildschirmpixeln
+  bildAbstand(spalte) {
+    return (spalte - (MITTE_X + 0.5)) * MASSSTAB;
+  }
+
+  get pose() {
+    if (this.offen && !this.aktion) return 'offen';
+    switch (this.aktion) {
+      case 'stoss':
+      case 'riposte':
+        return this.phase === 'aktiv' ? 'stoss' : 'grundstellung';
+      case 'ausfall':
+        return 'ausfall';
+      case 'parade':
+        return this.phase === 'aktiv' ? 'parade' : 'grundstellung';
+      case 'tiefstoss':
+        return this.geduckt ? 'tiefstoss' : 'grundstellung';
+    }
+    if (this.geht) return Math.floor(this.x / SCHRITTLAENGE) % 2 ? 'gehen1' : 'gehen2';
+    return 'grundstellung';
+  }
+
+  get hand() {
+    const [spalte, zeile] = POSEN[this.pose].hand;
+    return {
+      x: this.x + this.richtung * this.bildAbstand(spalte + 0.5),
+      y: BODEN_Y - (BILD_HOEHE - zeile - 0.5) * MASSSTAB,
     };
   }
 
@@ -93,6 +148,11 @@ export default class Fechter {
     if (ANGRIFFE.includes(this.aktion)) {
       if (this.phase === 'anlauf') laenge = KLINGE_RUHE - 15;
       if (this.phase === 'aktiv') laenge = AKTIONEN[this.aktion].reichweite;
+    }
+    if (this.offen && !this.aktion) {
+      // Nach einer gegnerischen Parade hängt die Klinge nach unten
+      const h = this.hand;
+      return { x: h.x + this.richtung * 30, y: h.y + 20 };
     }
     const y = ANGRIFFE.includes(this.aktion) ? this.zielHoehe : HOCH;
     return { x: this.vorderkante + this.richtung * laenge, y };
@@ -126,8 +186,10 @@ export default class Fechter {
         if (vor.isDown) v += TEMPO;
         if (zurueck.isDown) v -= TEMPO;
         this.x += (this.richtung * v * delta) / 1000;
+        this.geht = v !== 0;
       }
     }
+    if (this.aktion || this.offen || !eingabe) this.geht = false;
 
     // Beim Ausfall springt der Fechter während Anlauf und Stoß nach vorn
     if (this.aktion === 'ausfall' && this.phase !== 'erholung') {
@@ -157,9 +219,11 @@ export default class Fechter {
   pruefeStoss(gegner) {
     if (!ANGRIFFE.includes(this.aktion) || this.phase !== 'aktiv' || this.verbraucht) return null;
     const s = this.spitze;
-    const f = gegner.treffflaeche;
-    const erreicht = this.richtung > 0 ? s.x >= f.links : s.x <= f.rechts;
-    if (!erreicht || s.y < f.oben || s.y > f.unten) return null;
+    const getroffen = gegner.treffflaechen.some((f) => {
+      const erreicht = this.richtung > 0 ? s.x >= f.links : s.x <= f.rechts;
+      return erreicht && s.y >= f.oben && s.y <= f.unten;
+    });
+    if (!getroffen) return null;
 
     this.verbraucht = true;
     // Eine Parade schlägt nur hohe Klingen weg, ein Tiefstoß geht darunter durch
@@ -178,22 +242,19 @@ export default class Fechter {
   }
 
   zeichne() {
-    const g = this.grafik;
-    const f = this.treffflaeche;
-    g.clear();
+    this.bild.setPosition(this.x, BODEN_Y).setTexture(texturName(this.name, this.pose));
 
-    // Anzug, Maske, Schuhe
-    g.fillStyle(0xffffff, this.offen ? 0.55 : 1);
-    g.fillRect(f.links, f.oben, BREITE, f.unten - f.oben - 8);
-    g.fillStyle(0x3a4252);
-    g.fillRect(f.links + 9, f.oben + 2, BREITE - 18, 18);
-    g.fillStyle(this.farbe);
-    g.fillRect(f.links - 2, BODEN_Y - 8, BREITE + 4, 8);
-
-    // Degen: von der Hand an der Vorderkante bis zur Spitze
+    // Degen im Pixelstil: von der Hand bis zur Spitze aus Quadraten mit Bildpixelgröße
+    const g = this.klinge;
+    const h = this.hand;
     const s = this.spitze;
-    const handY = this.geduckt ? f.oben + 25 : BODEN_Y - 65;
-    g.lineStyle(3, 0xc8ccd4);
-    g.lineBetween(this.vorderkante, handY, s.x, s.y);
+    g.clear();
+    g.fillStyle(0xc8ccd4);
+    const schritte = Math.ceil(Math.max(Math.abs(s.x - h.x), Math.abs(s.y - h.y)) / MASSSTAB);
+    for (let i = 0; i <= schritte; i++) {
+      const x = h.x + ((s.x - h.x) * i) / schritte;
+      const y = h.y + ((s.y - h.y) * i) / schritte;
+      g.fillRect(Math.floor(x / MASSSTAB) * MASSSTAB, Math.floor(y / MASSSTAB) * MASSSTAB, MASSSTAB, MASSSTAB);
+    }
   }
 }
