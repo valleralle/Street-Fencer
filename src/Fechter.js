@@ -98,7 +98,8 @@ export default class Fechter {
     return { x: this.vorderkante + this.richtung * laenge, y };
   }
 
-  aktualisiere(jetzt, delta, gegner) {
+  // eingabe = false: laufende Aktionen gehen weiter, neue werden nicht angenommen
+  aktualisiere(jetzt, delta, gegner, eingabe = true) {
     this.jetzt = jetzt;
     if (this.aktion && this.phase === null) this.aktion = null;
 
@@ -111,7 +112,7 @@ export default class Fechter {
     const vor = this.richtung > 0 ? this.tasten.rechts : this.tasten.links;
     const zurueck = this.richtung > 0 ? this.tasten.links : this.tasten.rechts;
 
-    if (!this.aktion && !this.offen) {
+    if (eingabe && !this.aktion && !this.offen) {
       if (stoss) {
         if (jetzt < this.riposteBis) this.starte('riposte', gegner);
         else if (vor.isDown) this.starte('ausfall', gegner);

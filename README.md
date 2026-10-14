@@ -39,7 +39,7 @@ Bisher eingebaut: alle Aktionen, Treffererkennung und ein komplettes Gefecht mit
 1. Zwei Fechter auf der Fechtbahn, Vor-/Zurückschritt ✅
 2. Stoß, Ausfall, Parade, Riposte, Tiefstoß und Treffererkennung ✅
 3. Gefecht: Punkte, Doppeltreffer, Startlinien und Kommando, Zeit, Verlängerung mit Vorteil ✅
-4. Trefferanzeige mit Lampen, Signalton und Zeitlupe
+4. Trefferanzeige mit Lampen, Signalton und Zeitlupe ✅
 5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche
 6. Computergegner (leicht, mittel, schwer)
 7. Grafik: weiße Fechter mit roten/grünen Schuhen; Klingengeräusche

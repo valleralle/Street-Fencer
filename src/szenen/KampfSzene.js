@@ -16,6 +16,14 @@ const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 const DOPPELTREFFER_FENSTER = 100;
 const PAUSE_NACH_TREFFER = 1500;
 
+// Ab dem ersten Treffer läuft das Spiel langsamer und noch eine Weile nach
+const ZEITLUPE_TEMPO = 0.25;
+const ZEITLUPE_NACHLAUF = 700;
+
+const LAMPE_AUS = { rot: 0x4a2326, gruen: 0x1d4027 };
+const SIGNALTON_HZ = 880;
+const SIGNALTON_DAUER = 0.7;
+
 // Ablauf des Kommandos in Millisekunden; bei „Allez !“ geht es los
 const EN_GARDE = 700;
 const PRETS = 1400;
@@ -71,6 +79,16 @@ export default class KampfSzene extends Phaser.Scene {
 
     this.meldung = this.add.text(480, 250, '', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
 
+    // Trefferanzeige: links die rote, rechts die grüne Lampe, jeweils mit Lichtschein
+    this.lampen = {};
+    for (const [farbe, x] of [['rot', 340], ['gruen', 620]]) {
+      const schein = this.add.circle(x, 112, 34, FARBEN[farbe], 0.25).setVisible(false);
+      const lampe = this.add.circle(x, 112, 20, LAMPE_AUS[farbe]);
+      this.lampen[farbe] = { schein, lampe };
+    }
+
+    this.spielZeit = 0;
+    this.zeitlupe = false;
     this.neuesGefecht(this.time.now);
   }
 
@@ -86,6 +104,9 @@ export default class KampfSzene extends Phaser.Scene {
     this.fechterGruen.zuruecksetzen();
     this.treffer = { rot: false, gruen: false };
     this.ersterTrefferZeit = null;
+    this.zeitlupe = false;
+    this.schalteLampe('rot', false);
+    this.schalteLampe('gruen', false);
     this.phase = 'kommando';
     this.phaseStart = zeit;
   }
@@ -94,6 +115,8 @@ export default class KampfSzene extends Phaser.Scene {
     const rot = this.fechterRot;
     const gruen = this.fechterGruen;
     const seit = zeit - this.phaseStart;
+    // Die Fechter laufen auf der Spielzeit, die in der Zeitlupe langsamer vergeht
+    const spielDelta = delta * (this.zeitlupe ? ZEITLUPE_TEMPO : 1);
 
     if (this.phase === 'kommando') {
       this.meldung.setColor('#ffffff').setText(seit < EN_GARDE ? 'En garde !' : 'Prêts ?');
@@ -104,8 +127,15 @@ export default class KampfSzene extends Phaser.Scene {
       }
     } else if (this.phase === 'gefecht') {
       if (seit >= ALLEZ_SICHTBAR && this.meldung.text === 'Allez !') this.meldung.setText('');
-      this.fechte(zeit, delta);
+      this.spielZeit += spielDelta;
+      this.fechte(zeit, spielDelta);
     } else if (this.phase === 'treffer') {
+      if (seit < ZEITLUPE_NACHLAUF) {
+        this.spielZeit += spielDelta;
+        rot.aktualisiere(this.spielZeit, spielDelta, gruen, false);
+        gruen.aktualisiere(this.spielZeit, spielDelta, rot, false);
+        this.halteAbstand();
+      }
       if (seit >= PAUSE_NACH_TREFFER) {
         if (this.gefecht.sieger) this.beende(zeit);
         else this.starteKommando(zeit);
@@ -125,16 +155,19 @@ export default class KampfSzene extends Phaser.Scene {
   fechte(zeit, delta) {
     const rot = this.fechterRot;
     const gruen = this.fechterGruen;
+    const jetzt = this.spielZeit;
 
-    rot.aktualisiere(zeit, delta, gruen);
-    gruen.aktualisiere(zeit, delta, rot);
+    // Nach dem ersten Treffer zählen nur noch Stöße, die schon unterwegs sind
+    const eingabe = this.ersterTrefferZeit === null;
+    rot.aktualisiere(jetzt, delta, gruen, eingabe);
+    gruen.aktualisiere(jetzt, delta, rot, eingabe);
     this.halteAbstand();
 
-    this.pruefeStoss(rot, gruen, 'rot', zeit);
-    this.pruefeStoss(gruen, rot, 'gruen', zeit);
+    this.pruefeStoss(rot, gruen, 'rot', jetzt);
+    this.pruefeStoss(gruen, rot, 'gruen', jetzt);
 
     if (this.ersterTrefferZeit !== null) {
-      if (zeit - this.ersterTrefferZeit >= DOPPELTREFFER_FENSTER) this.werteTrefferAus(zeit);
+      if (jetzt - this.ersterTrefferZeit >= DOPPELTREFFER_FENSTER) this.werteTrefferAus(zeit);
       return;
     }
 
@@ -157,8 +190,34 @@ export default class KampfSzene extends Phaser.Scene {
       gegner.paradeGelungen();
     } else if (ergebnis === 'treffer') {
       this.treffer[farbe] = true;
-      if (this.ersterTrefferZeit === null) this.ersterTrefferZeit = zeit;
+      this.schalteLampe(farbe, true);
+      if (this.ersterTrefferZeit === null) {
+        this.ersterTrefferZeit = zeit;
+        this.zeitlupe = true;
+        this.signalton();
+      }
     }
+  }
+
+  schalteLampe(farbe, an) {
+    const { schein, lampe } = this.lampen[farbe];
+    lampe.setFillStyle(an ? FARBEN[farbe] : LAMPE_AUS[farbe]);
+    schein.setVisible(an);
+  }
+
+  signalton() {
+    const ctx = this.sound.context;
+    if (!ctx) return;
+    const ton = ctx.createOscillator();
+    const lautstaerke = ctx.createGain();
+    ton.type = 'square';
+    ton.frequency.value = SIGNALTON_HZ;
+    lautstaerke.gain.setValueAtTime(0.06, ctx.currentTime);
+    lautstaerke.gain.setValueAtTime(0.06, ctx.currentTime + SIGNALTON_DAUER - 0.05);
+    lautstaerke.gain.linearRampToValueAtTime(0, ctx.currentTime + SIGNALTON_DAUER);
+    ton.connect(lautstaerke).connect(ctx.destination);
+    ton.start();
+    ton.stop(ctx.currentTime + SIGNALTON_DAUER);
   }
 
   werteTrefferAus(zeit) {
