@@ -24,13 +24,18 @@ Dann die angezeigte Adresse (meist http://localhost:5173) im Browser öffnen.
 - **Riposte** = Stoß direkt nach einer gelungenen Parade
 - **Pause** = Esc
 
-Bisher eingebaut: alle Aktionen, Treffererkennung und ein komplettes Gefecht mit Punkten, Zeit und Verlängerung. Nach dem Gefecht startet die Leertaste ein neues.
+Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter.
+
+Bisher eingebaut: das komplette Spiel zu zweit – Titel, Steuerungsübersicht, Gefecht mit Punkten, Zeit und Verlängerung, Trefferanzeige, Pause und Siegerbildschirm mit Revanche. Der Computergegner fehlt noch.
 
 ## Struktur
 
 - `index.html` – Einstiegsseite
 - `src/main.js` – Phaser-Konfiguration
-- `src/szenen/` – Spielszenen (z. B. `KampfSzene.js`)
+- `src/szenen/` – Bildschirme: Titel, Steuerung, Kampf, Pause, Sieger
+- `src/Fechter.js` – ein Fechter mit seinen Aktionen
+- `src/Gefecht.js` – Regeln eines Gefechts (Punkte, Zeit, Verlängerung)
+- `src/Menue.js` – Menü für Titel, Pause und Sieger
 - `CONTEXT.md` – Glossar der Fachbegriffe
 - `docs/adr/` – Entscheidungsnotizen
 
@@ -40,7 +45,7 @@ Bisher eingebaut: alle Aktionen, Treffererkennung und ein komplettes Gefecht mit
 2. Stoß, Ausfall, Parade, Riposte, Tiefstoß und Treffererkennung ✅
 3. Gefecht: Punkte, Doppeltreffer, Startlinien und Kommando, Zeit, Verlängerung mit Vorteil ✅
 4. Trefferanzeige mit Lampen, Signalton und Zeitlupe ✅
-5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche
+5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche ✅
 6. Computergegner (leicht, mittel, schwer)
 7. Grafik: weiße Fechter mit roten/grünen Schuhen; Klingengeräusche
 8. Später: Flèche, Pixelart, Sprachansagen

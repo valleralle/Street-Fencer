@@ -1,5 +1,9 @@
 import Phaser from 'phaser';
+import TitelSzene from './szenen/TitelSzene.js';
+import SteuerungSzene from './szenen/SteuerungSzene.js';
 import KampfSzene from './szenen/KampfSzene.js';
+import PauseSzene from './szenen/PauseSzene.js';
+import SiegerSzene from './szenen/SiegerSzene.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -11,7 +15,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [KampfSzene],
+  scene: [TitelSzene, SteuerungSzene, KampfSzene, PauseSzene, SiegerSzene],
 };
 
 new Phaser.Game(config);

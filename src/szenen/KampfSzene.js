@@ -35,6 +35,10 @@ export default class KampfSzene extends Phaser.Scene {
     super('KampfSzene');
   }
 
+  init(daten) {
+    this.modus = daten.modus ?? 'zwei';
+  }
+
   create() {
     // Fechtbahn mit Wänden und Startlinien
     this.add.rectangle(480, BODEN_Y + 4, WAND_RECHTS - WAND_LINKS, 8, 0xdddddd);
@@ -56,19 +60,19 @@ export default class KampfSzene extends Phaser.Scene {
       farbe: FARBEN.gruen,
       tasten: tasten({ links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
     });
-    this.leertaste = this.input.keyboard.addKey('SPACE');
+    this.escTaste = this.input.keyboard.addKey('ESC');
+
+    // Nach der Pause alle Tastendrücke verwerfen, die während der Pause passiert sind
+    const nachPause = () => {
+      Phaser.Input.Keyboard.JustDown(this.escTaste);
+      this.fechterRot.vergissTasten();
+      this.fechterGruen.vergissTasten();
+    };
+    this.events.on('resume', nachPause);
+    this.events.once('shutdown', () => this.events.off('resume', nachPause));
 
     const schrift = { fontFamily: 'sans-serif', color: '#ffffff' };
-    this.add
-      .text(
-        480,
-        12,
-        'Rot: A / D bewegen · F Stoß · G Parade · S Tiefstoß     ' +
-          'Grün: ← / → bewegen · K Stoß · L Parade · ↓ Tiefstoß\n' +
-          'Ausfall = vorwärts + Stoß · Riposte = Stoß nach gelungener Parade',
-        { ...schrift, fontSize: '13px', align: 'center', color: '#9aa3b5' },
-      )
-      .setOrigin(0.5, 0);
+    this.add.text(950, 12, 'Esc: Pause', { ...schrift, fontSize: '14px', color: '#5d6578' }).setOrigin(1, 0);
 
     // Punktestand und Uhr
     this.punkteRot = this.add.text(450, 80, '0', { ...schrift, fontSize: '56px', color: TEXTFARBEN.rot }).setOrigin(1, 0);
@@ -89,13 +93,14 @@ export default class KampfSzene extends Phaser.Scene {
 
     this.spielZeit = 0;
     this.zeitlupe = false;
-    this.neuesGefecht(this.time.now);
+    // Eigene Uhr der Szene, die während der Pause stehen bleibt
+    this.szenenZeit = 0;
+    this.neuesGefecht(0);
   }
 
   neuesGefecht(zeit) {
     this.gefecht = new Gefecht();
     this.zeigeStand();
-    this.hinweis.setText('');
     this.starteKommando(zeit);
   }
 
@@ -111,7 +116,8 @@ export default class KampfSzene extends Phaser.Scene {
     this.phaseStart = zeit;
   }
 
-  update(zeit, delta) {
+  update(_, delta) {
+    const zeit = (this.szenenZeit += delta);
     const rot = this.fechterRot;
     const gruen = this.fechterGruen;
     const seit = zeit - this.phaseStart;
@@ -140,8 +146,11 @@ export default class KampfSzene extends Phaser.Scene {
         if (this.gefecht.sieger) this.beende(zeit);
         else this.starteKommando(zeit);
       }
-    } else if (this.phase === 'ende') {
-      if (Phaser.Input.Keyboard.JustDown(this.leertaste)) this.neuesGefecht(zeit);
+    }
+
+    if (this.phase !== 'ende' && Phaser.Input.Keyboard.JustDown(this.escTaste)) {
+      this.scene.pause();
+      this.scene.launch('PauseSzene');
     }
 
     if (this.phase !== 'gefecht') {
@@ -237,12 +246,11 @@ export default class KampfSzene extends Phaser.Scene {
 
   beende(zeit) {
     const { sieger, stand } = this.gefecht;
-    this.meldung
-      .setColor(TEXTFARBEN[sieger])
-      .setText(`${NAMEN[sieger]} gewinnt ${stand.rot}:${stand.gruen}!`);
-    this.hinweis.setColor('#c8ccd4').setText('Leertaste: neues Gefecht');
+    this.meldung.setText('');
     this.phase = 'ende';
     this.phaseStart = zeit;
+    this.scene.pause();
+    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus });
   }
 
   zeigeStand() {
@@ -253,7 +261,7 @@ export default class KampfSzene extends Phaser.Scene {
     const sekunden = Math.ceil(restzeit / 1000);
     const uhrzeit = `${Math.floor(sekunden / 60)}:${String(sekunden % 60).padStart(2, '0')}`;
     this.uhr.setText(verlaengerung ? `Verlängerung ${uhrzeit}` : uhrzeit);
-    if (verlaengerung && this.phase !== 'ende') {
+    if (verlaengerung) {
       this.hinweis.setColor(TEXTFARBEN[vorteil]).setText(`Vorteil ${NAMEN[vorteil]}`);
     }
   }
