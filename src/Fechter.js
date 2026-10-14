@@ -135,6 +135,14 @@ export default class Fechter {
     }
   }
 
+  // Tastendrücke außerhalb des Gefechts (z. B. während des Kommandos) verwerfen
+  vergissTasten() {
+    const JustDown = Phaser.Input.Keyboard.JustDown;
+    JustDown(this.tasten.stoss);
+    JustDown(this.tasten.parade);
+    JustDown(this.tasten.tiefstoss);
+  }
+
   starte(aktion, gegner) {
     this.aktion = aktion;
     this.aktionStart = this.jetzt;

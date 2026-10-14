@@ -24,7 +24,7 @@ Dann die angezeigte Adresse (meist http://localhost:5173) im Browser öffnen.
 - **Riposte** = Stoß direkt nach einer gelungenen Parade
 - **Pause** = Esc
 
-Bisher eingebaut: Bewegen und alle Aktionen mit Treffererkennung. Punkte und Zeit fehlen noch.
+Bisher eingebaut: alle Aktionen, Treffererkennung und ein komplettes Gefecht mit Punkten, Zeit und Verlängerung. Nach dem Gefecht startet die Leertaste ein neues.
 
 ## Struktur
 
@@ -38,7 +38,7 @@ Bisher eingebaut: Bewegen und alle Aktionen mit Treffererkennung. Punkte und Zei
 
 1. Zwei Fechter auf der Fechtbahn, Vor-/Zurückschritt ✅
 2. Stoß, Ausfall, Parade, Riposte, Tiefstoß und Treffererkennung ✅
-3. Gefecht: Punkte, Doppeltreffer, Startlinien und Kommando, Zeit, Verlängerung mit Vorteil
+3. Gefecht: Punkte, Doppeltreffer, Startlinien und Kommando, Zeit, Verlängerung mit Vorteil ✅
 4. Trefferanzeige mit Lampen, Signalton und Zeitlupe
 5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche
 6. Computergegner (leicht, mittel, schwer)
