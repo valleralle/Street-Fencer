@@ -38,7 +38,7 @@ const AKTIONEN = {
   ausfall: { anlauf: 350, aktiv: 150, erholung: 450, reichweite: 95, schritt: 80 },
   // Abtauchen geht schnell (ducken), der Stoß zum Fuß kommt erst nach dem langen Anlauf –
   // so bleibt Zeit, in den Geduckten hineinzustoßen
-  tiefstoss: { ducken: 40, anlauf: 700, aktiv: 180, erholung: 300, reichweite: 85 },
+  tiefstoss: { ducken: 40, anlauf: 650, aktiv: 180, erholung: 300, reichweite: 85 },
   parade: { anlauf: 0, aktiv: 300, erholung: 300 },
 };
 const ANGRIFFE = ['stoss', 'riposte', 'ausfall', 'tiefstoss'];
