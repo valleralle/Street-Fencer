@@ -4,9 +4,9 @@
 //   treffsicherheit – wie oft er die richtige Antwort wählt (0 bis 1)
 //   angriffslust    – wie oft er von sich aus angreift (0 bis 1)
 export const STUFEN = {
-  leicht: { reaktion: 320, treffsicherheit: 0.45, angriffslust: 0.3 },
-  mittel: { reaktion: 150, treffsicherheit: 0.65, angriffslust: 0.5 },
-  schwer: { reaktion: 60, treffsicherheit: 0.85, angriffslust: 0.7 },
+  leicht: { reaktion: 400, treffsicherheit: 0.45, angriffslust: 0.3 },
+  mittel: { reaktion: 260, treffsicherheit: 0.65, angriffslust: 0.5 },
+  schwer: { reaktion: 150, treffsicherheit: 0.92, angriffslust: 0.7 },
 };
 
 // Abstände zwischen den beiden Fechtern (Mitte zu Mitte), aus denen eine Aktion trifft

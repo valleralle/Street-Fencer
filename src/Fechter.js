@@ -29,14 +29,17 @@ const HOCH = BODEN_Y - 70;
 const MITTEL = BODEN_Y - 40; // Stoß gegen einen Gegner, der schon geduckt ist
 const TIEF = BODEN_Y - 8;
 
-// Zeiten in Millisekunden; reichweite = Länge der Klinge während der aktiven Phase
+// Zeiten in Millisekunden; reichweite = Länge der Klinge während der aktiven Phase.
+// Ein Mensch braucht etwa 200–250 ms, um auf etwas zu reagieren. Damit man einen Angriff
+// parieren kann, muss sein Anlauf (das Ausholen) länger dauern.
 const AKTIONEN = {
-  stoss: { anlauf: 80, aktiv: 120, erholung: 220, reichweite: 95 },
-  riposte: { anlauf: 30, aktiv: 120, erholung: 160, reichweite: 95 },
-  ausfall: { anlauf: 120, aktiv: 150, erholung: 450, reichweite: 95, schritt: 80 },
-  // Abtauchen geht schnell (ducken), der Stoß zum Fuß kommt erst nach dem Anlauf
-  tiefstoss: { ducken: 40, anlauf: 150, aktiv: 180, erholung: 300, reichweite: 85 },
-  parade: { anlauf: 0, aktiv: 200, erholung: 300 },
+  stoss: { anlauf: 300, aktiv: 120, erholung: 220, reichweite: 95 },
+  riposte: { anlauf: 80, aktiv: 120, erholung: 160, reichweite: 95 },
+  ausfall: { anlauf: 350, aktiv: 150, erholung: 450, reichweite: 95, schritt: 80 },
+  // Abtauchen geht schnell (ducken), der Stoß zum Fuß kommt erst nach dem langen Anlauf –
+  // so bleibt Zeit, in den Geduckten hineinzustoßen
+  tiefstoss: { ducken: 40, anlauf: 700, aktiv: 180, erholung: 300, reichweite: 85 },
+  parade: { anlauf: 0, aktiv: 300, erholung: 300 },
 };
 const ANGRIFFE = ['stoss', 'riposte', 'ausfall', 'tiefstoss'];
 
@@ -158,7 +161,7 @@ export default class Fechter {
     }
     let laenge = KLINGE_RUHE;
     if (ANGRIFFE.includes(this.aktion)) {
-      if (this.phase === 'anlauf') laenge = KLINGE_RUHE - 15;
+      if (this.phase === 'anlauf') laenge = KLINGE_RUHE - 25; // sichtbares Ausholen
       if (this.phase === 'aktiv') laenge = AKTIONEN[this.aktion].reichweite;
     }
     if (this.offen && !this.aktion) {
