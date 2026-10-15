@@ -5,6 +5,8 @@ import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
 import Meldegeraet from '../Meldegeraet.js';
 import { stil } from '../schrift.js';
+import { tastaturSteuerung } from '../steuerung.js';
+import Computergegner from '../Computergegner.js';
 
 const MIN_ABSTAND = BREITE + 10;
 
@@ -33,8 +35,10 @@ export default class KampfSzene extends Phaser.Scene {
     super('KampfSzene');
   }
 
+  // modus = 'zwei' (zwei Spieler) oder 'computer'; stufe = 'leicht' | 'mittel' | 'schwer'
   init(daten) {
     this.modus = daten.modus ?? 'zwei';
+    this.stufe = daten.stufe ?? 'mittel';
   }
 
   create() {
@@ -43,18 +47,21 @@ export default class KampfSzene extends Phaser.Scene {
     erzeugeFechterTexturen(this, 'rot', TEXTFARBEN.rot);
     erzeugeFechterTexturen(this, 'gruen', TEXTFARBEN.gruen);
 
-    const tasten = (belegung) => this.input.keyboard.addKeys(belegung);
+    // Der Computergegner steht immer rechts und ficht für Grün
+    this.computer = this.modus === 'computer' ? new Computergegner(this.stufe) : null;
     this.fechterRot = new Fechter(this, {
       x: STARTLINIE_ROT,
       richtung: 1,
       name: 'rot',
-      tasten: tasten({ links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S' }),
+      steuerung: tastaturSteuerung(this, { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S' }),
     });
     this.fechterGruen = new Fechter(this, {
       x: STARTLINIE_GRUEN,
       richtung: -1,
       name: 'gruen',
-      tasten: tasten({ links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
+      steuerung:
+        this.computer ??
+        tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
     });
     this.escTaste = this.input.keyboard.addKey('ESC');
 
@@ -150,6 +157,7 @@ export default class KampfSzene extends Phaser.Scene {
 
     // Nach dem ersten Treffer zählen nur noch Stöße, die schon unterwegs sind
     const eingabe = this.ersterTrefferZeit === null;
+    if (this.computer && eingabe) this.computer.denke(jetzt, gruen, rot);
     rot.aktualisiere(jetzt, delta, gruen, eingabe);
     gruen.aktualisiere(jetzt, delta, rot, eingabe);
     this.halteAbstand();
@@ -230,7 +238,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.phase = 'ende';
     this.phaseStart = zeit;
     this.scene.pause();
-    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus });
+    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus, stufe: this.stufe });
   }
 
   zeigeStand() {

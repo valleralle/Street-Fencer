@@ -15,6 +15,7 @@ export default class SiegerSzene extends Phaser.Scene {
     this.sieger = daten.sieger;
     this.stand = daten.stand;
     this.modus = daten.modus;
+    this.stufe = daten.stufe;
   }
 
   create() {
@@ -34,7 +35,7 @@ export default class SiegerSzene extends Phaser.Scene {
 
   // Startet die angehaltene KampfSzene neu und schließt dabei diese Szene
   revanche() {
-    this.scene.start('KampfSzene', { modus: this.modus });
+    this.scene.start('KampfSzene', { modus: this.modus, stufe: this.stufe });
   }
 
   zumTitel() {

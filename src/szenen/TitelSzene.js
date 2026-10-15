@@ -17,7 +17,7 @@ export default class TitelSzene extends Phaser.Scene {
 
     erzeugeMenue(this, 480, 280, [
       { text: '2 Spieler', aktion: () => this.starteGefecht('zwei') },
-      { text: 'Gegen Computer (kommt bald)' },
+      { text: 'Gegen Computer', aktion: () => this.scene.start('StufenSzene') },
       { text: 'Steuerung', aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
     ]);
 
@@ -26,12 +26,16 @@ export default class TitelSzene extends Phaser.Scene {
       .setOrigin(0.5);
   }
 
-  // Vor dem allerersten Gefecht wird einmal die Steuerung gezeigt
   starteGefecht(modus) {
-    if (this.registry.get('steuerungGezeigt')) {
-      this.scene.start('KampfSzene', { modus });
-    } else {
-      this.scene.start('SteuerungSzene', { danach: 'KampfSzene', modus });
-    }
+    starteGefecht(this, { modus });
+  }
+}
+
+// Vor dem allerersten Gefecht wird einmal die Steuerung gezeigt
+export function starteGefecht(szene, daten) {
+  if (szene.registry.get('steuerungGezeigt')) {
+    szene.scene.start('KampfSzene', daten);
+  } else {
+    szene.scene.start('SteuerungSzene', { danach: 'KampfSzene', ...daten });
   }
 }

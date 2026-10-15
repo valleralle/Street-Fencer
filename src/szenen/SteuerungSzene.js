@@ -16,7 +16,7 @@ export default class SteuerungSzene extends Phaser.Scene {
 
   init(daten) {
     this.danach = daten.danach ?? 'TitelSzene';
-    this.modus = daten.modus;
+    this.daten = daten;
   }
 
   create() {
@@ -48,7 +48,7 @@ export default class SteuerungSzene extends Phaser.Scene {
     const weiter = this.danach === 'KampfSzene' ? 'Enter: Los geht’s!' : 'Enter: zurück';
     this.add.text(480, 480, weiter, { ...schrift, color: '#ffd166' }).setOrigin(0.5);
 
-    const los = () => this.scene.start(this.danach, { modus: this.modus });
+    const los = () => this.scene.start(this.danach, this.daten);
     this.input.keyboard.on('keydown-ENTER', los);
     this.input.keyboard.on('keydown-SPACE', los);
     this.input.keyboard.on('keydown-ESC', los);

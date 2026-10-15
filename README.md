@@ -26,7 +26,7 @@ Dann die angezeigte Adresse (meist http://localhost:5173) im Browser öffnen.
 
 Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter.
 
-Bisher eingebaut: das komplette Spiel zu zweit – Titel, Steuerungsübersicht, Gefecht mit Punkten, Zeit und Verlängerung, Trefferanzeige, Pause und Siegerbildschirm mit Revanche. Der Computergegner fehlt noch.
+Bisher eingebaut: das komplette Spiel zu zweit oder gegen den Computer (leicht, mittel, schwer) – Titel, Steuerungsübersicht, Gefecht mit Punkten, Zeit und Verlängerung, Trefferanzeige, Pause und Siegerbildschirm mit Revanche. Gegen den Computer spielst du Rot.
 
 ## Struktur
 
@@ -35,6 +35,8 @@ Bisher eingebaut: das komplette Spiel zu zweit – Titel, Steuerungsübersicht, 
 - `src/szenen/` – Bildschirme: Titel, Steuerung, Kampf, Pause, Sieger
 - `src/Fechter.js` – ein Fechter mit seinen Aktionen
 - `src/Gefecht.js` – Regeln eines Gefechts (Punkte, Zeit, Verlängerung)
+- `src/Computergegner.js` – der Computergegner; Stärke der Stufen in `STUFEN`
+- `src/steuerung.js` – Tastatursteuerung eines Fechters
 - `src/Menue.js` – Menü für Titel, Pause und Sieger
 - `src/kulisse.js` – Halle und Fechtbahn
 - `src/Meldegeraet.js` – Lampen, Punktestand und Uhr
@@ -52,6 +54,6 @@ Bisher eingebaut: das komplette Spiel zu zweit – Titel, Steuerungsübersicht, 
 3. Gefecht: Punkte, Doppeltreffer, Startlinien und Kommando, Zeit, Verlängerung mit Vorteil ✅
 4. Trefferanzeige mit Lampen, Signalton und Zeitlupe ✅
 5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche ✅
-6. Computergegner (leicht, mittel, schwer)
+6. Computergegner (leicht, mittel, schwer) ✅
 7. Grafik: Fechter, Fechtbahn, Halle, Meldegerät und Schrift als Pixelart ✅ · Klingengeräusche
 8. Später: Flèche, Getroffen- und Jubelpose, Sprachansagen

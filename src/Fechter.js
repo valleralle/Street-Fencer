@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import { BREITE as BILD_BREITE, HOEHE as BILD_HOEHE, MITTE_X, POSEN } from './pixelart/fechterPosen.js';
 import { texturName } from './pixelart/texturen.js';
 
@@ -46,12 +45,12 @@ const OFFEN_DAUER = 500;
 const RIPOSTE_FENSTER = 400;
 
 export default class Fechter {
-  // name = 'rot' oder 'gruen' (für die Texturen)
-  constructor(szene, { x, richtung, name, tasten }) {
+  // name = 'rot' oder 'gruen' (für die Texturen); steuerung = Tastatur oder Computergegner
+  constructor(szene, { x, richtung, name, steuerung }) {
     this.startX = x;
     this.richtung = richtung; // 1 = schaut nach rechts, -1 = nach links
     this.name = name;
-    this.tasten = tasten;
+    this.steuerung = steuerung;
     this.jetzt = 0;
 
     // Grün ist das gespiegelte Bild von Rot; die Rumpfmitte bleibt dabei über x
@@ -97,6 +96,10 @@ export default class Fechter {
 
   get offen() {
     return this.jetzt < this.offenBis;
+  }
+
+  get kannRiposte() {
+    return this.jetzt < this.riposteBis;
   }
 
   // Liste von Rechtecken: der Körper und beim Ausfall zusätzlich der vordere Fuß
@@ -173,18 +176,18 @@ export default class Fechter {
     if (this.aktion && this.phase === null) this.aktion = null;
 
     // Tastendrücke immer abholen, damit sie nicht während einer Aktion „hängen bleiben“
-    const JustDown = Phaser.Input.Keyboard.JustDown;
-    const stoss = JustDown(this.tasten.stoss);
-    const parade = JustDown(this.tasten.parade);
-    const tiefstoss = JustDown(this.tasten.tiefstoss);
+    const s = this.steuerung;
+    const stoss = s.gedrueckt('stoss');
+    const parade = s.gedrueckt('parade');
+    const tiefstoss = s.gedrueckt('tiefstoss');
 
-    const vor = this.richtung > 0 ? this.tasten.rechts : this.tasten.links;
-    const zurueck = this.richtung > 0 ? this.tasten.links : this.tasten.rechts;
+    const vor = s.gehalten(this.richtung > 0 ? 'rechts' : 'links');
+    const zurueck = s.gehalten(this.richtung > 0 ? 'links' : 'rechts');
 
     if (eingabe && !this.aktion && !this.offen) {
       if (stoss) {
-        if (jetzt < this.riposteBis) this.starte('riposte', gegner);
-        else if (vor.isDown) this.starte('ausfall', gegner);
+        if (this.kannRiposte) this.starte('riposte', gegner);
+        else if (vor) this.starte('ausfall', gegner);
         else this.starte('stoss', gegner);
       } else if (parade) {
         this.starte('parade', gegner);
@@ -192,8 +195,8 @@ export default class Fechter {
         this.starte('tiefstoss', gegner);
       } else {
         let v = 0;
-        if (vor.isDown) v += TEMPO;
-        if (zurueck.isDown) v -= TEMPO;
+        if (vor) v += TEMPO;
+        if (zurueck) v -= TEMPO;
         this.x += (this.richtung * v * delta) / 1000;
         this.geht = v !== 0;
       }
@@ -209,10 +212,7 @@ export default class Fechter {
 
   // Tastendrücke außerhalb des Gefechts (z. B. während des Kommandos) verwerfen
   vergissTasten() {
-    const JustDown = Phaser.Input.Keyboard.JustDown;
-    JustDown(this.tasten.stoss);
-    JustDown(this.tasten.parade);
-    JustDown(this.tasten.tiefstoss);
+    for (const taste of ['stoss', 'parade', 'tiefstoss']) this.steuerung.gedrueckt(taste);
   }
 
   starte(aktion, gegner) {
