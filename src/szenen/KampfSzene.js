@@ -62,18 +62,18 @@ export default class KampfSzene extends Phaser.Scene {
         this.computer ??
         tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
     });
-    this.escTaste = this.input.keyboard.addKey('ESC');
+    this.pausenTasten = [this.input.keyboard.addKey('ESC'), this.input.keyboard.addKey('P')];
 
     // Nach der Pause alle Tastendrücke verwerfen, die während der Pause passiert sind
     const nachPause = () => {
-      Phaser.Input.Keyboard.JustDown(this.escTaste);
+      this.pauseGedrueckt();
       this.fechterRot.vergissTasten();
       this.fechterGruen.vergissTasten();
     };
     this.events.on('resume', nachPause);
     this.events.once('shutdown', () => this.events.off('resume', nachPause));
 
-    this.add.text(950, 10, 'Esc: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
+    this.add.text(950, 10, 'Esc / P: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
 
     this.meldegeraet = new Meldegeraet(this);
     this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
@@ -136,7 +136,7 @@ export default class KampfSzene extends Phaser.Scene {
       }
     }
 
-    if (this.phase !== 'ende' && Phaser.Input.Keyboard.JustDown(this.escTaste)) {
+    if (this.pauseGedrueckt() && this.phase !== 'ende') {
       this.scene.pause();
       this.scene.launch('PauseSzene');
     }
@@ -147,6 +147,12 @@ export default class KampfSzene extends Phaser.Scene {
     }
     rot.zeichne();
     gruen.zeichne();
+  }
+
+  // Fragt beide Pausentasten ab (und verbraucht ihre Tastendrücke)
+  pauseGedrueckt() {
+    const gedrueckt = this.pausenTasten.map((t) => Phaser.Input.Keyboard.JustDown(t));
+    return gedrueckt.some(Boolean);
   }
 
   fechte(zeit, delta) {

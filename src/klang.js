@@ -26,7 +26,7 @@ export function klingenschlag(ctx) {
   if (!ctx) return;
   const t = ctx.currentTime;
   const verstimmung = 0.97 + Math.random() * 0.06; // jeder Schlag klingt etwas anders
-  for (const [hz, laut, dauer] of [[2350, 0.05, 0.35], [3810, 0.035, 0.25], [5230, 0.025, 0.18], [6970, 0.015, 0.12]]) {
+  for (const [hz, laut, dauer] of [[2350, 0.24, 0.4], [3810, 0.16, 0.3], [5230, 0.1, 0.2], [6970, 0.06, 0.14]]) {
     const ton = ctx.createOscillator();
     const lautstaerke = ctx.createGain();
     ton.type = 'sine';
@@ -37,13 +37,13 @@ export function klingenschlag(ctx) {
     ton.start(t);
     ton.stop(t + dauer);
   }
-  rauschen(ctx, { dauer: 0.03, frequenz: 4000, laut: 0.08 });
+  rauschen(ctx, { dauer: 0.04, frequenz: 3500, laut: 0.5 });
 }
 
 // Leises Zischen, wenn die Klinge nach vorn schnellt
 export function luftzug(ctx) {
   if (!ctx) return;
-  rauschen(ctx, { dauer: 0.12, frequenz: 1800, laut: 0.035, gleitend: true });
+  rauschen(ctx, { dauer: 0.18, frequenz: 1500, laut: 0.9, gleitend: true });
 }
 
 // Gefiltertes Rauschen; gleitend = die Filterfrequenz fällt, das klingt wie vorbeiziehende Luft

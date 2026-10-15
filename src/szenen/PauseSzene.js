@@ -19,6 +19,7 @@ export default class PauseSzene extends Phaser.Scene {
       { text: 'Zurück zum Titel', aktion: () => this.zumTitel() },
     ]);
     this.input.keyboard.on('keydown-ESC', () => this.weiter());
+    this.input.keyboard.on('keydown-P', () => this.weiter());
   }
 
   weiter() {

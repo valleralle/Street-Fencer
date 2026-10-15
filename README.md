@@ -22,7 +22,7 @@ Dann die angezeigte Adresse (meist http://localhost:5173) im Browser öffnen.
 
 - **Ausfall** = vorwärts + Stoß
 - **Riposte** = Stoß direkt nach einer gelungenen Parade
-- **Pause** = Esc
+- **Pause** = Esc oder P
 
 Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter.
 
