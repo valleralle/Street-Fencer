@@ -11,7 +11,9 @@ import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
 
-const MIN_ABSTAND = BREITE + 10;
+// Kleinster Abstand der Körpermitten: so weit, dass sich die vorderen Füße gerade nicht berühren.
+// Stoß (bis 131) und Tiefstoß (bis 121) reichen weiter, treffen also weiterhin.
+const MIN_ABSTAND = 72;
 
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
@@ -129,9 +131,10 @@ export default class KampfSzene extends Phaser.Scene {
     } else if (this.phase === 'treffer') {
       if (seit < ZEITLUPE_NACHLAUF) {
         this.spielZeit += spielDelta;
+        const vorher = [rot.x, gruen.x];
         rot.aktualisiere(this.spielZeit, spielDelta, gruen, false);
         gruen.aktualisiere(this.spielZeit, spielDelta, rot, false);
-        this.halteAbstand();
+        this.halteAbstand(...vorher);
       }
       if (seit >= PAUSE_NACH_TREFFER) {
         if (this.gefecht.sieger) this.beende(zeit);
@@ -167,9 +170,10 @@ export default class KampfSzene extends Phaser.Scene {
     // Nach dem ersten Treffer zählen nur noch Stöße, die schon unterwegs sind
     const eingabe = this.ersterTrefferZeit === null;
     if (this.computer && eingabe) this.computer.denke(jetzt, gruen, rot);
+    const vorher = [rot.x, gruen.x];
     rot.aktualisiere(jetzt, delta, gruen, eingabe);
     gruen.aktualisiere(jetzt, delta, rot, eingabe);
-    this.halteAbstand();
+    this.halteAbstand(...vorher);
 
     // Luftzug in dem Moment, in dem eine Klinge nach vorn schnellt
     for (const f of [rot, gruen]) {
@@ -252,14 +256,19 @@ export default class KampfSzene extends Phaser.Scene {
     }
   }
 
-  // Die Fechter können nicht durcheinander hindurch und nicht über die Endlinien
-  halteAbstand() {
+  // Die Fechter berühren sich nicht und kommen nicht über die Endlinien. Wer zu nah herankommt,
+  // bleibt stehen (auch ein Ausfall bremst ab) – der Gegner wird dabei nicht weggeschoben.
+  halteAbstand(vorherRot, vorherGruen) {
     const rot = this.fechterRot;
     const gruen = this.fechterGruen;
-    const ueberlappung = MIN_ABSTAND - (gruen.x - rot.x);
-    if (ueberlappung > 0) {
-      rot.x -= ueberlappung / 2;
-      gruen.x += ueberlappung / 2;
+    const zuNah = MIN_ABSTAND - (gruen.x - rot.x);
+    if (zuNah > 0) {
+      // Zurückgesetzt wird, wer sich in diesem Bild nach vorn bewegt hat – laufen beide, anteilig
+      const vorRot = Math.max(0, rot.x - vorherRot);
+      const vorGruen = Math.max(0, vorherGruen - gruen.x);
+      const anteilRot = vorRot + vorGruen > 0 ? vorRot / (vorRot + vorGruen) : 0.5;
+      rot.x -= zuNah * anteilRot;
+      gruen.x += zuNah * (1 - anteilRot);
     }
     rot.x = Phaser.Math.Clamp(rot.x, ENDLINIE_LINKS + BREITE / 2, ENDLINIE_RECHTS - BREITE / 2 - MIN_ABSTAND);
     gruen.x = Phaser.Math.Clamp(gruen.x, rot.x + MIN_ABSTAND, ENDLINIE_RECHTS - BREITE / 2);

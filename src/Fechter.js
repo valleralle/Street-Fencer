@@ -183,6 +183,7 @@ export default class Fechter {
   // eingabe = false: laufende Aktionen gehen weiter, neue werden nicht angenommen
   aktualisiere(jetzt, delta, gegner, eingabe = true) {
     this.jetzt = jetzt;
+    this.gegner = gegner;
     if (this.aktion && this.phase === null) this.aktion = null;
 
     // Tastendrücke immer abholen, damit sie nicht während einer Aktion „hängen bleiben“
@@ -273,7 +274,14 @@ export default class Fechter {
     // Degen im Pixelstil: von der Hand bis zur Spitze aus Quadraten mit Bildpixelgröße
     const g = this.klinge;
     const h = this.hand;
-    const s = this.spitze;
+    const s = { ...this.spitze };
+    // Die Klinge endet am Körper des Gegners, statt durch ihn hindurchzugehen
+    for (const f of this.gegner?.treffflaechen ?? []) {
+      const kante = this.richtung > 0 ? f.links : f.rechts;
+      const vorKante = this.richtung * (kante - h.x) > 0;
+      const durch = this.richtung * (s.x - kante) > 0;
+      if (vorKante && durch && s.y >= f.oben && s.y <= f.unten) s.x = kante;
+    }
     const pixel = (x, y) =>
       g.fillRect(Math.floor(x / MASSSTAB) * MASSSTAB, Math.floor(y / MASSSTAB) * MASSSTAB, MASSSTAB, MASSSTAB);
     g.clear();
