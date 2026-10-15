@@ -1,8 +1,5 @@
 import { stil } from './schrift.js';
-
-const FARBEN = { rot: 0xe03b3b, gruen: 0x2fbf4f };
-const TEXTFARBEN = { rot: '#e03b3b', gruen: '#2fbf4f' };
-const LAMPE_AUS = { rot: 0x4a2326, gruen: 0x1d4027 };
+import { FECHTERFARBEN as TEXTFARBEN, LAMPE_AN as FARBEN, LAMPE_AUS } from './farben.js';
 
 const MITTE = 480;
 const OBEN = 40;

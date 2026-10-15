@@ -5,7 +5,7 @@ export const texturName = (farbe, pose) => `fechter-${farbe}-${pose}`;
 
 // Macht aus den Textrastern für jede Pose eine Textur mit der passenden Schuhfarbe
 export function erzeugeFechterTexturen(szene, farbe, schuhfarbe) {
-  const farben = { ...FARBEN, S: schuhfarbe };
+  const farben = { ...FARBEN, S: schuhfarbe, T: schuhfarbe }; // Schuhe und Handschuh
   for (const [pose, { pixel }] of Object.entries(POSEN)) {
     const name = texturName(farbe, pose);
     if (szene.textures.exists(name)) continue;

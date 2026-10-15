@@ -13,6 +13,8 @@ const KLINGE_RUHE = 45;
 const MASSSTAB = 2;
 // Beim Gehen wechselt das Bild alle so viele Bildschirmpixel
 const SCHRITTLAENGE = 14;
+// Halbe Breite der Glocke am Degen in Bildpixeln
+const GLOCKE_RADIUS = 3;
 // Höhe des vorderen Fußes, der beim Ausfall zur Trefffläche gehört
 const FUSS_HOEHE = 20;
 
@@ -272,13 +274,24 @@ export default class Fechter {
     const g = this.klinge;
     const h = this.hand;
     const s = this.spitze;
+    const pixel = (x, y) =>
+      g.fillRect(Math.floor(x / MASSSTAB) * MASSSTAB, Math.floor(y / MASSSTAB) * MASSSTAB, MASSSTAB, MASSSTAB);
     g.clear();
     g.fillStyle(0xc8ccd4);
     const schritte = Math.ceil(Math.max(Math.abs(s.x - h.x), Math.abs(s.y - h.y)) / MASSSTAB);
     for (let i = 0; i <= schritte; i++) {
-      const x = h.x + ((s.x - h.x) * i) / schritte;
-      const y = h.y + ((s.y - h.y) * i) / schritte;
-      g.fillRect(Math.floor(x / MASSSTAB) * MASSSTAB, Math.floor(y / MASSSTAB) * MASSSTAB, MASSSTAB, MASSSTAB);
+      pixel(h.x + ((s.x - h.x) * i) / schritte, h.y + ((s.y - h.y) * i) / schritte);
+    }
+
+    // Glocke (Handschutz des Degens): eine nach vorn gewölbte Scheibe quer zur Klinge, kurz vor der Hand
+    const laenge = Math.hypot(s.x - h.x, s.y - h.y) || 1;
+    const [vx, vy] = [(s.x - h.x) / laenge, (s.y - h.y) / laenge]; // entlang der Klinge
+    const [qx, qy] = [-vy, vx]; // quer zur Klinge
+    for (let q = -GLOCKE_RADIUS; q <= GLOCKE_RADIUS; q++) {
+      // in der Mitte am weitesten vorn, zum Rand hin nach hinten gewölbt
+      const vor = 2 - Math.round((q * q) / (GLOCKE_RADIUS * 2));
+      g.fillStyle(Math.abs(q) === GLOCKE_RADIUS ? 0x8e95a3 : 0xd8dce4);
+      pixel(h.x + (vx * vor + qx * q) * MASSSTAB, h.y + (vy * vor + qy * q) * MASSSTAB);
     }
   }
 }

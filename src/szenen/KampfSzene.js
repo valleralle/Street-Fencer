@@ -9,10 +9,10 @@ import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
+import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
 
 const MIN_ABSTAND = BREITE + 10;
 
-const TEXTFARBEN = { rot: '#e03b3b', gruen: '#2fbf4f' };
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
 // Treffer, die so kurz nacheinander landen, zählen als Doppeltreffer

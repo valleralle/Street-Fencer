@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
+import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
 
-const TEXTFARBEN = { rot: '#e03b3b', gruen: '#2fbf4f' };
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
 // Liegt über der KampfSzene, wenn das Gefecht entschieden ist

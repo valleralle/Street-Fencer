@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { stil } from '../schrift.js';
+import { FECHTERFARBEN } from '../farben.js';
 
 const ZEILEN = [
   ['', 'Rot (links)', 'Grün (rechts)'],
@@ -26,7 +27,7 @@ export default class SteuerungSzene extends Phaser.Scene {
     this.add.text(480, 50, 'Steuerung', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
 
     const spalten = [250, 480, 720];
-    const farben = ['#9aa3b5', '#e03b3b', '#2fbf4f'];
+    const farben = ['#9aa3b5', FECHTERFARBEN.rot, FECHTERFARBEN.gruen];
     ZEILEN.forEach((zeile, z) => {
       zeile.forEach((zelle, s) => {
         const farbe = z === 0 || s === 0 ? farben[z === 0 ? s : 0] : '#ffffff';

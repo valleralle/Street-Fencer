@@ -89,7 +89,7 @@ _Vermeiden_: Countdown
 ### Beteiligte und Ort
 
 **Fechter**:
-Eine Figur auf der Fechtbahn, die gesteuert wird – egal ob von einem Spieler oder vom Computer. Alle Fechter sind gleich stark und tragen Weiß; man unterscheidet sie nur an ihrer Farbe, die an den Schuhen, der Trefferanzeige und dem Punktestand gleich ist. Rot steht links, Grün rechts.
+Eine Figur auf der Fechtbahn, die gesteuert wird – egal ob von einem Spieler oder vom Computer. Alle Fechter sind gleich stark und tragen Weiß; man unterscheidet sie nur an ihrer Farbe, die an Schuhen, Handschuh, Trefferanzeige und Punktestand gleich ist. Rot steht links, Grün rechts.
 _Vermeiden_: Spieler (für die Figur), Kämpfer, Charakter
 
 **Spieler**:

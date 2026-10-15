@@ -5,8 +5,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { BREITE, HOEHE, FARBEN, POSEN } from '../src/pixelart/fechterPosen.js';
+import { FECHTERFARBEN } from '../src/farben.js';
 
-const SCHUHE = { rot: '#e03b3b', gruen: '#2fbf4f' };
+const SCHUHE = FECHTERFARBEN;
 const HINTERGRUND = '#1d2330';
 const ZIEL = new URL('../grafik/', import.meta.url);
 
@@ -56,7 +57,7 @@ function bogen(schuhfarbe, { massstab = 1, rand = 0, hintergrund = null, spiegel
   const breite = zelleB * namen.length;
   const leer = hintergrund ? [...rgb(hintergrund), 255] : [0, 0, 0, 0];
   const pixel = Array.from({ length: breite * zelleH }, () => leer);
-  const farben = { ...FARBEN, S: schuhfarbe };
+  const farben = { ...FARBEN, S: schuhfarbe, T: schuhfarbe };
 
   namen.forEach((name, i) => {
     POSEN[name].pixel.forEach((zeile, y) => {
