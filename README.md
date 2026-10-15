@@ -40,6 +40,7 @@ Bisher eingebaut: das komplette Spiel zu zweit oder gegen den Computer (leicht, 
 - `src/Menue.js` – Menü für Titel, Pause und Sieger
 - `src/kulisse.js` – Halle und Fechtbahn
 - `src/Meldegeraet.js` – Lampen, Punktestand und Uhr
+- `src/klang.js` – alle Töne (Signalton, Klingenschlag, Luftzug), im Browser erzeugt
 - `src/schrift.js`, `public/schrift/` – Pixelschrift „Pixelify Sans“ (OFL-Lizenz)
 - `src/pixelart/fechterPosen.js` – die Pixelbilder der Fechter als Textraster (hier kannst du jeden Pixel ändern)
 - `grafik/` – daraus erzeugte PNGs; neu erzeugen mit `npm run pixelart`
@@ -55,5 +56,5 @@ Bisher eingebaut: das komplette Spiel zu zweit oder gegen den Computer (leicht, 
 4. Trefferanzeige mit Lampen, Signalton und Zeitlupe ✅
 5. Titelbildschirm, Steuerungsübersicht, Pause, Siegerbildschirm mit Revanche ✅
 6. Computergegner (leicht, mittel, schwer) ✅
-7. Grafik: Fechter, Fechtbahn, Halle, Meldegerät und Schrift als Pixelart ✅ · Klingengeräusche
+7. Grafik: Fechter, Fechtbahn, Halle, Meldegerät und Schrift als Pixelart · Klingengeräusche ✅
 8. Später: Flèche, Getroffen- und Jubelpose, Sprachansagen

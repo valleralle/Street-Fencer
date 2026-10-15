@@ -93,6 +93,11 @@ export default class Fechter {
     return this.aktion === 'tiefstoss' && this.jetzt - this.aktionStart >= AKTIONEN.tiefstoss.ducken;
   }
 
+  // Die Klinge ist gerade vorn: ein Angriff in seiner aktiven Phase
+  get stoesst() {
+    return ANGRIFFE.includes(this.aktion) && this.phase === 'aktiv';
+  }
+
   get pariert() {
     return this.aktion === 'parade' && this.phase === 'aktiv';
   }

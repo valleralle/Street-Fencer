@@ -7,6 +7,7 @@ import Meldegeraet from '../Meldegeraet.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
+import { signalton, klingenschlag, luftzug } from '../klang.js';
 
 const MIN_ABSTAND = BREITE + 10;
 
@@ -21,8 +22,6 @@ const PAUSE_NACH_TREFFER = 1500;
 const ZEITLUPE_TEMPO = 0.25;
 const ZEITLUPE_NACHLAUF = 700;
 
-const SIGNALTON_HZ = 880;
-const SIGNALTON_DAUER = 0.7;
 
 // Ablauf des Kommandos in Millisekunden; bei „Allez !“ geht es los
 const EN_GARDE = 700;
@@ -162,6 +161,12 @@ export default class KampfSzene extends Phaser.Scene {
     gruen.aktualisiere(jetzt, delta, rot, eingabe);
     this.halteAbstand();
 
+    // Luftzug in dem Moment, in dem eine Klinge nach vorn schnellt
+    for (const f of [rot, gruen]) {
+      if (f.stoesst && !f.stiessVorher) luftzug(this.sound.context);
+      f.stiessVorher = f.stoesst;
+    }
+
     this.pruefeStoss(rot, gruen, 'rot', jetzt);
     this.pruefeStoss(gruen, rot, 'gruen', jetzt);
 
@@ -187,13 +192,14 @@ export default class KampfSzene extends Phaser.Scene {
     if (ergebnis === 'pariert') {
       angreifer.wurdePariert();
       gegner.paradeGelungen();
+      klingenschlag(this.sound.context);
     } else if (ergebnis === 'treffer') {
       this.treffer[farbe] = true;
       this.schalteLampe(farbe, true);
       if (this.ersterTrefferZeit === null) {
         this.ersterTrefferZeit = zeit;
         this.zeitlupe = true;
-        this.signalton();
+        signalton(this.sound.context);
       }
     }
   }
@@ -202,20 +208,6 @@ export default class KampfSzene extends Phaser.Scene {
     this.meldegeraet.schalteLampe(farbe, an);
   }
 
-  signalton() {
-    const ctx = this.sound.context;
-    if (!ctx) return;
-    const ton = ctx.createOscillator();
-    const lautstaerke = ctx.createGain();
-    ton.type = 'square';
-    ton.frequency.value = SIGNALTON_HZ;
-    lautstaerke.gain.setValueAtTime(0.06, ctx.currentTime);
-    lautstaerke.gain.setValueAtTime(0.06, ctx.currentTime + SIGNALTON_DAUER - 0.05);
-    lautstaerke.gain.linearRampToValueAtTime(0, ctx.currentTime + SIGNALTON_DAUER);
-    ton.connect(lautstaerke).connect(ctx.destination);
-    ton.start();
-    ton.stop(ctx.currentTime + SIGNALTON_DAUER);
-  }
 
   werteTrefferAus(zeit) {
     const ergebnis = this.gefecht.werteAus(this.treffer);
