@@ -30,9 +30,12 @@ export default class Meldegeraet {
 
     this.lampen = { rot: szene.add.graphics(), gruen: szene.add.graphics() };
     this.punkteRot = szene.add.text(MITTE - 12, OBEN + 42, '0', stil(48, TEXTFARBEN.rot)).setOrigin(1, 0.5);
-    szene.add.text(MITTE, OBEN + 42, ':', stil(48)).setOrigin(0.5);
+    const doppelpunkt = szene.add.text(MITTE, OBEN + 42, ':', stil(48)).setOrigin(0.5);
     this.punkteGruen = szene.add.text(MITTE + 12, OBEN + 42, '0', stil(48, TEXTFARBEN.gruen)).setOrigin(0, 0.5);
     this.uhr = szene.add.text(MITTE, OBEN + 90, '', stil(20, '#ffd166')).setOrigin(0.5);
+
+    // Alle Teile, damit die Kamera sie fest am Bildschirm halten kann
+    this.objekte = [g, this.lampen.rot, this.lampen.gruen, this.punkteRot, doppelpunkt, this.punkteGruen, this.uhr];
 
     this.schalteLampe('rot', false);
     this.schalteLampe('gruen', false);

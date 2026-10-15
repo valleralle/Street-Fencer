@@ -4,6 +4,7 @@ import Gefecht from '../Gefecht.js';
 import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
 import Meldegeraet from '../Meldegeraet.js';
+import Kamera from '../Kamera.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
@@ -73,11 +74,13 @@ export default class KampfSzene extends Phaser.Scene {
     this.events.on('resume', nachPause);
     this.events.once('shutdown', () => this.events.off('resume', nachPause));
 
-    this.add.text(950, 10, 'Esc / P: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
+    const pausenHinweis = this.add.text(950, 10, 'Esc / P: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
 
     this.meldegeraet = new Meldegeraet(this);
     this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
-    this.meldung = this.add.text(480, 260, '', stil(48)).setOrigin(0.5);
+    this.meldung = this.add.text(480, 218, '', stil(48)).setOrigin(0.5);
+
+    this.kamera = new Kamera(this, [...this.meldegeraet.objekte, pausenHinweis, this.hinweis, this.meldung]);
 
     this.spielZeit = 0;
     this.zeitlupe = false;
@@ -145,6 +148,7 @@ export default class KampfSzene extends Phaser.Scene {
       rot.vergissTasten();
       gruen.vergissTasten();
     }
+    this.kamera.folge(delta, rot, gruen);
     rot.zeichne();
     gruen.zeichne();
   }

@@ -39,6 +39,7 @@ Bisher eingebaut: das komplette Spiel zu zweit oder gegen den Computer (leicht, 
 - `src/steuerung.js` – Tastatursteuerung eines Fechters
 - `src/Menue.js` – Menü für Titel, Pause und Sieger
 - `src/kulisse.js` – Halle und Fechtbahn
+- `src/Kamera.js` – Kamera, die nah dran ist und den Fechtern folgt
 - `src/Meldegeraet.js` – Lampen, Punktestand und Uhr
 - `src/klang.js` – alle Töne (Signalton, Klingenschlag, Luftzug), im Browser erzeugt
 - `src/schrift.js`, `public/schrift/` – Pixelschrift „Pixelify Sans“ (OFL-Lizenz)
