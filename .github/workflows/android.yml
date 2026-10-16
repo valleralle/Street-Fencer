@@ -1,0 +1,60 @@
+# Android-App: baut bei jedem Push eine APK (unter „Actions“ → Lauf → Artifacts herunterladen).
+# Ein Tag wie v0.2.0 erzeugt zusätzlich ein GitHub-Release mit der APK zum Herunterladen.
+name: Android
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+
+      - run: npm install --no-audit --no-fund
+      - run: npm test
+
+      # Version: beim Tag dessen Name (v0.2.0 → 0.2.0), sonst die aus package.json plus Laufnummer
+      - name: Version bestimmen
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            name="${GITHUB_REF_NAME#v}"
+          else
+            name="$(node -p "require('./package.json').version")-build.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "VERSIONS_NAME=$name" >> "$GITHUB_ENV"
+          echo "VERSIONS_CODE=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
+      # Immer derselbe Debug-Schlüssel, damit sich neue APKs über ältere installieren lassen
+      - name: Debug-Schlüssel bereitlegen
+        run: mkdir -p ~/.android && cp werkzeuge/android/debug.keystore ~/.android/debug.keystore
+
+      - run: npm run android
+
+      - name: APK benennen
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk "street-fencer-${VERSIONS_NAME}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: street-fencer-${{ env.VERSIONS_NAME }}
+          path: street-fencer-*.apk
+
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: street-fencer-*.apk

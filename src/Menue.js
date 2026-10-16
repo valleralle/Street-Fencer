@@ -61,6 +61,23 @@ export default function erzeugeMenue(szene, x, y, eintraege, optionen = {}) {
     );
   }
 
+  // Antippen oder Anklicken wählt einen Eintrag und löst ihn aus
+  texte.forEach((t, i) => {
+    const e = eintraege[i];
+    if (!waehlbar(e)) return;
+    t.setPadding(16, 6).setInteractive({ useHandCursor: true });
+    t.on('pointerdown', (zeiger) =>
+      wenn(() => {
+        index = i;
+        if (e.aktion) e.aktion();
+        // Werte: linke Hälfte verringert, rechte Hälfte erhöht
+        else if (zeiger.x < t.x) e.links?.();
+        else e.rechts?.();
+        zeige();
+      })(),
+    );
+  });
+
   zeige();
   return { aktualisiere: zeige };
 }

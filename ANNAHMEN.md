@@ -72,3 +72,13 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Feste Adresse** `http://127.0.0.1:41730`, weil der Browser Einstellungen pro Adresse speichert. Ein zweiter Start öffnet nur das laufende Spiel.
 - Die .exe ist **nicht signiert** – Windows SmartScreen kann beim ersten Start warnen. Ein Programmsymbol (Icon) hat sie noch nicht.
 - `release/` steht in `.gitignore`: Die .exe wird nicht ins Repo eingecheckt (zu groß), sondern mit `npm run exe` gebaut.
+
+## Handy und Android-App
+
+- **Touch-Knöpfe** erscheinen nur, wenn der Touchscreen die Hauptbedienung ist (Handy, Tablet). Laptops mit Touchscreen behalten die Tastatur. Die Knöpfe gibt es nur im Gefecht **gegen den Computer** – für zwei Spieler auf einem Handy wäre zu wenig Platz.
+- **Belegung:** links ◀ ▶ zum Gehen, rechts Stoß (groß), Parade, Tief und Flèche. Ausfall = ▶ halten + Stoß, wie an der Tastatur. Die Knöpfe reagieren etwas großzügiger als ihr Kreis.
+- **Auf dem Handy ausgeblendet:** Training und 2 Spieler im Titelmenü sowie die Tastenbelegung in den Einstellungen. Lautstärke: links antippen = leiser, rechts = lauter.
+- Menüs lassen sich jetzt überall **antippen oder anklicken**, auch am PC.
+- Im **Hochformat** erscheint ein Hinweis, das Handy zu drehen. Im Browser versucht das Spiel beim ersten Antippen in den Vollbildmodus zu wechseln (klappt nicht in jedem Browser, z. B. nicht auf dem iPhone).
+- **Android-App** mit Capacitor 8, App-ID `de.valleralle.streetfencer`, fest im Querformat und ohne Statusleiste. Es ist eine **Debug-APK** – zum Selbstinstallieren gedacht, nicht für den Play Store.
+- `package-lock.json` enthält Capacitor noch nicht (ich konnte hier kein npm ausführen). Die Workflows nutzen deshalb `npm install` statt `npm ci`; beim nächsten lokalen `npm install` wird die Lock-Datei ergänzt – die bitte einchecken.

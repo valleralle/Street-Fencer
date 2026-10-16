@@ -4,6 +4,20 @@
 
 Zwei Fechter stehen sich auf der Fechtbahn gegenüber. Jeder Treffer bringt einen Punkt, wer zuerst 5 Treffer hat, gewinnt. Begriffe und Regeln stehen in [CONTEXT.md](CONTEXT.md), wichtige Entscheidungen in [docs/adr/](docs/adr/), meine Annahmen beim selbstständigen Umsetzen in [ANNAHMEN.md](ANNAHMEN.md).
 
+## Spielen
+
+| Version | Wo |
+|---|---|
+| Browser (PC) | https://valleralle.github.io/game_pilot/ – Tastatur |
+| Browser (Handy) | dieselbe Adresse, Handy quer halten – Knöpfe am Bildschirm |
+| Android-App | APK unter [Releases](https://github.com/valleralle/game_pilot/releases) oder bei jedem Lauf unter *Actions → Android → Artifacts* |
+| Windows | `npm run exe` (siehe unten) |
+| iOS | noch nicht – siehe [docs/adr/0002](docs/adr/0002-eine-codebasis-fuer-alle-plattformen.md) |
+
+Alle Versionen kommen aus demselben Code; wie das zusammenhängt, steht in [docs/adr/0002](docs/adr/0002-eine-codebasis-fuer-alle-plattformen.md).
+
+Auf dem Handy gibt es nur das Gefecht gegen den Computer (Training und 2 Spieler brauchen eine Tastatur).
+
 ## Starten
 
 ```bash
@@ -22,6 +36,18 @@ npm run exe
 Erzeugt `release/Street Fencer.exe` (etwa 90 MB). Ein Doppelklick startet das Spiel im Standardbrowser – ohne Installation, auch ohne Node. Zum Beenden das kleine Konsolenfenster schließen. Die Datei lässt sich einfach weitergeben.
 
 Beim ersten Start kann Windows warnen („Der Computer wurde durch Windows geschützt“), weil die Datei nicht signiert ist: **Weitere Informationen → Trotzdem ausführen**.
+
+## Als Android-App
+
+Am einfachsten über GitHub: Jeder Push baut eine APK (*Actions → Android → Artifacts*). Für eine feste Version einen Tag setzen, z. B. `git tag v0.2.0 && git push --tags` – dann erscheint die APK als Release.
+
+Lokal (braucht Java 21 und das Android-SDK):
+
+```bash
+npm run android
+```
+
+Erzeugt `android/app/build/outputs/apk/debug/app-debug.apk`. Zum Installieren die APK aufs Handy kopieren und öffnen (einmalig „Installation aus unbekannten Quellen“ erlauben).
 
 ## Tests
 

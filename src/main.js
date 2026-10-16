@@ -25,3 +25,17 @@ const config = {
 };
 
 ladeSchrift().then(() => new Phaser.Game(config));
+
+// Auf dem Handy beim ersten Antippen in den Vollbildmodus (quer) wechseln, falls der Browser das erlaubt
+if (matchMedia('(pointer: coarse)').matches && document.fullscreenEnabled) {
+  document.addEventListener(
+    'pointerup',
+    () => {
+      document.documentElement
+        .requestFullscreen()
+        .then(() => screen.orientation?.lock?.('landscape'))
+        .catch(() => {});
+    },
+    { once: true },
+  );
+}

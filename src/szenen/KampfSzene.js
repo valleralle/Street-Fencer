@@ -10,6 +10,7 @@ import Funken from '../Funken.js';
 import Statistik from '../Statistik.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
+import { istTouchGeraet, touchSteuerung } from '../touch.js';
 import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
@@ -54,11 +55,14 @@ export default class KampfSzene extends Phaser.Scene {
 
     // Der Computergegner steht immer rechts und ficht für Grün
     this.computer = this.modus === 'computer' ? new Computergegner(this.stufe) : null;
+    // Auf dem Handy steuert Rot über Knöpfe am Bildschirm (die Tastatur geht weiterhin)
+    const tastaturRot = tastaturSteuerung(this, einstellungen.tasten.rot);
+    this.touch = istTouchGeraet(this) && this.modus === 'computer' ? touchSteuerung(this, tastaturRot) : null;
     this.fechterRot = new Fechter(this, {
       x: STARTLINIE_ROT,
       richtung: 1,
       name: 'rot',
-      steuerung: tastaturSteuerung(this, einstellungen.tasten.rot),
+      steuerung: this.touch?.steuerung ?? tastaturRot,
     });
     this.fechterGruen = new Fechter(this, {
       x: STARTLINIE_GRUEN,
@@ -81,13 +85,24 @@ export default class KampfSzene extends Phaser.Scene {
     this.events.on('resume', nachPause);
     this.events.once('shutdown', () => this.events.off('resume', nachPause));
 
-    const pausenHinweis = this.add.text(950, 10, 'Esc / P: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
+    const pausenHinweis = this.touch
+      ? this.add.text(944, 14, '❚❚', stil(30, '#9aa3b5')).setOrigin(1, 0).setPadding(14)
+      : this.add.text(950, 10, 'Esc / P: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
+    // Antippen hält das Gefecht an
+    this.pauseAngetippt = false;
+    if (this.touch) pausenHinweis.setInteractive().on('pointerdown', () => (this.pauseAngetippt = true));
 
     this.meldegeraet = new Meldegeraet(this);
     this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
     this.meldung = this.add.text(480, 218, '', stil(48)).setOrigin(0.5);
 
-    this.kamera = new Kamera(this, [...this.meldegeraet.objekte, pausenHinweis, this.hinweis, this.meldung]);
+    this.kamera = new Kamera(this, [
+      ...this.meldegeraet.objekte,
+      pausenHinweis,
+      this.hinweis,
+      this.meldung,
+      ...(this.touch?.objekte ?? []),
+    ]);
 
     this.spielZeit = 0;
     this.zeitlupe = false;
@@ -166,7 +181,9 @@ export default class KampfSzene extends Phaser.Scene {
   // Fragt beide Pausentasten ab (und verbraucht ihre Tastendrücke)
   pauseGedrueckt() {
     const gedrueckt = this.pausenTasten.map((t) => Phaser.Input.Keyboard.JustDown(t));
-    return gedrueckt.some(Boolean);
+    const angetippt = this.pauseAngetippt;
+    this.pauseAngetippt = false;
+    return gedrueckt.some(Boolean) || angetippt;
   }
 
   fechte(zeit, delta) {

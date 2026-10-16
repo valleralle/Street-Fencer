@@ -8,3 +8,7 @@ Thumbs.db
 .env.*
 release/
 .exe-bau/
+
+# Native Projekte werden von Capacitor erzeugt (npm run android)
+/android/
+/ios/
