@@ -47,3 +47,11 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 
 - Gezählt wird pro Fechter: **Angriffe** (jede Aktion, bei der die Klinge nach vorn schnellt – auch parierte), **Treffer** (auch solche in Doppeltreffern und gestrichene), davon **Riposten**, **gelungene Paraden**, **Doppeltreffer** und die **Trefferquote** (Treffer pro Angriff).
 - Die Statistik gilt für ein Gefecht und wird bei der Revanche neu begonnen. Sie wird nicht dauerhaft gespeichert.
+
+## Training (Tutorial)
+
+- **Eigener Modus** „Training“ ganz oben im Titelmenü, statt Hinweisen mitten im Gefecht. Man spielt Rot gegen einen **Trainer** (Grün), der entweder stillsteht oder in ruhigem Rhythmus (alle 2 Sekunden) mit einfachen Stößen angreift.
+- **Sieben Lektionen:** Bewegen, Stoß, Ausfall, Parade, Riposte, Tiefstoß, Flèche. Eine Lektion ist geschafft, wenn man die verlangte Aktion erfolgreich ausführt (z. B. bei „Ausfall“ mit einem Ausfall trifft). Wer getroffen wird oder mit einer anderen Aktion trifft, bekommt einen Hinweis und versucht es noch einmal.
+- Die Anleitungen zeigen die **aktuelle Tastenbelegung** aus den Einstellungen.
+- Es gibt keine Punkte, keine Uhr und keine Pause – Esc führt jederzeit zurück zum Titel. Der Fortschritt wird nicht gespeichert.
+- Den Trainingsmodus gibt es nur für Rot (die linke Tastaturhälfte).

@@ -4,6 +4,7 @@ import SteuerungSzene from './szenen/SteuerungSzene.js';
 import StufenSzene from './szenen/StufenSzene.js';
 import EinstellungenSzene from './szenen/EinstellungenSzene.js';
 import TastenSzene from './szenen/TastenSzene.js';
+import TrainingSzene from './szenen/TrainingSzene.js';
 import KampfSzene from './szenen/KampfSzene.js';
 import PauseSzene from './szenen/PauseSzene.js';
 import SiegerSzene from './szenen/SiegerSzene.js';
@@ -20,7 +21,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [TitelSzene, StufenSzene, SteuerungSzene, EinstellungenSzene, TastenSzene, KampfSzene, PauseSzene, SiegerSzene],
+  scene: [TitelSzene, StufenSzene, SteuerungSzene, EinstellungenSzene, TastenSzene, TrainingSzene, KampfSzene, PauseSzene, SiegerSzene],
 };
 
 ladeSchrift().then(() => new Phaser.Game(config));
