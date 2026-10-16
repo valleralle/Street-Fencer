@@ -7,6 +7,7 @@ import Meldegeraet from '../Meldegeraet.js';
 import Kamera from '../Kamera.js';
 import { halteAbstand } from '../abstand.js';
 import Funken from '../Funken.js';
+import Statistik from '../Statistik.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
@@ -97,6 +98,7 @@ export default class KampfSzene extends Phaser.Scene {
 
   neuesGefecht(zeit) {
     this.gefecht = new Gefecht();
+    this.statistik = new Statistik();
     this.zeigeStand();
     this.starteKommando(zeit);
   }
@@ -182,7 +184,10 @@ export default class KampfSzene extends Phaser.Scene {
 
     // Luftzug in dem Moment, in dem eine Klinge nach vorn schnellt
     for (const f of [rot, gruen]) {
-      if (f.stoesst && !f.stiessVorher) luftzug(this.sound.context);
+      if (f.stoesst && !f.stiessVorher) {
+        luftzug(this.sound.context);
+        this.statistik.angriff(f.name);
+      }
       f.stiessVorher = f.stoesst;
     }
 
@@ -213,10 +218,12 @@ export default class KampfSzene extends Phaser.Scene {
       angreifer.wurdePariert();
       gegner.paradeGelungen();
       klingenschlag(this.sound.context);
+      this.statistik.parade(gegner.name);
       // Funken dort, wo die Klingen aufeinandertreffen: kurz vor dem Parierenden, auf Höhe der Spitze
       this.funken.spruehe(gegner.vorderkante + gegner.richtung * 22, angreifer.spitze.y, gegner.richtung);
     } else if (ergebnis === 'treffer') {
       this.treffer[farbe] = true;
+      this.statistik.treffer(farbe, angreifer.aktion);
       this.schalteLampe(farbe, true);
       if (this.ersterTrefferZeit === null) {
         this.ersterTrefferZeit = zeit;
@@ -233,6 +240,7 @@ export default class KampfSzene extends Phaser.Scene {
 
   werteTrefferAus(zeit) {
     const ergebnis = this.gefecht.werteAus(this.treffer);
+    if (this.treffer.rot && this.treffer.gruen) this.statistik.doppeltreffer();
     if (ergebnis === 'gestrichen') {
       this.meldung.setColor('#ffffff').setText('Doppeltreffer – gestrichen');
     } else if (ergebnis === 'doppeltreffer') {
@@ -263,7 +271,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.phase = 'ende';
     this.phaseStart = zeit;
     this.scene.pause();
-    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus, stufe: this.stufe });
+    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus, stufe: this.stufe, statistik: this.statistik.zeilen() });
   }
 
   zeigeStand() {

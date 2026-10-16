@@ -36,3 +36,14 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Im Browser erzeugt** wie die Effekte, ohne Musikdateien: ein ruhiges Stück für Titel und Menüs (d-Moll) und ein treibendes für das Gefecht (a-Moll, mit Schlagzeug). Beide sind kurze Schleifen von vier Takten.
 - Die Musik ist bewusst leise, damit Signalton und Klingengeräusche hörbar bleiben (Standard: Musik 50 %, Effekte 80 %).
 - In der Pause läuft die Gefechtsmusik weiter; auf dem Siegerbildschirm wechselt sie zur Titelmusik.
+
+## Getroffen, Jubel und Funken
+
+- **Getroffen:** Nur bei einem einzelnen Treffer zuckt der Getroffene zurück. Bei Doppeltreffern zeigt niemand diese Pose (beide wären getroffen).
+- **Jubel:** Sobald das Gefecht entschieden ist – auch durch Zeitablauf –, jubelt der Sieger mit hochgerecktem Degen. Auf dem Siegerbildschirm erscheint er groß in dieser Pose.
+- **Funken** sprühen nur bei einer gelungenen Parade (wenn Klinge auf Klinge trifft), nicht bei Treffern. Ein Wackeln der Kamera bei Treffern habe ich nicht eingebaut, weil es nicht auf der Liste stand.
+
+## Statistik
+
+- Gezählt wird pro Fechter: **Angriffe** (jede Aktion, bei der die Klinge nach vorn schnellt – auch parierte), **Treffer** (auch solche in Doppeltreffern und gestrichene), davon **Riposten**, **gelungene Paraden**, **Doppeltreffer** und die **Trefferquote** (Treffer pro Angriff).
+- Die Statistik gilt für ein Gefecht und wird bei der Revanche neu begonnen. Sie wird nicht dauerhaft gespeichert.
