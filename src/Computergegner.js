@@ -15,7 +15,7 @@ export const STUFEN = {
 const STOSS_REICHWEITE = 125;
 const AUSFALL_REICHWEITE = 200;
 const TIEFSTOSS_REICHWEITE = 115;
-const FLECHE_REICHWEITE = 340;
+const FLECHE_REICHWEITE = 265;
 
 import { AKTIONEN, FINTEN } from './Fechter.js';
 
@@ -87,7 +87,7 @@ export default class Computergegner {
         } else if (abstand <= STOSS_REICHWEITE) this.plane(jetzt, 'stoss');
         else if (abstand <= AUSFALL_REICHWEITE) this.plane(jetzt, 'stoss', true);
         // Die Flèche ist riskant – nur selten und nur aus mittlerer Distanz
-        else if (abstand <= FLECHE_REICHWEITE - 40 && this.zufall() < 0.25) this.plane(jetzt, 'fleche');
+        else if (abstand <= FLECHE_REICHWEITE - 20 && this.zufall() < 0.25) this.plane(jetzt, 'fleche');
       }
     }
 
@@ -123,7 +123,12 @@ export default class Computergegner {
       if (abstand > REICHWEITEN[aktion] + 10) return;
       // Richtig: Parade oder unter dem Stoß wegtauchen. Falsch: selbst stoßen (Doppeltreffer) oder nichts tun.
       const antwort = this.zufall() < 0.7 ? 'parade' : 'tiefstoss';
-      if (richtig && FINTEN.includes(aktion) && this.zufall() < durchschaut) {
+      if (richtig && aktion === 'fleche') {
+        // Die Flèche kommt erst nach Antritt und Sprint an – kurz davor antworten
+        const f = AKTIONEN.fleche;
+        const ankunft = gegner.aktionStart + f.anlauf + (Math.max(0, abstand - 130) / f.tempo) * 1000;
+        this.plane(Math.max(zeit, ankunft - (antwort === 'tiefstoss' ? 120 : 80)), antwort);
+      } else if (richtig && FINTEN.includes(aktion) && this.zufall() < durchschaut) {
         // Durchschaut: erst kurz bevor die Klinge ankommt antworten – und nur, wenn der Angriff noch läuft.
         // Der Tiefstoß braucht etwas mehr Vorlauf, weil man erst abtauchen muss.
         const start = gegner.aktionStart;

@@ -14,7 +14,7 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 
 - **Eigene Taste:** Rot **R**, Grün **J** – nahe an den übrigen Tasten und ohne Überschneidung. Eine Tastenkombination wäre mit dem Ausfall (vorwärts + Stoß) verwechselbar gewesen.
 - **Kein Vorbeistürmen:** Im echten Fechten läuft der Fechter am Gegner vorbei. Im Spiel würde das die Seiten tauschen (Blickrichtung, Startlinien, Kamera). Stattdessen bremst die Flèche wie der Ausfall am Gegner ab.
-- **Zeiten:** 250 ms Antritt, 350 ms Sprint (650 px/s), danach 600 ms verwundbar. Sie trifft aus etwa 300 Pixeln, wo kein Ausfall mehr reicht.
+- **Zeiten:** 300 ms Antritt, 300 ms Sprint (450 px/s), danach 600 ms verwundbar. Sie trifft aus bis zu etwa 265 Pixeln – etwas weiter als der Ausfall (etwa 210).
 - **Antworten:** Parade und Tiefstoß funktionieren beide mit menschlicher Reaktionszeit (siehe `test/fleche.test.js`).
 - Der Computergegner setzt sie selten (nur aus mittlerer Distanz) ein und reagiert auf sie wie auf andere Angriffe.
 

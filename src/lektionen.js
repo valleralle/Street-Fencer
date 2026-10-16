@@ -67,7 +67,7 @@ export const LEKTIONEN = [
     titel: 'Flèche',
     text: (t) => `Sturmangriff aus der Distanz: drücke ${t.fleche}.`,
     trainer: 'stehen',
-    abstand: 300,
+    abstand: 240,
     ziel: trifftMit('fleche'),
     tipp: 'Für die Flèche brauchst du Anlauf – geh erst etwas zurück.',
   },

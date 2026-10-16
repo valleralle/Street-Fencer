@@ -72,3 +72,29 @@ test('wer Finten durchschaut, wehrt den echten Stoß danach ab – wer nicht, wi
   assert.ok(ohne > 0.6, `ohne Durchschauen nur ${ohne} getroffen`);
   assert.ok(mit < 0.2, `mit Durchschauen trotzdem ${mit} getroffen`);
 });
+
+test('der Computer wehrt eine Flèche ab, wenn er richtig antwortet', () => {
+  let abgewehrt = 0;
+  for (let i = 0; i < 40; i++) {
+    const computer = new Computergegner('mittel', zufall(900 + i));
+    computer.werte = { ...STUFEN.mittel, treffsicherheit: 1, angriffslust: 0 };
+    const sr = fernsteuerung();
+    const { rot, gruen } = zweiFechter(250, sr, computer);
+    sr.druck.add('fleche');
+    for (let t = 0; t < 2000; t += BILD) {
+      computer.denke(t, gruen, rot);
+      computer.halte = { links: false, rechts: false };
+      rot.aktualisiere(t, BILD, gruen);
+      gruen.aktualisiere(t, BILD, rot);
+      gruen.x = Math.max(gruen.x, rot.x + 72);
+      const e = rot.pruefeStoss(gruen);
+      if (e === 'treffer') break;
+      // abgewehrt: pariert oder mit dem Tiefstoß darunter durch getroffen
+      if (e === 'pariert' || gruen.pruefeStoss(rot) === 'treffer') {
+        abgewehrt++;
+        break;
+      }
+    }
+  }
+  assert.ok(abgewehrt / 40 > 0.9, `nur ${abgewehrt} von 40 abgewehrt`);
+});

@@ -44,7 +44,7 @@ export const AKTIONEN = {
   parade: { anlauf: 0, aktiv: 300, erholung: 300 },
   // Sturmangriff im Laufen: kurzer Antritt, dann ein schneller Sprint mit gestreckter Klinge.
   // Wer ihn verfehlt, ist lange verwundbar. tempo = Laufgeschwindigkeit in der aktiven Phase (px/s)
-  fleche: { anlauf: 250, aktiv: 350, erholung: 600, reichweite: 95, tempo: 650 },
+  fleche: { anlauf: 300, aktiv: 300, erholung: 600, reichweite: 95, tempo: 450 },
 };
 const ANGRIFFE = ['stoss', 'riposte', 'ausfall', 'tiefstoss', 'fleche'];
 // Diese Angriffe lassen sich während des Ausholens als Finte abbrechen
