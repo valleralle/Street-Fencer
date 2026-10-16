@@ -6,6 +6,7 @@ import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLIN
 import Meldegeraet from '../Meldegeraet.js';
 import Kamera from '../Kamera.js';
 import { halteAbstand } from '../abstand.js';
+import Funken from '../Funken.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
@@ -64,6 +65,7 @@ export default class KampfSzene extends Phaser.Scene {
         this.computer ??
         tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN', fleche: 'J' }),
     });
+    this.funken = new Funken(this);
     this.pausenTasten = [this.input.keyboard.addKey('ESC'), this.input.keyboard.addKey('P')];
 
     // Nach der Pause alle Tastendrücke verwerfen, die während der Pause passiert sind
@@ -150,6 +152,7 @@ export default class KampfSzene extends Phaser.Scene {
       rot.vergissTasten();
       gruen.vergissTasten();
     }
+    this.funken.aktualisiere(spielDelta);
     this.kamera.folge(delta, rot, gruen);
     rot.zeichne();
     gruen.zeichne();
@@ -192,6 +195,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.zeigeStand();
     if (ereignis === 'ende') {
       this.meldung.setColor('#ffffff').setText('Zeit !');
+      this.zeigeJubel();
       this.phase = 'treffer';
       this.phaseStart = zeit;
     } else if (ereignis === 'verlaengerung') {
@@ -206,6 +210,8 @@ export default class KampfSzene extends Phaser.Scene {
       angreifer.wurdePariert();
       gegner.paradeGelungen();
       klingenschlag(this.sound.context);
+      // Funken dort, wo die Klingen aufeinandertreffen: kurz vor dem Parierenden, auf Höhe der Spitze
+      this.funken.spruehe(gegner.vorderkante + gegner.richtung * 22, angreifer.spitze.y, gegner.richtung);
     } else if (ergebnis === 'treffer') {
       this.treffer[farbe] = true;
       this.schalteLampe(farbe, true);
@@ -231,10 +237,21 @@ export default class KampfSzene extends Phaser.Scene {
     } else {
       const farbe = this.treffer.rot ? 'rot' : 'gruen';
       this.meldung.setColor(TEXTFARBEN[farbe]).setText(`Treffer ${NAMEN[farbe]}!`);
+      this.fechter(farbe === 'rot' ? 'gruen' : 'rot').zeigePose('getroffen');
     }
+    this.zeigeJubel();
     this.zeigeStand();
     this.phase = 'treffer';
     this.phaseStart = zeit;
+  }
+
+  fechter(farbe) {
+    return farbe === 'rot' ? this.fechterRot : this.fechterGruen;
+  }
+
+  // Ist das Gefecht entschieden, jubelt der Sieger
+  zeigeJubel() {
+    if (this.gefecht.sieger) this.fechter(this.gefecht.sieger).zeigePose('jubel');
   }
 
   beende(zeit) {
