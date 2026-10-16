@@ -95,5 +95,5 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 6. Computergegner (leicht, mittel, schwer) ✅
 7. Grafik: Fechter, Fechtbahn, Halle, Meldegerät und Schrift als Pixelart · Klingengeräusche ✅
 8. Flèche, Getroffen- und Jubelpose, Funken, Musik, Training, Statistik, Einstellungen, Regeltests ✅
-9. Finte · Name 
+9. Finte · Name „Street Fencer“ · .exe zum Starten im Browser ✅
 10. Später: Sprachansagen, Battement, Karten und Strafen, Turniermodus
