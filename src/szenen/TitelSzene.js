@@ -10,7 +10,7 @@ export default class TitelSzene extends Phaser.Scene {
 
   create() {
     this.add
-      .text(480, 120, 'game_pilot', stil(72))
+      .text(480, 120, 'Street Fencer', stil(72))
       .setOrigin(0.5);
     this.add
       .text(480, 185, 'Degenfechten', stil(28, '#9aa3b5'))

@@ -1,4 +1,4 @@
-# game_pilot
+# Street Fencer
 
 2D-Fechtspiel für den Browser nach den Regeln des Degenfechtens – gebaut mit [Phaser](https://phaser.io) und [Vite](https://vitejs.dev).
 
@@ -12,6 +12,16 @@ npm run dev
 ```
 
 Dann die angezeigte Adresse (meist http://localhost:5173) im Browser öffnen.
+
+## Als .exe (Windows)
+
+```bash
+npm run exe
+```
+
+Erzeugt `release/Street Fencer.exe` (etwa 90 MB). Ein Doppelklick startet das Spiel im Standardbrowser – ohne Installation, auch ohne Node. Zum Beenden das kleine Konsolenfenster schließen. Die Datei lässt sich einfach weitergeben.
+
+Beim ersten Start kann Windows warnen („Der Computer wurde durch Windows geschützt“), weil die Datei nicht signiert ist: **Weitere Informationen → Trotzdem ausführen**.
 
 ## Tests
 
@@ -68,6 +78,7 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 - `src/farben.js` – die Farben der Fechter
 - `src/schrift.js`, `public/schrift/` – Pixelschrift „Pixelify Sans“ (OFL-Lizenz)
 - `src/pixelart/fechterPosen.js` – die Pixelbilder der Fechter als Textraster
+- `werkzeuge/exe/` – baut die .exe (`baue-exe.mjs`) und das Startprogramm darin (`starter.cjs`)
 - `werkzeuge/pixelart-zeichnen.mjs` – zeichnet die Posen (`npm run pixelart:zeichnen`; überschreibt `fechterPosen.js`)
 - `grafik/` – daraus erzeugte PNGs; neu erzeugen mit `npm run pixelart`
 - `test/` – Tests (`npm test`)
@@ -84,5 +95,5 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 6. Computergegner (leicht, mittel, schwer) ✅
 7. Grafik: Fechter, Fechtbahn, Halle, Meldegerät und Schrift als Pixelart · Klingengeräusche ✅
 8. Flèche, Getroffen- und Jubelpose, Funken, Musik, Training, Statistik, Einstellungen, Regeltests ✅
-9. Finte ✅
+9. Finte · Name 
 10. Später: Sprachansagen, Battement, Karten und Strafen, Turniermodus

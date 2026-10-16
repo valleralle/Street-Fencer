@@ -63,3 +63,12 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Nebenwirkung:** Wer wild auf die Stoß-Taste hämmert, macht ungewollt Finten – sein Angriff bricht ab. Das bestraft Hämmern bewusst.
 - **Computergegner:** „Mittel“ durchschaut 40 % der Finten, „Schwer“ 80 % (er pariert dann erst kurz bevor die Klinge ankommt). „Mittel“ täuscht in 15 % seiner Stöße selbst, „Schwer“ in 30 %, „Leicht“ nie.
 - **Training:** neue Lektion „Finte“ gegen einen Trainer, der jeden Angriff sofort pariert.
+
+## Name und .exe
+
+- **Neuer Name „Street Fencer“** im Titelbildschirm, Browser-Tab, README, Glossar und `package.json` (`street-fencer`). Der Projektordner und das GitHub-Repo heißen weiter `game_pilot` – das umzubenennen ändert Pfade und die Repo-Adresse, das mache ich nur auf Wunsch.
+- Der **Speicherschlüssel der Einstellungen** bleibt `game_pilot.einstellungen`, damit gespeicherte Lautstärken und Tasten erhalten bleiben. Die Entscheidungsnotiz erwähnt `game_pilot` weiter als damaligen Arbeitstitel.
+- **.exe mit eingebautem Node** (Node „Single Executable Application“): Sie enthält das gebaute Spiel, startet einen kleinen Webserver nur auf diesem Rechner (`127.0.0.1`) und öffnet den Standardbrowser. Deshalb ist sie etwa 90 MB groß.
+- **Feste Adresse** `http://127.0.0.1:41730`, weil der Browser Einstellungen pro Adresse speichert. Ein zweiter Start öffnet nur das laufende Spiel.
+- Die .exe ist **nicht signiert** – Windows SmartScreen kann beim ersten Start warnen. Ein Programmsymbol (Icon) hat sie noch nicht.
+- `release/` steht in `.gitignore`: Die .exe wird nicht ins Repo eingecheckt (zu groß), sondern mit `npm run exe` gebaut.

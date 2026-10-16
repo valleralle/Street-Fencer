@@ -1,4 +1,4 @@
-# game_pilot
+# Street Fencer
 
 Ein 2D-Fechtspiel für den Browser nach den Regeln des Degenfechtens: zwei Fechter stehen sich auf einer Fechtbahn gegenüber, und jeder gültige Treffer bringt einen Punkt.
 

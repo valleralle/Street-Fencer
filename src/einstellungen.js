@@ -23,7 +23,7 @@ export const AKTIONS_NAMEN = {
 // Diese Tasten bleiben für Pause und Menüs reserviert
 export const RESERVIERT = ['ESC', 'P', 'ENTER', 'SPACE'];
 
-const SCHLUESSEL = 'game_pilot.einstellungen';
+// Der Schlüssel stammt noch aus der Zeit des Arbeitstitels 
 
 const kopie = (e) => JSON.parse(JSON.stringify(e));
 

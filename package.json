@@ -1,5 +1,5 @@
 {
-  "name": "game_pilot",
+  "name": "street-fencer",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "pixelart": "node werkzeuge/pixelart-export.mjs",
     "pixelart:zeichnen": "node werkzeuge/pixelart-zeichnen.mjs && node werkzeuge/pixelart-export.mjs",
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"test/*.test.js\"",
+    "exe": "node werkzeuge/exe/baue-exe.mjs"
   },
   "dependencies": {
     "phaser": "^4.2.1"
   },
   "devDependencies": {
+    "postject": "^1.0.0-alpha.6",
     "vite": "^8.3.4"
   }
 }
