@@ -46,9 +46,12 @@ function druecke(steuerung, fechter, aktion) {
 }
 
 // Ein Schlagabtausch: Rot macht aktionRot zur Zeit zeitRot, Grün aktionGruen zur Zeit zeitGruen.
+// Für mehrere Aktionen nacheinander: folgeRot / folgeGruen = [[zeit, aktion], …] (z. B. für Finten).
 // Nach einer gelungenen Parade ripostiert der Parierende sofort. Liefert die Ereignisse als Text,
 // z. B. ['rot pariert', 'gruen trifft'] – nach dem ersten Treffer wird noch das Doppeltreffer-Fenster abgewartet.
-export function schlagabtausch({ abstand, aktionRot, zeitRot = 0, aktionGruen, zeitGruen = 0 }) {
+export function schlagabtausch({ abstand, aktionRot, zeitRot = 0, aktionGruen, zeitGruen = 0, folgeRot, folgeGruen }) {
+  folgeRot ??= aktionRot ? [[zeitRot, aktionRot]] : [];
+  folgeGruen ??= aktionGruen ? [[zeitGruen, aktionGruen]] : [];
   const sr = fernsteuerung();
   const sg = fernsteuerung();
   const { rot, gruen } = zweiFechter(abstand, sr, sg);
@@ -56,8 +59,8 @@ export function schlagabtausch({ abstand, aktionRot, zeitRot = 0, aktionGruen, z
   let ersterTreffer = null;
 
   for (let t = 0; t < 3000; t += BILD) {
-    if (aktionRot && t >= zeitRot && t < zeitRot + BILD) druecke(sr, rot, aktionRot);
-    if (aktionGruen && t >= zeitGruen && t < zeitGruen + BILD) druecke(sg, gruen, aktionGruen);
+    for (const [zeit, aktion] of folgeRot) if (t >= zeit && t < zeit + BILD) druecke(sr, rot, aktion);
+    for (const [zeit, aktion] of folgeGruen) if (t >= zeit && t < zeit + BILD) druecke(sg, gruen, aktion);
     const vorher = [rot.x, gruen.x];
     const eingabe = ersterTreffer === null;
     rot.aktualisiere(t, BILD, gruen, eingabe);
@@ -131,7 +134,13 @@ export function ganzesGefecht(steuerungRot, steuerungGruen, startwert = 1) {
 
 // Spieler-Attrappen für Gefechte gegen den Computer
 export const passiverSpieler = () => ({ gehalten: () => false, gedrueckt: () => false });
+// Läuft stur vorwärts und stößt, sobald sein Fechter frei ist. (Während des Ausholens erneut zu
+// drücken wäre eine Finte – das tut er nicht.)
 export function draufgaenger() {
-  let n = 0;
-  return { gehalten: (t) => t === 'rechts', gedrueckt: (t) => t === 'stoss' && n++ % 10 === 0 };
+  let frei = false;
+  return {
+    denke: (t, ich) => (frei = !ich.aktion && !ich.offen),
+    gehalten: (t) => t === 'rechts',
+    gedrueckt: (t) => t === 'stoss' && frei,
+  };
 }

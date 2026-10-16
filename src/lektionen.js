@@ -4,7 +4,7 @@
 //   abstand  – Abstand der Fechter zu Beginn
 //   ziel(e)  – true, wenn das Ereignis e die Lektion erfüllt
 //   tipp     – Hinweis, wenn man mit einer anderen Aktion trifft
-// Ereignisse: { art: 'bewegt', strecke }, { art: 'parade', farbe }, { art: 'treffer', farbe, aktion }
+// Ereignisse: { art: 'bewegt', strecke }, { art: 'parade', farbe }, { art: 'treffer', farbe, aktion, nachFinte }
 const trifftMit = (aktion) => (e) => e.art === 'treffer' && e.farbe === 'rot' && e.aktion === aktion;
 
 export const LEKTIONEN = [
@@ -45,6 +45,15 @@ export const LEKTIONEN = [
     abstand: 180,
     ziel: trifftMit('riposte'),
     tipp: 'Stoße gleich nach der gelungenen Parade.',
+  },
+  {
+    titel: 'Finte',
+    text: (t) =>
+      `Der Trainer pariert jeden Angriff. Täusche ihn: drücke ${t.stoss} dreimal im Rhythmus – ausholen, abbrechen, zustoßen.`,
+    trainer: 'pariert',
+    abstand: 120,
+    ziel: (e) => e.art === 'treffer' && e.farbe === 'rot' && e.nachFinte,
+    tipp: 'Nicht zu schnell: der echte Stoß muss nach seiner Parade kommen.',
   },
   {
     titel: 'Tiefstoß',

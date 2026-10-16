@@ -43,7 +43,7 @@ export default class SteuerungSzene extends Phaser.Scene {
       .text(
         480,
         350,
-        'Ausfall = vorwärts + Stoß\n' +
+        'Ausfall = vorwärts + Stoß · Finte = beim Ausholen noch einmal Stoß\n' +
           'Riposte = Stoß direkt nach einer gelungenen Parade\n' +
           'Wer zuerst 5 Treffer hat, gewinnt · Esc oder P = Pause · Tasten ändern unter Einstellungen',
         { ...schrift, fontSize: '19px', align: 'center', color: '#c8ccd4', lineSpacing: 8 },

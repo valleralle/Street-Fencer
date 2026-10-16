@@ -1,8 +1,8 @@
 // Ganze Gefechte gegen den Computergegner – mit festem Zufall, damit das Ergebnis immer gleich ist
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import Computergegner from '../src/Computergegner.js';
-import { ganzesGefecht, passiverSpieler, draufgaenger, zufall } from './hilfen.js';
+import Computergegner, { STUFEN } from '../src/Computergegner.js';
+import { ganzesGefecht, passiverSpieler, draufgaenger, zufall, fernsteuerung, zweiFechter, BILD } from './hilfen.js';
 
 const GEFECHTE = 30;
 
@@ -35,4 +35,40 @@ test('„leicht“ ist für einen sturen Draufgänger schlagbar, „schwer“ ka
   const schwer = siegquote(draufgaenger, computer('schwer', 9));
   assert.ok(leicht < 0.7, `leicht gewinnt zu oft: ${leicht}`);
   assert.ok(schwer > leicht, `schwer ${schwer} sollte öfter gewinnen als leicht ${leicht}`);
+});
+
+// Rot täuscht einen Stoß an, bricht nach 240 ms ab und stößt sofort wirklich zu.
+// Liefert, wie oft der Computer (Grün) dabei getroffen wird.
+function getroffenNachFinte(durchschaut) {
+  let getroffen = 0;
+  for (let i = 0; i < 40; i++) {
+    const computer = new Computergegner('mittel', zufall(500 + i));
+    // Reaktionszeit wie ein Mensch, damit nur das Durchschauen den Unterschied macht
+    computer.werte = { ...STUFEN.mittel, reaktion: 200, treffsicherheit: 1, durchschaut, angriffslust: 0 };
+    const sr = fernsteuerung();
+    const { rot, gruen } = zweiFechter(120, sr, computer);
+    for (let t = 0; t < 1500; t += BILD) {
+      if (t === 0 || t === 240 || t === 256) sr.druck.add('stoss');
+      computer.denke(t, gruen, rot);
+      computer.halte = { links: false, rechts: false }; // er soll stehen bleiben, nicht ausweichen
+      rot.aktualisiere(t, BILD, gruen);
+      gruen.aktualisiere(t, BILD, rot);
+      gruen.x = Math.max(gruen.x, rot.x + 72);
+      const e = rot.pruefeStoss(gruen);
+      if (e === 'pariert') break;
+      if (e === 'treffer') {
+        getroffen++;
+        break;
+      }
+    }
+  }
+  return getroffen / 40;
+}
+
+test('wer Finten durchschaut, wehrt den echten Stoß danach ab – wer nicht, wird getroffen', () => {
+  const ohne = getroffenNachFinte(0);
+  const mit = getroffenNachFinte(1);
+  // Ohne Durchschauen rettet ihn nur, wenn er zufällig mit einem Tiefstoß unter dem echten Stoß wegtaucht
+  assert.ok(ohne > 0.6, `ohne Durchschauen nur ${ohne} getroffen`);
+  assert.ok(mit < 0.2, `mit Durchschauen trotzdem ${mit} getroffen`);
 });

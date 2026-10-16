@@ -55,3 +55,11 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Die Anleitungen zeigen die **aktuelle Tastenbelegung** aus den Einstellungen.
 - Es gibt keine Punkte, keine Uhr und keine Pause – Esc führt jederzeit zurück zum Titel. Der Fortschritt wird nicht gespeichert.
 - Den Trainingsmodus gibt es nur für Rot (die linke Tastaturhälfte).
+
+## Finte
+
+- **Bedienung:** Während des Ausholens die Stoß-Taste ein zweites Mal drücken. „Halten und loslassen“ hätte bedeutet, dass jeder normale Stoß 300 ms gedrückt werden muss.
+- Geht beim **Stoß und Ausfall**, nicht bei Flèche und Riposte. Nach dem Abbruch ist man sofort wieder frei und kann wirklich zustoßen.
+- **Nebenwirkung:** Wer wild auf die Stoß-Taste hämmert, macht ungewollt Finten – sein Angriff bricht ab. Das bestraft Hämmern bewusst.
+- **Computergegner:** „Mittel“ durchschaut 40 % der Finten, „Schwer“ 80 % (er pariert dann erst kurz bevor die Klinge ankommt). „Mittel“ täuscht in 15 % seiner Stöße selbst, „Schwer“ in 30 %, „Leicht“ nie.
+- **Training:** neue Lektion „Finte“ gegen einen Trainer, der jeden Angriff sofort pariert.

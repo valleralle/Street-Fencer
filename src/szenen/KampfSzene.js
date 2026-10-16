@@ -189,6 +189,8 @@ export default class KampfSzene extends Phaser.Scene {
         this.statistik.angriff(f.name);
       }
       f.stiessVorher = f.stoesst;
+      if (f.finten > (f.gezaehlteFinten ?? 0)) this.statistik.finte(f.name);
+      f.gezaehlteFinten = f.finten;
     }
 
     this.pruefeStoss(rot, gruen, 'rot', jetzt);

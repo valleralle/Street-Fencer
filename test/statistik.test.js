@@ -13,8 +13,9 @@ test('die Statistik zählt Angriffe, Treffer, Riposten, Paraden und Doppeltreffe
   s.treffer('gruen', 'stoss');
   s.doppeltreffer();
 
-  assert.deepEqual(s.werte.rot, { angriffe: 4, treffer: 2, riposten: 0, paraden: 0, doppeltreffer: 1 });
-  assert.deepEqual(s.werte.gruen, { angriffe: 1, treffer: 2, riposten: 1, paraden: 1, doppeltreffer: 1 });
+  s.finte('rot');
+  assert.deepEqual(s.werte.rot, { angriffe: 4, finten: 1, treffer: 2, riposten: 0, paraden: 0, doppeltreffer: 1 });
+  assert.deepEqual(s.werte.gruen, { angriffe: 1, finten: 0, treffer: 2, riposten: 1, paraden: 1, doppeltreffer: 1 });
   assert.equal(s.trefferquote('rot'), 50);
 });
 
@@ -24,7 +25,7 @@ test('ohne Angriffe ist die Trefferquote 0 % statt eines Fehlers', () => {
 
 test('die Anzeige hat für jede Zeile Bezeichnung, Rot und Grün als Text', () => {
   const zeilen = new Statistik().zeilen();
-  assert.equal(zeilen.length, 6);
+  assert.equal(zeilen.length, 7);
   for (const z of zeilen) {
     assert.equal(z.length, 3);
     assert.ok(z.every((zelle) => typeof zelle === 'string'));

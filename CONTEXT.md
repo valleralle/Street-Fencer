@@ -56,6 +56,10 @@ _Vermeiden_: Block, Abwehr
 Ein Gegenstoß direkt nach einer gelungenen Parade, schneller als ein normaler Stoß.
 _Vermeiden_: Konter
 
+**Finte**:
+Ein angetäuschter Angriff: Der Fechter holt aus und bricht ab, bevor er zustößt, um eine Parade herauszulocken und dann wirklich zu treffen.
+_Vermeiden_: Täuschung, Fake
+
 **Tiefstoß**:
 Der Fechter duckt sich unter einem hohen Stoß weg und stößt dabei zum Fuß des Gegners. Riskant, aber auch als Antwort auf eine Flèche gedacht.
 _Vermeiden_: Ducken (allein), Fußstoß

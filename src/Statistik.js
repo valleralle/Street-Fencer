@@ -1,5 +1,5 @@
 // Zählt während eines Gefechts mit, was jeder Fechter gemacht hat – für die Auswertung am Ende.
-const leer = () => ({ angriffe: 0, treffer: 0, riposten: 0, paraden: 0, doppeltreffer: 0 });
+const leer = () => ({ angriffe: 0, finten: 0, treffer: 0, riposten: 0, paraden: 0, doppeltreffer: 0 });
 
 export default class Statistik {
   constructor() {
@@ -9,6 +9,11 @@ export default class Statistik {
   // Ein Angriff wurde ausgeführt (die Klinge ist nach vorn geschnellt)
   angriff(farbe) {
     this.werte[farbe].angriffe++;
+  }
+
+  // Ein Angriff wurde während des Ausholens abgebrochen
+  finte(farbe) {
+    this.werte[farbe].finten++;
   }
 
   // farbe hat erfolgreich pariert
@@ -38,6 +43,7 @@ export default class Statistik {
     const { rot, gruen } = this.werte;
     return [
       ['Angriffe', rot.angriffe, gruen.angriffe],
+      ['Finten', rot.finten, gruen.finten],
       ['Treffer', rot.treffer, gruen.treffer],
       ['davon Riposten', rot.riposten, gruen.riposten],
       ['Paraden', rot.paraden, gruen.paraden],

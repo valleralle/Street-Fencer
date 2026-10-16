@@ -34,7 +34,7 @@ const TIEF = BODEN_Y - 8;
 // Zeiten in Millisekunden; reichweite = Länge der Klinge während der aktiven Phase.
 // Ein Mensch braucht etwa 200–250 ms, um auf etwas zu reagieren. Damit man einen Angriff
 // parieren kann, muss sein Anlauf (das Ausholen) länger dauern.
-const AKTIONEN = {
+export const AKTIONEN = {
   stoss: { anlauf: 300, aktiv: 120, erholung: 220, reichweite: 95 },
   riposte: { anlauf: 80, aktiv: 120, erholung: 160, reichweite: 95 },
   ausfall: { anlauf: 350, aktiv: 150, erholung: 450, reichweite: 95, schritt: 80 },
@@ -47,6 +47,8 @@ const AKTIONEN = {
   fleche: { anlauf: 250, aktiv: 350, erholung: 600, reichweite: 95, tempo: 650 },
 };
 const ANGRIFFE = ['stoss', 'riposte', 'ausfall', 'tiefstoss', 'fleche'];
+// Diese Angriffe lassen sich während des Ausholens als Finte abbrechen
+export const FINTEN = ['stoss', 'ausfall'];
 
 // Wie lange ein parierter Angreifer offen ist bzw. wie lange nach einer Parade eine Riposte möglich ist
 const OFFEN_DAUER = 500;
@@ -61,6 +63,7 @@ export default class Fechter {
     this.name = name;
     this.steuerung = steuerung;
     this.jetzt = 0;
+    this.finten = 0; // Anzahl aller Finten (wird beim Zurücksetzen nicht gelöscht)
     this.zuruecksetzen();
     if (!szene) return;
 
@@ -85,6 +88,12 @@ export default class Fechter {
     this.riposteBis = 0;
     this.geht = false;
     this.festePose = null;
+    this.letzteFinte = -Infinity;
+  }
+
+  // Wurde der laufende Angriff kurz nach einer Finte begonnen?
+  get nachFinte() {
+    return this.jetzt - this.letzteFinte < 1000;
   }
 
   // Zeigt bis zum nächsten Zurücksetzen eine feste Pose ('getroffen' oder 'jubel')
@@ -217,7 +226,12 @@ export default class Fechter {
     const vor = s.gehalten(this.richtung > 0 ? 'rechts' : 'links');
     const zurueck = s.gehalten(this.richtung > 0 ? 'links' : 'rechts');
 
-    if (eingabe && !this.aktion && !this.offen) {
+    // Finte: wer während des Ausholens noch einmal Stoß drückt, bricht den Angriff ab
+    if (eingabe && stoss && FINTEN.includes(this.aktion) && this.phase === 'anlauf') {
+      this.aktion = null;
+      this.finten++;
+      this.letzteFinte = jetzt;
+    } else if (eingabe && !this.aktion && !this.offen) {
       if (stoss) {
         if (this.kannRiposte) this.starte('riposte', gegner);
         else if (vor) this.starte('ausfall', gegner);

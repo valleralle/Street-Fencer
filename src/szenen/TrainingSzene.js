@@ -119,7 +119,7 @@ export default class TrainingSzene extends Phaser.Scene {
         this.melde({ art: 'parade', farbe: gegner.name });
       } else if (ergebnis === 'treffer') {
         signalton(this.sound.context);
-        this.melde({ art: 'treffer', farbe: angreifer.name, aktion: angreifer.aktion });
+        this.melde({ art: 'treffer', farbe: angreifer.name, aktion: angreifer.aktion, nachFinte: angreifer.nachFinte });
       }
     }
   }
@@ -130,6 +130,10 @@ export default class TrainingSzene extends Phaser.Scene {
       if (ereignis.art === 'treffer') this.gruen.zeigePose('getroffen');
       this.geschafft = true;
       this.pauseBis = this.szenenZeit + PAUSE_NACH_ERFOLG;
+    } else if (ereignis.art === 'parade' && ereignis.farbe === 'gruen' && this.lektion.trainer === 'pariert') {
+      this.rueckmeldung.setColor('#ffd166').setText('Pariert! ' + this.lektion.tipp);
+      this.geschafft = false;
+      this.pauseBis = this.szenenZeit + PAUSE_NACH_TREFFER;
     } else if (ereignis.art === 'treffer') {
       const getroffen = ereignis.farbe === 'gruen';
       this.rueckmeldung

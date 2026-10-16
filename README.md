@@ -30,6 +30,7 @@ Prüft die Spielregeln ohne Browser: Schlagabtausch mit menschlicher Reaktionsze
 
 - **Ausfall** = vorwärts + Stoß
 - **Riposte** = Stoß direkt nach einer gelungenen Parade
+- **Finte** = während des Ausholens noch einmal Stoß: der Angriff bricht ab, der Gegner pariert ins Leere
 - **Pause** = Esc oder P
 - Die Tasten lassen sich unter **Einstellungen** ändern.
 
@@ -37,11 +38,11 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 
 ## Was es gibt
 
-- **Training:** sieben Lektionen gegen einen Trainer – Bewegen, Stoß, Ausfall, Parade, Riposte, Tiefstoß, Flèche
+- **Training:** acht Lektionen gegen einen Trainer – Bewegen, Stoß, Ausfall, Parade, Riposte, Finte, Tiefstoß, Flèche
 - **2 Spieler** an einer Tastatur oder **gegen den Computer** (leicht, mittel, schwer); gegen den Computer spielst du Rot
 - **Gefecht** mit Punkten, Doppeltreffern, Kommando, 3 Minuten Zeit und Verlängerung mit Vorteil
 - **Meldegerät** mit Lampen und Signalton, Zeitlupe bei Treffern, Funken bei Paraden, Getroffen- und Jubelpose
-- **Siegerbildschirm** mit Statistik (Angriffe, Treffer, Riposten, Paraden, Doppeltreffer, Trefferquote) und Revanche
+- **Siegerbildschirm** mit Statistik (Angriffe, Finten, Treffer, Riposten, Paraden, Doppeltreffer, Trefferquote) und Revanche
 - **Musik** für Titel und Gefecht, Klingengeräusche – alles im Browser erzeugt, ohne Audiodateien
 - **Einstellungen:** Lautstärke von Musik und Effekten, Tastenbelegung – im Browser gespeichert
 
@@ -83,4 +84,5 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 6. Computergegner (leicht, mittel, schwer) ✅
 7. Grafik: Fechter, Fechtbahn, Halle, Meldegerät und Schrift als Pixelart · Klingengeräusche ✅
 8. Flèche, Getroffen- und Jubelpose, Funken, Musik, Training, Statistik, Einstellungen, Regeltests ✅
-9. Später: Sprachansagen, Finte, Battement, Karten und Strafen, Turniermodus
+9. Finte ✅
+10. Später: Sprachansagen, Battement, Karten und Strafen, Turniermodus
