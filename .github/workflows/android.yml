@@ -48,7 +48,19 @@ jobs:
       - name: Debug-Schlüssel bereitlegen
         run: mkdir -p ~/.android && cp werkzeuge/android/debug.keystore ~/.android/debug.keystore
 
-      - run: npm run android
+      - name: APK bauen
+        run: |
+          set -o pipefail
+          npm run android 2>&1 | tee bau.log
+
+      # Fehler als Anmerkung am Lauf, damit man sie ohne das ganze Log sieht
+      - name: Fehler zusammenfassen
+        if: failure()
+        run: |
+          [ -f bau.log ] || exit 0
+          grep -iE "error|failed|what went wrong|exception" bau.log | head -20 | while IFS= read -r zeile; do
+            echo "::error::${zeile}"
+          done
 
       - name: APK benennen
         run: cp android/app/build/outputs/apk/debug/app-debug.apk "street-fencer-${VERSIONS_NAME}.apk"
