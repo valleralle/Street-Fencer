@@ -1,5 +1,17 @@
 // Alle Töne des Spiels, direkt im Browser erzeugt – ohne Sounddateien.
 // ctx ist der AudioContext von Phaser (szene.sound.context); fehlt er, bleibt es still.
+import { einstellungen } from './einstellungen.js';
+
+// Gemeinsamer Ausgang aller Effekte, dessen Lautstärke der Einstellung „Effekte“ folgt
+let effekte = null;
+function ausgang(ctx) {
+  if (effekte?.context !== ctx) {
+    effekte = ctx.createGain();
+    effekte.connect(ctx.destination);
+  }
+  effekte.gain.value = einstellungen.effekte;
+  return effekte;
+}
 
 const SIGNALTON_HZ = 880;
 const SIGNALTON_DAUER = 0.7;
@@ -15,7 +27,7 @@ export function signalton(ctx) {
   lautstaerke.gain.setValueAtTime(0.06, t);
   lautstaerke.gain.setValueAtTime(0.06, t + SIGNALTON_DAUER - 0.05);
   lautstaerke.gain.linearRampToValueAtTime(0, t + SIGNALTON_DAUER);
-  ton.connect(lautstaerke).connect(ctx.destination);
+  ton.connect(lautstaerke).connect(ausgang(ctx));
   ton.start(t);
   ton.stop(t + SIGNALTON_DAUER);
 }
@@ -33,7 +45,7 @@ export function klingenschlag(ctx) {
     ton.frequency.value = hz * verstimmung;
     lautstaerke.gain.setValueAtTime(laut, t);
     lautstaerke.gain.exponentialRampToValueAtTime(0.0001, t + dauer);
-    ton.connect(lautstaerke).connect(ctx.destination);
+    ton.connect(lautstaerke).connect(ausgang(ctx));
     ton.start(t);
     ton.stop(t + dauer);
   }
@@ -63,6 +75,6 @@ function rauschen(ctx, { dauer, frequenz, laut, gleitend = false }) {
   lautstaerke.gain.setValueAtTime(laut, t);
   lautstaerke.gain.exponentialRampToValueAtTime(0.0001, t + dauer);
 
-  quelle.connect(filter).connect(lautstaerke).connect(ctx.destination);
+  quelle.connect(filter).connect(lautstaerke).connect(ausgang(ctx));
   quelle.start(t);
 }

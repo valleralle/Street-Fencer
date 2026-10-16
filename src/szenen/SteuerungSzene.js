@@ -1,14 +1,18 @@
 import Phaser from 'phaser';
 import { stil } from '../schrift.js';
 import { FECHTERFARBEN } from '../farben.js';
+import { einstellungen, tastenName, AKTIONS_NAMEN } from '../einstellungen.js';
 
-const ZEILEN = [
-  ['', 'Rot (links)', 'Grün (rechts)'],
-  ['Bewegen', 'A / D', 'Pfeil links / rechts'],
-  ['Stoß', 'F', 'K'],
-  ['Parade', 'G', 'L'],
-  ['Tiefstoß', 'S', '↓'],
-];
+// Tabelle der aktuellen Tastenbelegung (siehe Einstellungen)
+function zeilen() {
+  const { rot, gruen } = einstellungen.tasten;
+  const bewegen = (t) => `${tastenName(t.links)} / ${tastenName(t.rechts)}`.replace('Pfeil links / Pfeil rechts', 'Pfeil links / rechts');
+  return [
+    ['', 'Rot (links)', 'Grün (rechts)'],
+    ['Bewegen', bewegen(rot), bewegen(gruen)],
+    ...['stoss', 'parade', 'tiefstoss', 'fleche'].map((a) => [AKTIONS_NAMEN[a], tastenName(rot[a]), tastenName(gruen[a])]),
+  ];
+}
 
 export default class SteuerungSzene extends Phaser.Scene {
   constructor() {
@@ -24,24 +28,24 @@ export default class SteuerungSzene extends Phaser.Scene {
     this.registry.set('steuerungGezeigt', true);
     const schrift = stil(24);
 
-    this.add.text(480, 50, 'Steuerung', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
+    this.add.text(480, 44, 'Steuerung', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
 
     const spalten = [250, 480, 720];
     const farben = ['#9aa3b5', FECHTERFARBEN.rot, FECHTERFARBEN.gruen];
-    ZEILEN.forEach((zeile, z) => {
+    zeilen().forEach((zeile, z) => {
       zeile.forEach((zelle, s) => {
         const farbe = z === 0 || s === 0 ? farben[z === 0 ? s : 0] : '#ffffff';
-        this.add.text(spalten[s], 120 + z * 40, zelle, { ...schrift, color: farbe }).setOrigin(0.5);
+        this.add.text(spalten[s], 105 + z * 38, zelle, { ...schrift, color: farbe }).setOrigin(0.5);
       });
     });
 
     this.add
       .text(
         480,
-        345,
+        350,
         'Ausfall = vorwärts + Stoß\n' +
           'Riposte = Stoß direkt nach einer gelungenen Parade\n' +
-          'Wer zuerst 5 Treffer hat, gewinnt · Esc oder P = Pause',
+          'Wer zuerst 5 Treffer hat, gewinnt · Esc oder P = Pause · Tasten ändern unter Einstellungen',
         { ...schrift, fontSize: '19px', align: 'center', color: '#c8ccd4', lineSpacing: 8 },
       )
       .setOrigin(0.5, 0);

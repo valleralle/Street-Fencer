@@ -13,9 +13,11 @@ export const STUFEN = {
 const STOSS_REICHWEITE = 125;
 const AUSFALL_REICHWEITE = 200;
 const TIEFSTOSS_REICHWEITE = 115;
+const FLECHE_REICHWEITE = 340;
 
 const DENKPAUSE = 200; // so oft überlegt er, ob er selbst angreift
-const ANGRIFFE = ['stoss', 'ausfall', 'riposte'];
+const ANGRIFFE = ['stoss', 'ausfall', 'riposte', 'fleche'];
+const REICHWEITEN = { stoss: STOSS_REICHWEITE, riposte: STOSS_REICHWEITE, ausfall: AUSFALL_REICHWEITE, fleche: FLECHE_REICHWEITE };
 
 export default class Computergegner {
   constructor(stufe, zufall = Math.random) {
@@ -75,6 +77,8 @@ export default class Computergegner {
         if (abstand <= TIEFSTOSS_REICHWEITE && this.zufall() < 0.2) this.plane(jetzt, 'tiefstoss');
         else if (abstand <= STOSS_REICHWEITE) this.plane(jetzt, 'stoss');
         else if (abstand <= AUSFALL_REICHWEITE) this.plane(jetzt, 'stoss', true);
+        // Die Flèche ist riskant – nur selten und nur aus mittlerer Distanz
+        else if (abstand <= FLECHE_REICHWEITE - 40 && this.zufall() < 0.25) this.plane(jetzt, 'fleche');
       }
     }
 
@@ -103,8 +107,7 @@ export default class Computergegner {
     const richtig = this.zufall() < treffsicherheit;
 
     if (ANGRIFFE.includes(aktion)) {
-      const reichweite = aktion === 'ausfall' ? AUSFALL_REICHWEITE : STOSS_REICHWEITE;
-      if (abstand > reichweite + 10) return;
+      if (abstand > REICHWEITEN[aktion] + 10) return;
       // Richtig: Parade oder unter dem Stoß wegtauchen. Falsch: selbst stoßen (Doppeltreffer) oder nichts tun.
       if (richtig) this.plane(zeit, this.zufall() < 0.7 ? 'parade' : 'tiefstoss');
       else if (this.zufall() < 0.5) this.plane(zeit, 'stoss');

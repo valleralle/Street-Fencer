@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "pixelart": "node werkzeuge/pixelart-export.mjs"
+    "pixelart": "node werkzeuge/pixelart-export.mjs",
+    "pixelart:zeichnen": "node werkzeuge/pixelart-zeichnen.mjs && node werkzeuge/pixelart-export.mjs",
+    "test": "node --test \"test/*.test.js\""
   },
   "dependencies": {
     "phaser": "^4.2.1"

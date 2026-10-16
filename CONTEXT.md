@@ -60,8 +60,8 @@ _Vermeiden_: Konter
 Der Fechter duckt sich unter einem hohen Stoß weg und stößt dabei zum Fuß des Gegners. Riskant, aber auch als Antwort auf eine Flèche gedacht.
 _Vermeiden_: Ducken (allein), Fußstoß
 
-**Flèche** (geplant):
-Ein Sturmangriff im Laufen, bei dem der Fechter am Gegner vorbeistürmt.
+**Flèche**:
+Ein Sturmangriff im Laufen mit gestreckter Klinge, der aus mittlerer Distanz trifft; wer ihn verfehlt, ist lange verwundbar.
 _Vermeiden_: Sturm, Dash
 
 ### Ablauf
@@ -103,6 +103,18 @@ _Vermeiden_: KI, Bot, CPU
 **Revanche**:
 Ein neues Gefecht derselben Fechter direkt nach dem Ende des vorherigen.
 _Vermeiden_: Rematch, Neustart
+
+**Training**:
+Eine Folge von Lektionen, in denen ein Spieler die Aktionen einzeln gegen den Trainer übt – ohne Punkte und ohne Uhr.
+_Vermeiden_: Tutorial, Übungsmodus
+
+**Lektion**:
+Ein Abschnitt des Trainings, der als geschafft gilt, sobald der Spieler eine bestimmte Aktion erfolgreich ausführt.
+_Vermeiden_: Level, Aufgabe, Mission
+
+**Trainer**:
+Der Fechter, gegen den im Training geübt wird; er steht still oder greift in ruhigem Rhythmus an.
+_Vermeiden_: Dummy, Puppe, Computergegner (das ist der Gegner im Gefecht)
 
 **Fechtbahn**:
 Die lange, schmale Metallbahn, auf der gefochten wird. Die Fechter stehen mittig auf ihr und bewegen sich nur vor und zurück; an den Endlinien geht es nicht weiter.

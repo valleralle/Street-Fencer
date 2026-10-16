@@ -1,19 +1,22 @@
 import Phaser from 'phaser';
-import Fechter, { BODEN_Y, BREITE } from '../Fechter.js';
+import Fechter from '../Fechter.js';
 import Gefecht from '../Gefecht.js';
 import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
 import Meldegeraet from '../Meldegeraet.js';
 import Kamera from '../Kamera.js';
+import { halteAbstand } from '../abstand.js';
+import Funken from '../Funken.js';
+import Statistik from '../Statistik.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
+import { einstellungen } from '../einstellungen.js';
+import { musik } from '../musik.js';
 
-// Kleinster Abstand der Körpermitten: so weit, dass sich die vorderen Füße gerade nicht berühren.
-// Stoß (bis 131) und Tiefstoß (bis 121) reichen weiter, treffen also weiterhin.
-const MIN_ABSTAND = 72;
+
 
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
@@ -55,7 +58,7 @@ export default class KampfSzene extends Phaser.Scene {
       x: STARTLINIE_ROT,
       richtung: 1,
       name: 'rot',
-      steuerung: tastaturSteuerung(this, { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S' }),
+      steuerung: tastaturSteuerung(this, einstellungen.tasten.rot),
     });
     this.fechterGruen = new Fechter(this, {
       x: STARTLINIE_GRUEN,
@@ -63,8 +66,10 @@ export default class KampfSzene extends Phaser.Scene {
       name: 'gruen',
       steuerung:
         this.computer ??
-        tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
+        tastaturSteuerung(this, einstellungen.tasten.gruen),
     });
+    this.funken = new Funken(this);
+    musik.spiele('gefecht', this.sound.context);
     this.pausenTasten = [this.input.keyboard.addKey('ESC'), this.input.keyboard.addKey('P')];
 
     // Nach der Pause alle Tastendrücke verwerfen, die während der Pause passiert sind
@@ -93,6 +98,7 @@ export default class KampfSzene extends Phaser.Scene {
 
   neuesGefecht(zeit) {
     this.gefecht = new Gefecht();
+    this.statistik = new Statistik();
     this.zeigeStand();
     this.starteKommando(zeit);
   }
@@ -151,6 +157,7 @@ export default class KampfSzene extends Phaser.Scene {
       rot.vergissTasten();
       gruen.vergissTasten();
     }
+    this.funken.aktualisiere(spielDelta);
     this.kamera.folge(delta, rot, gruen);
     rot.zeichne();
     gruen.zeichne();
@@ -177,7 +184,10 @@ export default class KampfSzene extends Phaser.Scene {
 
     // Luftzug in dem Moment, in dem eine Klinge nach vorn schnellt
     for (const f of [rot, gruen]) {
-      if (f.stoesst && !f.stiessVorher) luftzug(this.sound.context);
+      if (f.stoesst && !f.stiessVorher) {
+        luftzug(this.sound.context);
+        this.statistik.angriff(f.name);
+      }
       f.stiessVorher = f.stoesst;
     }
 
@@ -193,6 +203,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.zeigeStand();
     if (ereignis === 'ende') {
       this.meldung.setColor('#ffffff').setText('Zeit !');
+      this.zeigeJubel();
       this.phase = 'treffer';
       this.phaseStart = zeit;
     } else if (ereignis === 'verlaengerung') {
@@ -207,8 +218,12 @@ export default class KampfSzene extends Phaser.Scene {
       angreifer.wurdePariert();
       gegner.paradeGelungen();
       klingenschlag(this.sound.context);
+      this.statistik.parade(gegner.name);
+      // Funken dort, wo die Klingen aufeinandertreffen: kurz vor dem Parierenden, auf Höhe der Spitze
+      this.funken.spruehe(gegner.vorderkante + gegner.richtung * 22, angreifer.spitze.y, gegner.richtung);
     } else if (ergebnis === 'treffer') {
       this.treffer[farbe] = true;
+      this.statistik.treffer(farbe, angreifer.aktion);
       this.schalteLampe(farbe, true);
       if (this.ersterTrefferZeit === null) {
         this.ersterTrefferZeit = zeit;
@@ -225,6 +240,7 @@ export default class KampfSzene extends Phaser.Scene {
 
   werteTrefferAus(zeit) {
     const ergebnis = this.gefecht.werteAus(this.treffer);
+    if (this.treffer.rot && this.treffer.gruen) this.statistik.doppeltreffer();
     if (ergebnis === 'gestrichen') {
       this.meldung.setColor('#ffffff').setText('Doppeltreffer – gestrichen');
     } else if (ergebnis === 'doppeltreffer') {
@@ -232,10 +248,21 @@ export default class KampfSzene extends Phaser.Scene {
     } else {
       const farbe = this.treffer.rot ? 'rot' : 'gruen';
       this.meldung.setColor(TEXTFARBEN[farbe]).setText(`Treffer ${NAMEN[farbe]}!`);
+      this.fechter(farbe === 'rot' ? 'gruen' : 'rot').zeigePose('getroffen');
     }
+    this.zeigeJubel();
     this.zeigeStand();
     this.phase = 'treffer';
     this.phaseStart = zeit;
+  }
+
+  fechter(farbe) {
+    return farbe === 'rot' ? this.fechterRot : this.fechterGruen;
+  }
+
+  // Ist das Gefecht entschieden, jubelt der Sieger
+  zeigeJubel() {
+    if (this.gefecht.sieger) this.fechter(this.gefecht.sieger).zeigePose('jubel');
   }
 
   beende(zeit) {
@@ -244,7 +271,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.phase = 'ende';
     this.phaseStart = zeit;
     this.scene.pause();
-    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus, stufe: this.stufe });
+    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus, stufe: this.stufe, statistik: this.statistik.zeilen() });
   }
 
   zeigeStand() {
@@ -256,21 +283,10 @@ export default class KampfSzene extends Phaser.Scene {
     }
   }
 
-  // Die Fechter berühren sich nicht und kommen nicht über die Endlinien. Wer zu nah herankommt,
-  // bleibt stehen (auch ein Ausfall bremst ab) – der Gegner wird dabei nicht weggeschoben.
   halteAbstand(vorherRot, vorherGruen) {
-    const rot = this.fechterRot;
-    const gruen = this.fechterGruen;
-    const zuNah = MIN_ABSTAND - (gruen.x - rot.x);
-    if (zuNah > 0) {
-      // Zurückgesetzt wird, wer sich in diesem Bild nach vorn bewegt hat – laufen beide, anteilig
-      const vorRot = Math.max(0, rot.x - vorherRot);
-      const vorGruen = Math.max(0, vorherGruen - gruen.x);
-      const anteilRot = vorRot + vorGruen > 0 ? vorRot / (vorRot + vorGruen) : 0.5;
-      rot.x -= zuNah * anteilRot;
-      gruen.x += zuNah * (1 - anteilRot);
-    }
-    rot.x = Phaser.Math.Clamp(rot.x, ENDLINIE_LINKS + BREITE / 2, ENDLINIE_RECHTS - BREITE / 2 - MIN_ABSTAND);
-    gruen.x = Phaser.Math.Clamp(gruen.x, rot.x + MIN_ABSTAND, ENDLINIE_RECHTS - BREITE / 2);
+    halteAbstand(this.fechterRot, this.fechterGruen, vorherRot, vorherGruen, {
+      links: ENDLINIE_LINKS,
+      rechts: ENDLINIE_RECHTS,
+    });
   }
 }
