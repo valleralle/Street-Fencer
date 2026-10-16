@@ -42,8 +42,11 @@ const AKTIONEN = {
   // so bleibt Zeit, in den Geduckten hineinzustoßen
   tiefstoss: { ducken: 40, anlauf: 650, aktiv: 180, erholung: 300, reichweite: 85 },
   parade: { anlauf: 0, aktiv: 300, erholung: 300 },
+  // Sturmangriff im Laufen: kurzer Antritt, dann ein schneller Sprint mit gestreckter Klinge.
+  // Wer ihn verfehlt, ist lange verwundbar. tempo = Laufgeschwindigkeit in der aktiven Phase (px/s)
+  fleche: { anlauf: 250, aktiv: 350, erholung: 600, reichweite: 95, tempo: 650 },
 };
-const ANGRIFFE = ['stoss', 'riposte', 'ausfall', 'tiefstoss'];
+const ANGRIFFE = ['stoss', 'riposte', 'ausfall', 'tiefstoss', 'fleche'];
 
 // Wie lange ein parierter Angreifer offen ist bzw. wie lange nach einer Parade eine Riposte möglich ist
 const OFFEN_DAUER = 500;
@@ -81,6 +84,12 @@ export default class Fechter {
     this.offenBis = 0;
     this.riposteBis = 0;
     this.geht = false;
+    this.festePose = null;
+  }
+
+  // Zeigt bis zum nächsten Zurücksetzen eine feste Pose ('getroffen' oder 'jubel')
+  zeigePose(pose) {
+    this.festePose = pose;
   }
 
   get phase() {
@@ -136,6 +145,7 @@ export default class Fechter {
   }
 
   get pose() {
+    if (this.festePose) return this.festePose;
     if (this.offen && !this.aktion) return 'offen';
     switch (this.aktion) {
       case 'stoss':
@@ -147,6 +157,8 @@ export default class Fechter {
         return this.phase === 'aktiv' ? 'parade' : 'grundstellung';
       case 'tiefstoss':
         return this.geduckt ? 'tiefstoss' : 'grundstellung';
+      case 'fleche':
+        return this.phase === 'aktiv' ? 'fleche' : 'grundstellung';
     }
     if (this.geht) return Math.floor(this.x / SCHRITTLAENGE) % 2 ? 'gehen1' : 'gehen2';
     return 'grundstellung';
@@ -165,6 +177,13 @@ export default class Fechter {
   }
 
   get spitze() {
+    if (this.festePose) {
+      // Jubel: Degen senkrecht hoch; getroffen: Degen hängt herab
+      const h = this.hand;
+      return this.festePose === 'jubel'
+        ? { x: h.x + this.richtung * 8, y: h.y - 70 }
+        : { x: h.x + this.richtung * 30, y: h.y + 24 };
+    }
     if (this.aktion === 'parade') {
       return { x: this.vorderkante + this.richtung * 25, y: BODEN_Y - HOEHE_STEHEND - 15 };
     }
@@ -193,6 +212,7 @@ export default class Fechter {
     const stoss = s.gedrueckt('stoss');
     const parade = s.gedrueckt('parade');
     const tiefstoss = s.gedrueckt('tiefstoss');
+    const fleche = s.gedrueckt('fleche');
 
     const vor = s.gehalten(this.richtung > 0 ? 'rechts' : 'links');
     const zurueck = s.gehalten(this.richtung > 0 ? 'links' : 'rechts');
@@ -206,6 +226,8 @@ export default class Fechter {
         this.starte('parade', gegner);
       } else if (tiefstoss) {
         this.starte('tiefstoss', gegner);
+      } else if (fleche) {
+        this.starte('fleche', gegner);
       } else {
         let v = 0;
         if (vor) v += TEMPO;
@@ -221,11 +243,15 @@ export default class Fechter {
       const a = AKTIONEN.ausfall;
       this.x += (this.richtung * a.schritt * delta) / (a.anlauf + a.aktiv);
     }
+    // Bei der Flèche sprintet der Fechter in der aktiven Phase nach vorn
+    if (this.aktion === 'fleche' && this.phase === 'aktiv') {
+      this.x += (this.richtung * AKTIONEN.fleche.tempo * delta) / 1000;
+    }
   }
 
   // Tastendrücke außerhalb des Gefechts (z. B. während des Kommandos) verwerfen
   vergissTasten() {
-    for (const taste of ['stoss', 'parade', 'tiefstoss']) this.steuerung.gedrueckt(taste);
+    for (const taste of ['stoss', 'parade', 'tiefstoss', 'fleche']) this.steuerung.gedrueckt(taste);
   }
 
   starte(aktion, gegner) {

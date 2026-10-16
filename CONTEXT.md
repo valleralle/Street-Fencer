@@ -60,8 +60,8 @@ _Vermeiden_: Konter
 Der Fechter duckt sich unter einem hohen Stoß weg und stößt dabei zum Fuß des Gegners. Riskant, aber auch als Antwort auf eine Flèche gedacht.
 _Vermeiden_: Ducken (allein), Fußstoß
 
-**Flèche** (geplant):
-Ein Sturmangriff im Laufen, bei dem der Fechter am Gegner vorbeistürmt.
+**Flèche**:
+Ein Sturmangriff im Laufen mit gestreckter Klinge, der aus mittlerer Distanz trifft; wer ihn verfehlt, ist lange verwundbar.
 _Vermeiden_: Sturm, Dash
 
 ### Ablauf

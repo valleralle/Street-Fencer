@@ -54,7 +54,7 @@ export default class KampfSzene extends Phaser.Scene {
       x: STARTLINIE_ROT,
       richtung: 1,
       name: 'rot',
-      steuerung: tastaturSteuerung(this, { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S' }),
+      steuerung: tastaturSteuerung(this, { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S', fleche: 'R' }),
     });
     this.fechterGruen = new Fechter(this, {
       x: STARTLINIE_GRUEN,
@@ -62,7 +62,7 @@ export default class KampfSzene extends Phaser.Scene {
       name: 'gruen',
       steuerung:
         this.computer ??
-        tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN' }),
+        tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN', fleche: 'J' }),
     });
     this.pausenTasten = [this.input.keyboard.addKey('ESC'), this.input.keyboard.addKey('P')];
 

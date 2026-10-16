@@ -8,6 +8,7 @@ const ZEILEN = [
   ['Stoß', 'F', 'K'],
   ['Parade', 'G', 'L'],
   ['Tiefstoß', 'S', '↓'],
+  ['Flèche', 'R', 'J'],
 ];
 
 export default class SteuerungSzene extends Phaser.Scene {
