@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
+import { musik } from '../musik.js';
 
 export default class TitelSzene extends Phaser.Scene {
   constructor() {
@@ -19,7 +20,9 @@ export default class TitelSzene extends Phaser.Scene {
       { text: '2 Spieler', aktion: () => this.starteGefecht('zwei') },
       { text: 'Gegen Computer', aktion: () => this.scene.start('StufenSzene') },
       { text: 'Steuerung', aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
+      { text: 'Einstellungen', aktion: () => this.scene.start('EinstellungenSzene') },
     ]);
+    musik.spiele('titel', this.sound.context);
 
     this.add
       .text(480, 500, '↑ / ↓ wählen · Enter bestätigen', stil(18, '#5d6578'))

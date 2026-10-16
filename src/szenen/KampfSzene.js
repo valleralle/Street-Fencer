@@ -12,6 +12,8 @@ import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
+import { einstellungen } from '../einstellungen.js';
+import { musik } from '../musik.js';
 
 
 
@@ -55,7 +57,7 @@ export default class KampfSzene extends Phaser.Scene {
       x: STARTLINIE_ROT,
       richtung: 1,
       name: 'rot',
-      steuerung: tastaturSteuerung(this, { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S', fleche: 'R' }),
+      steuerung: tastaturSteuerung(this, einstellungen.tasten.rot),
     });
     this.fechterGruen = new Fechter(this, {
       x: STARTLINIE_GRUEN,
@@ -63,9 +65,10 @@ export default class KampfSzene extends Phaser.Scene {
       name: 'gruen',
       steuerung:
         this.computer ??
-        tastaturSteuerung(this, { links: 'LEFT', rechts: 'RIGHT', stoss: 'K', parade: 'L', tiefstoss: 'DOWN', fleche: 'J' }),
+        tastaturSteuerung(this, einstellungen.tasten.gruen),
     });
     this.funken = new Funken(this);
+    musik.spiele('gefecht', this.sound.context);
     this.pausenTasten = [this.input.keyboard.addKey('ESC'), this.input.keyboard.addKey('P')];
 
     // Nach der Pause alle Tastendrücke verwerfen, die während der Pause passiert sind

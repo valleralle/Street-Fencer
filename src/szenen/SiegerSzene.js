@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
+import { musik } from '../musik.js';
 
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
@@ -20,6 +21,7 @@ export default class SiegerSzene extends Phaser.Scene {
 
   create() {
     this.add.rectangle(480, 270, 960, 540, 0x10141c, 0.88);
+    musik.spiele('titel', this.sound.context);
     this.add
       .text(480, 150, `${NAMEN[this.sieger]} gewinnt!`, stil(64, TEXTFARBEN[this.sieger]))
       .setOrigin(0.5);
