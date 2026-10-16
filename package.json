@@ -10,13 +10,15 @@
     "pixelart": "node werkzeuge/pixelart-export.mjs",
     "pixelart:zeichnen": "node werkzeuge/pixelart-zeichnen.mjs && node werkzeuge/pixelart-export.mjs",
     "test": "node --test \"test/*.test.js\"",
-    "exe": "node werkzeuge/exe/baue-exe.mjs"
+    "exe": "node werkzeuge/exe/baue-exe.mjs",
+    "symbol": "node werkzeuge/symbol.mjs"
   },
   "dependencies": {
     "phaser": "^4.2.1"
   },
   "devDependencies": {
     "postject": "^1.0.0-alpha.6",
+    "rcedit": "^5.0.2",
     "vite": "^8.3.4"
   }
 }

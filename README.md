@@ -79,6 +79,8 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 - `src/schrift.js`, `public/schrift/` – Pixelschrift „Pixelify Sans“ (OFL-Lizenz)
 - `src/pixelart/fechterPosen.js` – die Pixelbilder der Fechter als Textraster
 - `werkzeuge/exe/` – baut die .exe (`baue-exe.mjs`) und das Startprogramm darin (`starter.cjs`)
+- `werkzeuge/symbol.mjs` – zeichnet das Programmsymbol: Fechter im Ausfall (groß), Degen (klein); `npm run symbol`
+- `werkzeuge/png.mjs` – kleiner PNG-Schreiber für die Werkzeuge
 - `werkzeuge/pixelart-zeichnen.mjs` – zeichnet die Posen (`npm run pixelart:zeichnen`; überschreibt `fechterPosen.js`)
 - `grafik/` – daraus erzeugte PNGs; neu erzeugen mit `npm run pixelart`
 - `test/` – Tests (`npm test`)
