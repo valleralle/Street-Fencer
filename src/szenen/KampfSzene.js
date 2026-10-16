@@ -1,19 +1,18 @@
 import Phaser from 'phaser';
-import Fechter, { BODEN_Y, BREITE } from '../Fechter.js';
+import Fechter from '../Fechter.js';
 import Gefecht from '../Gefecht.js';
 import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
 import Meldegeraet from '../Meldegeraet.js';
 import Kamera from '../Kamera.js';
+import { halteAbstand } from '../abstand.js';
 import { stil } from '../schrift.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
 
-// Kleinster Abstand der Körpermitten: so weit, dass sich die vorderen Füße gerade nicht berühren.
-// Stoß (bis 131) und Tiefstoß (bis 121) reichen weiter, treffen also weiterhin.
-const MIN_ABSTAND = 72;
+
 
 const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
@@ -256,21 +255,10 @@ export default class KampfSzene extends Phaser.Scene {
     }
   }
 
-  // Die Fechter berühren sich nicht und kommen nicht über die Endlinien. Wer zu nah herankommt,
-  // bleibt stehen (auch ein Ausfall bremst ab) – der Gegner wird dabei nicht weggeschoben.
   halteAbstand(vorherRot, vorherGruen) {
-    const rot = this.fechterRot;
-    const gruen = this.fechterGruen;
-    const zuNah = MIN_ABSTAND - (gruen.x - rot.x);
-    if (zuNah > 0) {
-      // Zurückgesetzt wird, wer sich in diesem Bild nach vorn bewegt hat – laufen beide, anteilig
-      const vorRot = Math.max(0, rot.x - vorherRot);
-      const vorGruen = Math.max(0, vorherGruen - gruen.x);
-      const anteilRot = vorRot + vorGruen > 0 ? vorRot / (vorRot + vorGruen) : 0.5;
-      rot.x -= zuNah * anteilRot;
-      gruen.x += zuNah * (1 - anteilRot);
-    }
-    rot.x = Phaser.Math.Clamp(rot.x, ENDLINIE_LINKS + BREITE / 2, ENDLINIE_RECHTS - BREITE / 2 - MIN_ABSTAND);
-    gruen.x = Phaser.Math.Clamp(gruen.x, rot.x + MIN_ABSTAND, ENDLINIE_RECHTS - BREITE / 2);
+    halteAbstand(this.fechterRot, this.fechterGruen, vorherRot, vorherGruen, {
+      links: ENDLINIE_LINKS,
+      rechts: ENDLINIE_RECHTS,
+    });
   }
 }

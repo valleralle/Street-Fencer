@@ -1,5 +1,5 @@
 import { BREITE as BILD_BREITE, HOEHE as BILD_HOEHE, MITTE_X, POSEN } from './pixelart/fechterPosen.js';
-import { texturName } from './pixelart/texturen.js';
+import { texturName } from './pixelart/namen.js';
 
 export const BODEN_Y = 440;
 export const BREITE = 36;
@@ -50,13 +50,16 @@ const OFFEN_DAUER = 500;
 const RIPOSTE_FENSTER = 400;
 
 export default class Fechter {
-  // name = 'rot' oder 'gruen' (für die Texturen); steuerung = Tastatur oder Computergegner
+  // name = 'rot' oder 'gruen' (für die Texturen); steuerung = Tastatur oder Computergegner.
+  // Ohne szene (z. B. in Tests) gibt es keine Grafik, die Spiellogik funktioniert trotzdem.
   constructor(szene, { x, richtung, name, steuerung }) {
     this.startX = x;
     this.richtung = richtung; // 1 = schaut nach rechts, -1 = nach links
     this.name = name;
     this.steuerung = steuerung;
     this.jetzt = 0;
+    this.zuruecksetzen();
+    if (!szene) return;
 
     // Grün ist das gespiegelte Bild von Rot; die Rumpfmitte bleibt dabei über x
     const mitte = (MITTE_X + 0.5) / BILD_BREITE;
@@ -67,7 +70,6 @@ export default class Fechter {
       .setScale(MASSSTAB)
       .setFlipX(richtung < 0);
     this.klinge = szene.add.graphics();
-    this.zuruecksetzen();
   }
 
   zuruecksetzen() {
@@ -262,6 +264,7 @@ export default class Fechter {
   }
 
   zeichne() {
+    if (!this.bild) return;
     this.bild.setPosition(this.x, BODEN_Y).setTexture(texturName(this.name, this.pose));
 
     // Schatten auf der Fechtbahn: ein flaches Oval unter den Schuhen
