@@ -34,7 +34,7 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 ## Musik
 
 - **Im Browser erzeugt** wie die Effekte, ohne Musikdateien: ein ruhiges Stück für Titel und Menüs (d-Moll) und ein treibendes für das Gefecht (a-Moll, mit Schlagzeug). Beide sind kurze Schleifen von vier Takten.
-- Die Musik bleibt unter den Effekten, damit Signalton und Klingengeräusche hörbar bleiben (Standard: Musik 50 %, Effekte 80 %). Nach Rückmeldung vom Handy ist sie insgesamt 50 % lauter als zuerst.
+- Die Musik bleibt unter den Effekten, damit Signalton und Klingengeräusche hörbar bleiben (Standard: Musik 50 %, Effekte 80 %). Nach Rückmeldungen vom Handy ist sie inzwischen dreimal so laut wie zuerst (Grundpegel 0,22 → 0,33 → 0,66).
 - In der Pause läuft die Gefechtsmusik weiter; auf dem Siegerbildschirm wechselt sie zur Titelmusik.
 
 ## Getroffen, Jubel und Funken

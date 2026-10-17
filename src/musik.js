@@ -2,8 +2,8 @@
 // Ein kleiner Sequenzer spielt Achtelnoten: Akkordfläche, Bass, Begleitfigur und (im Gefecht) Schlagzeug.
 import { einstellungen } from './einstellungen.js';
 
-// Die Musik soll unter den Effekten bleiben: bei 100 % Musiklautstärke ist sie trotzdem eher leise
-const GRUNDLAUTSTAERKE = 0.33;
+// Grundpegel der Musik; der Regler „Musik“ in den Einstellungen skaliert ihn (0 bis 100 %)
+const GRUNDLAUTSTAERKE = 0.66;
 const VORLAUF = 0.25; // so viele Sekunden im Voraus werden Noten eingeplant
 const TAKT = 100; // ms zwischen zwei Planungsdurchläufen
 
