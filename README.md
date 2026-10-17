@@ -12,7 +12,9 @@ Zwei Fechter stehen sich auf der Fechtbahn gegenüber. Jeder Treffer bringt eine
 | Browser (Handy) | dieselbe Adresse, Handy quer halten – Knöpfe am Bildschirm |
 | Android-App | APK unter [Releases](https://github.com/valleralle/game_pilot/releases) oder bei jedem Lauf unter *Actions → Android → Artifacts* |
 | Windows | `npm run exe` (siehe unten) |
-| iOS | noch nicht – siehe [docs/adr/0002](docs/adr/0002-eine-codebasis-fuer-alle-plattformen.md) |
+| iPhone/iPad | Browser-Adresse in Safari öffnen → Teilen → „Zum Home-Bildschirm“: startet wie eine App im Vollbild. Eine echte iOS-App braucht ein Apple-Entwicklerkonto – siehe [docs/adr/0002](docs/adr/0002-eine-codebasis-fuer-alle-plattformen.md) |
+
+Fehler und Wünsche bitte als [Issue](https://github.com/valleralle/game_pilot/issues/new/choose) – es gibt Vorlagen dafür.
 
 Alle Versionen kommen aus demselben Code; wie das zusammenhängt, steht in [docs/adr/0002](docs/adr/0002-eine-codebasis-fuer-alle-plattformen.md).
 

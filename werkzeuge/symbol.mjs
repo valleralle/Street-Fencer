@@ -2,6 +2,8 @@
 //   grafik/street-fencer.ico   – Symbol der .exe (16, 32, 48 und 256 Pixel)
 //   public/symbol-16.png, -32.png – Symbol im Browser-Tab
 //   grafik/symbol-vorschau.png – alle Größen vergrößert auf dunklem und hellem Grund
+//   public/apple-touch-icon.png, symbol-192.png, symbol-512.png, symbol-maskable-512.png
+//                              – Symbol der Web-App auf dem Homescreen (iPhone, Android-Browser)
 //   werkzeuge/android/res/     – Symbol der Android-App in allen Auflösungen (rund, eckig und
 //                                als „adaptive icon“: Fechter vorn, Hallenwand als Hintergrund)
 // Groß (48, 256): ein Fechter im Ausfall mit gestrecktem Degen. Klein (16, 32): ein Degen –
@@ -115,7 +117,7 @@ function gross() {
 }
 
 // Android: das Raster nächstgelegen (pixelig) auf inhalt × inhalt Pixel skaliert, mittig in
-// groesse × groesse. form: 'kreis' oder 'eckig' mit Hintergrund, sonst durchsichtig.
+// groesse × groesse. form: 'kreis', 'eckig' oder 'voll' (ganzes Quadrat) mit Hintergrund, sonst durchsichtig.
 const HINTERGRUND = '#1d2330'; // Hintergrund des Spiels
 function androidBild(r, groesse, inhalt, form) {
   const n = r.length;
@@ -124,6 +126,7 @@ function androidBild(r, groesse, inhalt, form) {
   const halb = groesse / 2;
   const ecke = groesse * 0.18;
   const imGrund = (x, y) => {
+    if (form === 'voll') return true;
     if (form === 'kreis') return Math.hypot(x + 0.5 - halb, y + 0.5 - halb) <= halb;
     if (form !== 'eckig') return false;
     // Abgerundetes Quadrat: Abstand zum inneren Rechteck höchstens ecke
@@ -222,6 +225,13 @@ for (const reihe of [16, hoehe / 2 + 16]) {
 }
 writeFileSync(ziel('grafik/symbol-vorschau.png'), png(breite, hoehe, bild));
 androidSymbole();
+
+// Web-App: das iPhone rundet die Ecken selbst ab, „maskable“ lässt Android Rand für seine Form
+const webR = fechter(64);
+writeFileSync(ziel('public/apple-touch-icon.png'), androidBild(webR, 180, 144, 'voll'));
+writeFileSync(ziel('public/symbol-192.png'), androidBild(webR, 192, 154, 'voll'));
+writeFileSync(ziel('public/symbol-512.png'), androidBild(webR, 512, 410, 'voll'));
+writeFileSync(ziel('public/symbol-maskable-512.png'), androidBild(webR, 512, 307, 'voll'));
 console.log(
-  'Symbol gespeichert: grafik/street-fencer.ico, public/symbol-16.png, public/symbol-32.png, grafik/symbol-vorschau.png, werkzeuge/android/res/',
+  'Symbol gespeichert: grafik/street-fencer.ico, public/symbol-16.png, public/symbol-32.png, grafik/symbol-vorschau.png, public/apple-touch-icon.png, public/symbol-*.png, werkzeuge/android/res/',
 );

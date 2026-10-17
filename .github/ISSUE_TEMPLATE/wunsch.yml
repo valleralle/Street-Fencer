@@ -1,0 +1,26 @@
+name: Wunsch
+description: Neue Idee oder Änderung am Spiel
+labels: [wunsch]
+body:
+  - type: textarea
+    id: was
+    attributes:
+      label: Was soll sich ändern?
+      description: Möglichst konkret, z. B. „Der Tief-Knopf soll größer sein“. Skizzen oder Screenshots gern dazu.
+    validations:
+      required: true
+  - type: checkboxes
+    id: plattform
+    attributes:
+      label: Für welche Plattform?
+      description: Nichts ankreuzen, wenn es für alle gelten soll (der Normalfall – es gibt nur einen Spielcode).
+      options:
+        - label: nur Handy/Tablet (Touch)
+        - label: nur Computer (Tastatur)
+  - type: dropdown
+    id: wichtig
+    attributes:
+      label: Wie wichtig?
+      options:
+        - bald
+        - irgendwann
