@@ -71,7 +71,7 @@ export default function erzeugeMenue(szene, x, y, eintraege, optionen = {}) {
         index = i;
         if (e.aktion) e.aktion();
         // Werte: linke Hälfte verringert, rechte Hälfte erhöht
-        else if (zeiger.x < t.x) e.links?.();
+        else if (zeiger.worldX < t.x) e.links?.();
         else e.rechts?.();
         zeige();
       })(),

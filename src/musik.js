@@ -3,7 +3,7 @@
 import { einstellungen } from './einstellungen.js';
 
 // Die Musik soll unter den Effekten bleiben: bei 100 % Musiklautstärke ist sie trotzdem eher leise
-const GRUNDLAUTSTAERKE = 0.22;
+const GRUNDLAUTSTAERKE = 0.33;
 const VORLAUF = 0.25; // so viele Sekunden im Voraus werden Noten eingeplant
 const TAKT = 100; // ms zwischen zwei Planungsdurchläufen
 

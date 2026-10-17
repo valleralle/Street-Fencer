@@ -2,10 +2,12 @@
 //   grafik/street-fencer.ico   – Symbol der .exe (16, 32, 48 und 256 Pixel)
 //   public/symbol-16.png, -32.png – Symbol im Browser-Tab
 //   grafik/symbol-vorschau.png – alle Größen vergrößert auf dunklem und hellem Grund
+//   werkzeuge/android/res/     – Symbol der Android-App in allen Auflösungen (rund, eckig und
+//                                als „adaptive icon“: Fechter vorn, Hallenwand als Hintergrund)
 // Groß (48, 256): ein Fechter im Ausfall mit gestrecktem Degen. Klein (16, 32): ein Degen –
 // dafür ist der Fechter (46 Pixel hoch) zu groß.
 // Aufruf: npm run symbol
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { FARBEN, POSEN } from '../src/pixelart/fechterPosen.js';
 import { FECHTERFARBEN } from '../src/farben.js';
 import { png, rgb } from './png.mjs';
@@ -112,6 +114,58 @@ function gross() {
   return { n: 256, out: voll };
 }
 
+// Android: das Raster nächstgelegen (pixelig) auf inhalt × inhalt Pixel skaliert, mittig in
+// groesse × groesse. form: 'kreis' oder 'eckig' mit Hintergrund, sonst durchsichtig.
+const HINTERGRUND = '#1d2330'; // Hintergrund des Spiels
+function androidBild(r, groesse, inhalt, form) {
+  const n = r.length;
+  const versatz = Math.round((groesse - inhalt) / 2);
+  const grund = [...rgb(HINTERGRUND), 255];
+  const halb = groesse / 2;
+  const ecke = groesse * 0.18;
+  const imGrund = (x, y) => {
+    if (form === 'kreis') return Math.hypot(x + 0.5 - halb, y + 0.5 - halb) <= halb;
+    if (form !== 'eckig') return false;
+    // Abgerundetes Quadrat: Abstand zum inneren Rechteck höchstens ecke
+    const dx = Math.max(ecke - x - 0.5, 0, x + 0.5 - (groesse - ecke));
+    const dy = Math.max(ecke - y - 0.5, 0, y + 0.5 - (groesse - ecke));
+    return Math.hypot(dx, dy) <= ecke;
+  };
+  const out = [];
+  for (let y = 0; y < groesse; y++)
+    for (let x = 0; x < groesse; x++) {
+      const [qx, qy] = [Math.floor(((x - versatz) * n) / inhalt), Math.floor(((y - versatz) * n) / inhalt)];
+      const c = qx >= 0 && qx < n && qy >= 0 && qy < n ? r[qy][qx] : '.';
+      if (imGrund(x, y) && c !== '.') out.push([...rgb(PALETTE[c]), 255]);
+      else if (imGrund(x, y)) out.push(grund);
+      else if (!form && c !== '.') out.push([...rgb(PALETTE[c]), 255]);
+      else out.push([0, 0, 0, 0]);
+    }
+  return png(groesse, groesse, out);
+}
+
+// Größen je Bildschirmdichte: Symbol 48 dp, Vordergrund des adaptive icon 108 dp (davon sind
+// nur die mittleren 66 dp sicher sichtbar – der Fechter bleibt darin)
+const DICHTEN = { mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 };
+function androidSymbole() {
+  const res = ziel('werkzeuge/android/res/');
+  const r = fechter(64);
+  for (const [dichte, faktor] of Object.entries(DICHTEN)) {
+    const ordner = new URL(`mipmap-${dichte}/`, res);
+    mkdirSync(ordner, { recursive: true });
+    const symbol = 48 * faktor;
+    const vorn = 108 * faktor;
+    writeFileSync(new URL('ic_launcher.png', ordner), androidBild(r, symbol, Math.round(symbol * 0.8), 'eckig'));
+    writeFileSync(new URL('ic_launcher_round.png', ordner), androidBild(r, symbol, Math.round(symbol * 0.74), 'kreis'));
+    writeFileSync(new URL('ic_launcher_foreground.png', ordner), androidBild(r, vorn, Math.round(vorn * 0.6)));
+  }
+  mkdirSync(new URL('values/', res), { recursive: true });
+  writeFileSync(
+    new URL('values/ic_launcher_background.xml', res),
+    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">${HINTERGRUND}</color>\n</resources>\n`,
+  );
+}
+
 const bilder = {
   16: pixel(degen(16)),
   32: pixel(degen(32)),
@@ -167,4 +221,7 @@ for (const reihe of [16, hoehe / 2 + 16]) {
   male(bilder[256], x, reihe);
 }
 writeFileSync(ziel('grafik/symbol-vorschau.png'), png(breite, hoehe, bild));
-console.log('Symbol gespeichert: grafik/street-fencer.ico, public/symbol-16.png, public/symbol-32.png, grafik/symbol-vorschau.png');
+androidSymbole();
+console.log(
+  'Symbol gespeichert: grafik/street-fencer.ico, public/symbol-16.png, public/symbol-32.png, grafik/symbol-vorschau.png, werkzeuge/android/res/',
+);

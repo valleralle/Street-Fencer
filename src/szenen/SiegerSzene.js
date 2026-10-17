@@ -23,7 +23,8 @@ export default class SiegerSzene extends Phaser.Scene {
   }
 
   create() {
-    this.add.rectangle(480, 270, 960, 540, 0x10141c, 0.92);
+    // Dreimal so groß wie das Bild, damit es auch breite Handybildschirme ganz abdeckt
+    this.add.rectangle(480, 270, 3 * 960, 3 * 540, 0x10141c, 0.92);
     musik.spiele('titel', this.sound.context);
 
     this.add.text(480, 56, `${NAMEN[this.sieger]} gewinnt!`, stil(56, TEXTFARBEN[this.sieger])).setOrigin(0.5);

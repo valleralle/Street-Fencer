@@ -20,6 +20,7 @@ test('Android-App läuft im Vollbild', () => {
   const styles = '<resources>\n    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">\n    </style>\n</resources>';
   const ergebnis = vollbild(styles);
   assert.match(ergebnis, /<item name="android:windowFullscreen">true<\/item>/);
+  assert.match(ergebnis, /<item name="android:windowLayoutInDisplayCutoutMode">shortEdges<\/item>/);
   assert.equal(vollbild(ergebnis), ergebnis);
 });
 
