@@ -66,7 +66,7 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 
 ## Name und .exe
 
-- **Neuer Name „Street Fencer“** im Titelbildschirm, Browser-Tab, README, Glossar und `package.json` (`street-fencer`). Der Projektordner und das GitHub-Repo heißen weiter `game_pilot` – das umzubenennen ändert Pfade und die Repo-Adresse, das mache ich nur auf Wunsch.
+- **Neuer Name „Street Fencer“** im Titelbildschirm, Browser-Tab, README, Glossar und `package.json` (`street-fencer`). Das GitHub-Repo heißt inzwischen `Street-Fencer` (Browser-Adresse https://valleralle.github.io/Street-Fencer/); der lokale Projektordner kann weiter `game_pilot` heißen.
 - Der **Speicherschlüssel der Einstellungen** bleibt `game_pilot.einstellungen`, damit gespeicherte Lautstärken und Tasten erhalten bleiben. Die Entscheidungsnotiz erwähnt `game_pilot` weiter als damaligen Arbeitstitel.
 - **.exe mit eingebautem Node** (Node „Single Executable Application“): Sie enthält das gebaute Spiel, startet einen kleinen Webserver nur auf diesem Rechner (`127.0.0.1`) und öffnet den Standardbrowser. Deshalb ist sie etwa 90 MB groß.
 - **Feste Adresse** `http://127.0.0.1:41730`, weil der Browser Einstellungen pro Adresse speichert. Ein zweiter Start öffnet nur das laufende Spiel.
