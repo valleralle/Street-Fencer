@@ -1,0 +1,23 @@
+# Street Fencer
+
+Degenfechten im Browser (Phaser + Vite). Fachbegriffe und ihre Bedeutung stehen in `CONTEXT.md` – im Code, in Texten und im Gespräch diese Begriffe verwenden. Entscheidungen stehen in `docs/adr/`, Annahmen aus selbstständiger Arbeit in `ANNAHMEN.md`.
+
+## Sprache
+
+Alles auf Deutsch: Gespräch, Bezeichner im Code, Kommentare, Doku, Commit-Nachrichten, Issues und Pull Requests.
+
+## Änderungen nur per Pull Request
+
+Jeder Push auf `main` veröffentlicht sofort die Browser-Version auf GitHub Pages (`.github/workflows/web.yml`), und mehrere Claude-Sitzungen arbeiten parallel am Repo. Deshalb gilt für jede Änderung, auch die kleinste:
+
+1. `main` aktualisieren, dann einen eigenen Branch anlegen.
+2. Committen erst, wenn `npm test` grün ist.
+3. Branch pushen und einen Pull Request gegen `main` öffnen; gehört die Änderung zu einem Issue, steht im Text „Closes #N“.
+4. Fertig ist die Aufgabe mit dem PR-Link an den Nutzer – der Nutzer merged selbst.
+
+## Fallstricke
+
+- `src/pixelart/fechterPosen.js` wird von `werkzeuge/pixelart-zeichnen.mjs` erzeugt: Posen im Zeichenskript ändern, dann `npm run pixelart:zeichnen`.
+- Der Speicherschlüssel `game_pilot.einstellungen` in `src/einstellungen.js` bleibt, bis es eine Migration gibt (Issue #9) – sonst sind gespeicherte Einstellungen weg.
+- Pixelify Sans macht aus „fi“ ein Zeichen, das wie „A“ aussieht, und 2/5 sehen aus wie Z/S (Issue #8): neue Texte im Spiel darauf prüfen.
+- Unter Windows mit PowerShell: Typografische Anführungszeichen („ “) beenden doppelt gequotete Strings – für Texte mit „…“ einfach gequotete Here-Strings (`@'…'@`) oder das Edit-Werkzeug verwenden.
