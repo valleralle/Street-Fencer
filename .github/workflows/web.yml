@@ -1,5 +1,5 @@
 # Browser-Version (PC und Handy): testet, baut und veröffentlicht das Spiel auf GitHub Pages.
-# Adresse nach dem ersten Lauf auf main: https://valleralle.github.io/game_pilot/
+# Adresse nach dem ersten Lauf auf main: https://valleralle.github.io/Street-Fencer/
 # Einmalig nötig: Repo → Settings → Pages → Source: „GitHub Actions“ (geht kostenlos nur bei öffentlichem Repo).
 name: Web
 
