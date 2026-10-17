@@ -2,22 +2,51 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#111111" />
+    <!-- Web-App: auf dem iPhone über Teilen → „Zum Home-Bildschirm“ wie eine App im Vollbild -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Street Fencer" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <title>Street Fencer</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="/symbol-16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/symbol-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./symbol-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./symbol-32.png" />
     <style>
       @font-face {
         font-family: 'Pixelify Sans';
-        src: url('/schrift/pixelify-sans-latin-400-normal.woff2') format('woff2');
+        src: url('./schrift/pixelify-sans-latin-400-normal.woff2') format('woff2');
         font-weight: 400;
       }
-      html, body { margin: 0; height: 100%; background: #111; }
+      html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
+      /* Kein Scrollen, Zoomen oder Markieren beim Spielen mit den Fingern */
+      body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
       #spiel { display: flex; justify-content: center; align-items: center; height: 100%; }
+      /* Nur iPhone/iPad: Notch und Home-Leiste freilassen, damit keine Knöpfe darunter liegen.
+         (Die Android-App regelt den Rand selbst, siehe capacitor.config.json.) */
+      @supports (-webkit-touch-callout: none) {
+        #spiel {
+          position: fixed; height: auto; top: 0;
+          left: env(safe-area-inset-left); right: env(safe-area-inset-right); bottom: env(safe-area-inset-bottom);
+        }
+      }
+      /* Auf dem Handy im Hochformat: Hinweis zum Drehen */
+      #drehen { display: none; }
+      @media (pointer: coarse) and (orientation: portrait) {
+        #drehen {
+          display: flex; position: fixed; inset: 0; z-index: 10; flex-direction: column;
+          justify-content: center; align-items: center; gap: 16px; background: #111; color: #fff;
+          font-family: 'Pixelify Sans', sans-serif; font-size: 24px; text-align: center; padding: 24px;
+        }
+        #drehen span { font-size: 64px; }
+      }
     </style>
   </head>
   <body>
     <div id="spiel"></div>
+    <div id="drehen"><span>⟳</span>Bitte das Handy quer halten</div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

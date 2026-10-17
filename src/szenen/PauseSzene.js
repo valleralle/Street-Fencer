@@ -9,7 +9,8 @@ export default class PauseSzene extends Phaser.Scene {
   }
 
   create() {
-    this.add.rectangle(480, 270, 960, 540, 0x10141c, 0.88);
+    // Dreimal so groß wie das Bild, damit es auch breite Handybildschirme ganz abdeckt
+    this.add.rectangle(480, 270, 3 * 960, 3 * 540, 0x10141c, 0.88);
     this.add
       .text(480, 170, 'Pause', stil(56))
       .setOrigin(0.5);

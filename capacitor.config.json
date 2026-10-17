@@ -1,0 +1,12 @@
+{
+  "appId": "de.valleralle.streetfencer",
+  "appName": "Street Fencer",
+  "webDir": "dist",
+  "backgroundColor": "#111111",
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "disable",
+      "hidden": true
+    }
+  }
+}

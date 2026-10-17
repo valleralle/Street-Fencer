@@ -34,7 +34,7 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 ## Musik
 
 - **Im Browser erzeugt** wie die Effekte, ohne Musikdateien: ein ruhiges Stück für Titel und Menüs (d-Moll) und ein treibendes für das Gefecht (a-Moll, mit Schlagzeug). Beide sind kurze Schleifen von vier Takten.
-- Die Musik ist bewusst leise, damit Signalton und Klingengeräusche hörbar bleiben (Standard: Musik 50 %, Effekte 80 %).
+- Die Musik bleibt unter den Effekten, damit Signalton und Klingengeräusche hörbar bleiben (Standard: Musik 50 %, Effekte 80 %). Nach Rückmeldung vom Handy ist sie insgesamt 50 % lauter als zuerst.
 - In der Pause läuft die Gefechtsmusik weiter; auf dem Siegerbildschirm wechselt sie zur Titelmusik.
 
 ## Getroffen, Jubel und Funken
@@ -72,3 +72,15 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Feste Adresse** `http://127.0.0.1:41730`, weil der Browser Einstellungen pro Adresse speichert. Ein zweiter Start öffnet nur das laufende Spiel.
 - Die .exe ist **nicht signiert** – Windows SmartScreen kann beim ersten Start warnen. Ein Programmsymbol (Icon) hat sie noch nicht.
 - `release/` steht in `.gitignore`: Die .exe wird nicht ins Repo eingecheckt (zu groß), sondern mit `npm run exe` gebaut.
+
+## Handy und Android-App
+
+- **Touch-Knöpfe** erscheinen nur, wenn der Touchscreen die Hauptbedienung ist (Handy, Tablet). Laptops mit Touchscreen behalten die Tastatur. Die Knöpfe gibt es nur im Gefecht **gegen den Computer** – für zwei Spieler auf einem Handy wäre zu wenig Platz.
+- **Belegung:** links ◀ ▶ zum Gehen, rechts Stoß (groß), daneben ganz unten Parade und Tief, darüber Flèche. Ausfall = ▶ halten + Stoß, wie an der Tastatur. Die Knöpfe reagieren etwas großzügiger als ihr Kreis.
+- **Auf dem Handy ausgeblendet:** Training und 2 Spieler im Titelmenü sowie die Tastenbelegung in den Einstellungen. Lautstärke: links antippen = leiser, rechts = lauter.
+- Menüs lassen sich jetzt überall **antippen oder anklicken**, auch am PC.
+- **Ganzer Bildschirm:** Auf Handy und Tablet wird das Spielbild breiter bzw. höher als 16:9 (Phaser-Modus EXPAND, siehe `src/bildschirm.js`). Die 960 × 540 liegen mittig, am Rand ist mehr Halle zu sehen, die Knöpfe bleiben in den Ecken. Am Computer bleibt es bei 16:9 mit Rand.
+- **Android-App:** ohne Statusleiste und bis in den Kamera-Ausschnitt; das Programmsymbol ist der rote Fechter im Ausfall.
+- Im **Hochformat** erscheint ein Hinweis, das Handy zu drehen. Im Browser versucht das Spiel beim ersten Antippen in den Vollbildmodus zu wechseln (klappt nicht in jedem Browser, z. B. nicht auf dem iPhone).
+- **Android-App** mit Capacitor 8, App-ID `de.valleralle.streetfencer`, fest im Querformat und ohne Statusleiste. Es ist eine **Debug-APK** – zum Selbstinstallieren gedacht, nicht für den Play Store.
+- `package-lock.json` enthält Capacitor noch nicht (ich konnte hier kein npm ausführen). Die Workflows nutzen deshalb `npm install` statt `npm ci`; beim nächsten lokalen `npm install` wird die Lock-Datei ergänzt – die bitte einchecken.

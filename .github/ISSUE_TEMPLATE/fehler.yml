@@ -1,0 +1,25 @@
+name: Fehler
+description: Etwas funktioniert nicht oder sieht falsch aus
+labels: [fehler]
+body:
+  - type: textarea
+    id: was
+    attributes:
+      label: Was ist passiert?
+      description: Was hast du gemacht, was ist passiert, was hättest du erwartet? Screenshots helfen sehr.
+    validations:
+      required: true
+  - type: checkboxes
+    id: plattform
+    attributes:
+      label: Wo tritt es auf?
+      options:
+        - label: Android-App
+        - label: iPhone/iPad (Web-App oder Safari)
+        - label: Browser am Computer
+        - label: Windows (.exe)
+  - type: input
+    id: geraet
+    attributes:
+      label: Gerät und Version
+      description: z. B. „Pixel 8, APK build.4“ oder „iPhone 13, Safari“

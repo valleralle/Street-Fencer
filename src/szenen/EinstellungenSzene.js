@@ -3,6 +3,7 @@ import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
 import { einstellungen, aendereLautstaerke, speichereEinstellungen, setzeZurueck } from '../einstellungen.js';
 import { musik } from '../musik.js';
+import { istTouchGeraet } from '../touch.js';
 
 const prozent = (wert) => `${Math.round(wert * 100)} %`;
 
@@ -13,6 +14,7 @@ export default class EinstellungenSzene extends Phaser.Scene {
 
   create() {
     this.add.text(480, 80, 'Einstellungen', stil(56)).setOrigin(0.5);
+    const touch = istTouchGeraet(this);
 
     const lautstaerke = (art, name) => ({
       text: () => `${name}: ${prozent(einstellungen[art])}`,
@@ -22,8 +24,13 @@ export default class EinstellungenSzene extends Phaser.Scene {
     erzeugeMenue(this, 480, 180, [
       lautstaerke('musik', 'Musik'),
       lautstaerke('effekte', 'Effekte'),
-      { text: 'Tasten Rot', aktion: () => this.scene.start('TastenSzene', { farbe: 'rot' }) },
-      { text: 'Tasten Grün', aktion: () => this.scene.start('TastenSzene', { farbe: 'gruen' }) },
+      // Tastenbelegung nur, wenn es eine Tastatur gibt
+      ...(touch
+        ? []
+        : [
+            { text: 'Tasten Rot', aktion: () => this.scene.start('TastenSzene', { farbe: 'rot' }) },
+            { text: 'Tasten Grün', aktion: () => this.scene.start('TastenSzene', { farbe: 'gruen' }) },
+          ]),
       {
         text: 'Standard wiederherstellen',
         aktion: () => {
@@ -36,7 +43,14 @@ export default class EinstellungenSzene extends Phaser.Scene {
     ]);
 
     this.add
-      .text(480, 500, '↑ / ↓ wählen · Lautstärke mit A / D bzw. den Pfeiltasten · Esc zurück', stil(16, '#5d6578'))
+      .text(
+        480,
+        500,
+        touch
+          ? 'Lautstärke: links antippen = leiser, rechts = lauter'
+          : '↑ / ↓ wählen · Lautstärke mit A / D bzw. den Pfeiltasten · Esc zurück',
+        stil(16, '#5d6578'),
+      )
       .setOrigin(0.5);
     this.input.keyboard.on('keydown-ESC', () => this.scene.start('TitelSzene'));
     musik.spiele('titel', this.sound.context);

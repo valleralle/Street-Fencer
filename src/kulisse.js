@@ -14,6 +14,7 @@ const UEBERSTAND = 24; // die Fechtbahn reicht etwas über die Endlinien hinaus
 const TIEFE = 30;
 const FLUCHT = 0.03;
 const PODEST = 24; // Höhe der sichtbaren Vorderseite des Podests
+const HALLE_UEBERSTAND = 480; // so weit reicht die Halle über das Bild hinaus
 
 const P = 2; // ein Bildpixel
 const raster = (v) => Math.round(v / P) * P;
@@ -44,14 +45,16 @@ export function zeichneHalle(szene) {
   const hinten = BODEN_Y - TIEFE;
   const vorn = BODEN_Y + TIEFE;
 
-  // Hallenwand mit Fugen, Sockel und Hallenboden
-  g.fillStyle(FARBEN.wand).fillRect(0, 0, 960, hinten);
+  // Hallenwand mit Fugen, Sockel und Hallenboden – nach links, rechts und oben weit über das
+  // 960 × 540 große Bild hinaus, damit auch breite Handybildschirme gefüllt sind (siehe bildschirm.js)
+  const [links, breite, oben] = [-HALLE_UEBERSTAND, 960 + 2 * HALLE_UEBERSTAND, -HALLE_UEBERSTAND];
+  g.fillStyle(FARBEN.wand).fillRect(links, oben, breite, hinten - oben);
   g.fillStyle(FARBEN.wandFuge);
-  for (let y = 60; y < hinten - 20; y += 60) g.fillRect(0, y, 960, P);
-  g.fillStyle(FARBEN.sockel).fillRect(0, hinten - 20, 960, 20);
-  g.fillStyle(FARBEN.boden).fillRect(0, hinten, 960, 540 - hinten);
+  for (let y = 60 - 60 * Math.floor(HALLE_UEBERSTAND / 60); y < hinten - 20; y += 60) g.fillRect(links, y, breite, P);
+  g.fillStyle(FARBEN.sockel).fillRect(links, hinten - 20, breite, 20);
+  g.fillStyle(FARBEN.boden).fillRect(links, hinten, breite, 540 - hinten);
   g.fillStyle(FARBEN.bodenFuge);
-  for (let y = vorn + PODEST + 16; y < 540; y += 16) g.fillRect(0, y, 960, P);
+  for (let y = vorn + PODEST + 16; y < 540; y += 16) g.fillRect(links, y, breite, P);
 
   // Lichtkegel von oben: drei übereinanderliegende Schichten, innen am hellsten
   for (const [breite, deckkraft] of [[1, 0.035], [0.72, 0.035], [0.45, 0.04]]) {

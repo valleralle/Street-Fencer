@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
 import { musik } from '../musik.js';
+import { istTouchGeraet } from '../touch.js';
 
 export default class TitelSzene extends Phaser.Scene {
   constructor() {
@@ -16,17 +17,20 @@ export default class TitelSzene extends Phaser.Scene {
       .text(480, 185, 'Degenfechten', stil(28, '#9aa3b5'))
       .setOrigin(0.5);
 
-    erzeugeMenue(this, 480, 260, [
+    // Auf dem Handy gibt es nur das Gefecht gegen den Computer – Training und 2 Spieler brauchen eine Tastatur
+    const touch = istTouchGeraet(this);
+    const eintraege = [
       { text: 'Training', aktion: () => this.scene.start('TrainingSzene') },
       { text: '2 Spieler', aktion: () => this.starteGefecht('zwei') },
       { text: 'Gegen Computer', aktion: () => this.scene.start('StufenSzene') },
       { text: 'Steuerung', aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
       { text: 'Einstellungen', aktion: () => this.scene.start('EinstellungenSzene') },
-    ]);
+    ];
+    erzeugeMenue(this, 480, touch ? 280 : 260, touch ? eintraege.slice(2) : eintraege);
     musik.spiele('titel', this.sound.context);
 
     this.add
-      .text(480, 500, '↑ / ↓ wählen · Enter bestätigen', stil(18, '#5d6578'))
+      .text(480, 500, touch ? 'Antippen zum Auswählen' : '↑ / ↓ wählen · Enter bestätigen', stil(18, '#5d6578'))
       .setOrigin(0.5);
   }
 
