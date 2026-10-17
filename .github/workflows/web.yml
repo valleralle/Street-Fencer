@@ -1,6 +1,9 @@
 # Browser-Version (PC und Handy): testet, baut und veröffentlicht das Spiel auf GitHub Pages.
 # Adresse nach dem ersten Lauf auf main: https://valleralle.github.io/game_pilot/
-# Einmalig nötig: Repo → Settings → Pages → Source: „GitHub Actions“.
+# Veröffentlicht wird erst, wenn die Repo-Variable PAGES_AKTIV auf true steht:
+#   1. Repo → Settings → Pages → Source: „GitHub Actions“
+#   2. Repo → Settings → Secrets and variables → Actions → Variables → PAGES_AKTIV = true
+# Bis dahin wird nur getestet und gebaut.
 name: Web
 
 on:
@@ -34,7 +37,7 @@ jobs:
           path: dist
 
   veroeffentlichen:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && vars.PAGES_AKTIV == 'true'
     needs: bauen
     runs-on: ubuntu-latest
     environment:
