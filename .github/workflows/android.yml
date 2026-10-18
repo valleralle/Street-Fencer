@@ -1,5 +1,6 @@
 # Android-App: baut bei jedem Push eine APK (unter „Actions“ → Lauf → Artifacts herunterladen).
-# Ein Tag wie v0.2.0 erzeugt zusätzlich ein GitHub-Release mit der APK zum Herunterladen.
+# Ein Tag wie v0.2.0 erzeugt zusätzlich ein GitHub-Release mit der APK zum Herunterladen;
+# die Beschreibung kommt aus docs/releases/v0.2.0.md (falls vorhanden).
 name: Android
 
 on:
@@ -70,7 +71,16 @@ jobs:
           name: street-fencer-${{ env.VERSIONS_NAME }}
           path: street-fencer-*.apk
 
+      # Release-Notizen aus docs/releases/<tag>.md, falls es die Datei gibt
+      - name: Release-Notizen suchen
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          datei="docs/releases/${GITHUB_REF_NAME}.md"
+          [ -f "$datei" ] && echo "NOTIZEN=$datei" >> "$GITHUB_ENV" || true
+
       - if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          name: Street Fencer ${{ github.ref_name }}
+          body_path: ${{ env.NOTIZEN }}
           files: street-fencer-*.apk
