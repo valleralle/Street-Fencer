@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import Trainer from '../src/Trainer.js';
-import { LEKTIONEN } from '../src/lektionen.js';
+import { LEKTIONEN, bedienung } from '../src/lektionen.js';
 import { zweiFechter, fernsteuerung, BILD, ENDLINIEN } from './hilfen.js';
 import { halteAbstand } from '../src/abstand.js';
 
@@ -55,12 +55,27 @@ test('unter seinen Angriffen kann man mit dem Tiefstoß wegtauchen', () => {
   assert.ok(LEKTIONEN.find((l) => l.titel === 'Tiefstoß').ziel(e), JSON.stringify(e));
 });
 
+const TASTEN = { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S', fleche: 'R' };
+
 test('jede Lektion hat Titel, Anleitung mit Tastennamen und ein Ziel', () => {
-  const tasten = { links: 'A', rechts: 'D', stoss: 'F', parade: 'G', tiefstoss: 'S', fleche: 'R' };
   for (const l of LEKTIONEN) {
     assert.ok(l.titel && typeof l.ziel === 'function');
-    assert.ok(!l.text(tasten).includes('undefined'), l.titel);
+    assert.ok(!l.text(bedienung(TASTEN)).includes('undefined'), l.titel);
   }
+  assert.equal(LEKTIONEN[2].text(bedienung(TASTEN)), 'Aus größerer Entfernung: D halten und dabei F drücken.');
+});
+
+test('auf dem Handy nennen die Anleitungen die Knöpfe statt der Tasten', () => {
+  const t = bedienung(TASTEN, true);
+  for (const l of LEKTIONEN) {
+    const text = l.text(t);
+    assert.ok(!text.includes('undefined'), l.titel);
+    assert.ok(!/drück/i.test(text), `${l.titel}: ${text}`);
+    assert.ok(!/\b[ADFGSR]\b/.test(text), `${l.titel} nennt eine Taste: ${text}`);
+  }
+  assert.equal(LEKTIONEN[2].text(t), 'Aus größerer Entfernung: ▶ halten und dabei „Stoß“ tippen.');
+  assert.equal(LEKTIONEN[3].text(t), 'Der Trainer greift an. Tippe „Parade“, sobald er ausholt.');
+  assert.equal(LEKTIONEN[6].text(t), 'Tauche mit „Tief“ unter dem Stoß des Trainers weg.');
 });
 
 test('die Lektionen erkennen genau die geforderte Aktion', () => {

@@ -3,11 +3,13 @@ import Fechter from '../Fechter.js';
 import Trainer from '../Trainer.js';
 import Funken from '../Funken.js';
 import Kamera from '../Kamera.js';
-import { LEKTIONEN } from '../lektionen.js';
+import { LEKTIONEN, bedienung } from '../lektionen.js';
 import { halteAbstand } from '../abstand.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT } from '../kulisse.js';
 import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { tastaturSteuerung } from '../steuerung.js';
+import { istTouchGeraet, touchSteuerung } from '../touch.js';
+import { amRechtenRand } from '../bildschirm.js';
 import { einstellungen, tastenName } from '../einstellungen.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN } from '../farben.js';
@@ -29,21 +31,30 @@ export default class TrainingSzene extends Phaser.Scene {
     erzeugeFechterTexturen(this, 'gruen', FECHTERFARBEN.gruen);
 
     this.trainer = new Trainer();
+    // Auf dem Handy dieselben Knöpfe wie im Gefecht; die Tastatur gilt weiterhin
+    const tastatur = tastaturSteuerung(this, einstellungen.tasten.rot);
+    this.touch = istTouchGeraet(this) ? touchSteuerung(this, tastatur) : null;
     this.rot = new Fechter(this, {
       x: STARTLINIE_ROT,
       richtung: 1,
       name: 'rot',
-      steuerung: tastaturSteuerung(this, einstellungen.tasten.rot),
+      steuerung: this.touch?.steuerung ?? tastatur,
     });
     this.gruen = new Fechter(this, { x: STARTLINIE_ROT + 256, richtung: -1, name: 'gruen', steuerung: this.trainer });
     this.funken = new Funken(this);
 
+    const zurueck = this.touch
+      ? this.add.text(944, 14, 'Zurück', stil(24, '#9aa3b5')).setOrigin(1, 0).setPadding(14)
+      : this.add.text(950, 10, 'Esc: zurück zum Titel', stil(16, '#5d6578')).setOrigin(1, 0);
+    if (this.touch) zurueck.setInteractive().on('pointerdown', () => this.scene.start('TitelSzene'));
+    amRechtenRand(this, zurueck, zurueck.x);
     const ui = [
-      this.add.text(950, 10, 'Esc: zurück zum Titel', stil(16, '#5d6578')).setOrigin(1, 0),
+      zurueck,
       (this.nummer = this.add.text(480, 40, '', stil(20, '#9aa3b5')).setOrigin(0.5)),
       (this.titel = this.add.text(480, 80, '', stil(44)).setOrigin(0.5)),
       (this.anleitung = this.add.text(480, 135, '', stil(24, '#ffd166', { align: 'center', wordWrap: { width: 860 } })).setOrigin(0.5, 0)),
       (this.rueckmeldung = this.add.text(480, 215, '', stil(32)).setOrigin(0.5)),
+      ...(this.touch?.objekte ?? []),
     ];
     this.kamera = new Kamera(this, ui);
 
@@ -59,9 +70,10 @@ export default class TrainingSzene extends Phaser.Scene {
     this.lektionNummer = nummer;
     this.lektion = LEKTIONEN[nummer];
     const tasten = Object.fromEntries(Object.entries(einstellungen.tasten.rot).map(([a, t]) => [a, tastenName(t)]));
+    const t = bedienung(tasten, Boolean(this.touch));
     this.nummer.setText(`Training · Lektion ${nummer + 1} von ${LEKTIONEN.length}`);
     this.titel.setText(this.lektion.titel);
-    this.anleitung.setText(this.lektion.text(tasten));
+    this.anleitung.setText(this.lektion.text(t));
     this.rueckmeldung.setText('');
     this.aufAnfang();
   }
@@ -162,8 +174,12 @@ export default class TrainingSzene extends Phaser.Scene {
     this.rot.zeigePose('jubel');
     this.nummer.setText('');
     this.titel.setText('Training abgeschlossen!');
-    this.anleitung.setText('Jetzt bist du bereit für ein Gefecht.\nEnter oder Esc: zurück zum Titel');
+    this.anleitung.setText(
+      `Jetzt bist du bereit für ein Gefecht.\n${this.touch ? 'Antippen: zurück zum Titel' : 'Enter oder Esc: zurück zum Titel'}`,
+    );
     this.rueckmeldung.setText('');
     this.input.keyboard.once('keydown-ENTER', () => this.scene.start('TitelSzene'));
+    // Kurz warten, damit ein letztes Antippen der Knöpfe nicht gleich zum Titel springt
+    if (this.touch) this.time.delayedCall(800, () => this.input.once('pointerdown', () => this.scene.start('TitelSzene')));
   }
 }

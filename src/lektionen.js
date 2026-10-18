@@ -1,10 +1,21 @@
 // Die Lektionen des Trainings. Der Spieler ficht als Rot gegen den Trainer (Grün).
-//   text(t)  – Anleitung; t = Tastennamen des Spielers (z. B. t.stoss = 'F')
+//   text(t)  – Anleitung; t = Bedienung des Spielers (siehe bedienung: t.stoss = 'F' bzw. „Stoß“)
 //   trainer  – 'stehen' oder 'angreifen' (siehe Trainer.js)
 //   abstand  – Abstand der Fechter zu Beginn
 //   ziel(e)  – true, wenn das Ereignis e die Lektion erfüllt
 //   tipp     – Hinweis, wenn man mit einer anderen Aktion trifft
 // Ereignisse: { art: 'bewegt', strecke }, { art: 'parade', farbe }, { art: 'treffer', farbe, aktion, nachFinte }
+import { knopfText } from './touch.js';
+
+// Namen und Verben für die Anleitungen: an der Tastatur die Tasten (tasten = { stoss: 'F', … }),
+// auf dem Handy die Knöpfe am Bildschirm
+export function bedienung(tasten, touch = false) {
+  if (!touch) return { ...tasten, druecke: 'drücke', Druecke: 'Drücke', druecken: 'drücken' };
+  const knopf = (name) => (['links', 'rechts'].includes(name) ? knopfText(name) : `„${knopfText(name)}“`);
+  const namen = Object.fromEntries(['links', 'rechts', 'stoss', 'parade', 'tiefstoss', 'fleche'].map((n) => [n, knopf(n)]));
+  return { ...namen, druecke: 'tippe', Druecke: 'Tippe', druecken: 'tippen' };
+}
+
 const trifftMit = (aktion) => (e) => e.art === 'treffer' && e.farbe === 'rot' && e.aktion === aktion;
 
 export const LEKTIONEN = [
@@ -25,7 +36,7 @@ export const LEKTIONEN = [
   },
   {
     titel: 'Ausfall',
-    text: (t) => `Aus größerer Entfernung: ${t.rechts} halten und dabei ${t.stoss} drücken.`,
+    text: (t) => `Aus größerer Entfernung: ${t.rechts} halten und dabei ${t.stoss} ${t.druecken}.`,
     trainer: 'stehen',
     abstand: 200,
     ziel: trifftMit('ausfall'),
@@ -33,7 +44,7 @@ export const LEKTIONEN = [
   },
   {
     titel: 'Parade',
-    text: (t) => `Der Trainer greift an. Drücke ${t.parade}, sobald er ausholt.`,
+    text: (t) => `Der Trainer greift an. ${t.Druecke} ${t.parade}, sobald er ausholt.`,
     trainer: 'angreifen',
     abstand: 180,
     ziel: (e) => e.art === 'parade' && e.farbe === 'rot',
@@ -49,7 +60,7 @@ export const LEKTIONEN = [
   {
     titel: 'Finte',
     text: (t) =>
-      `Der Trainer pariert jeden Angriff. Täusche ihn: drücke ${t.stoss} dreimal im Rhythmus – ausholen, abbrechen, zustoßen.`,
+      `Der Trainer pariert jeden Angriff. Täusche ihn: ${t.druecke} ${t.stoss} dreimal im Rhythmus – ausholen, abbrechen, zustoßen.`,
     trainer: 'pariert',
     abstand: 120,
     ziel: (e) => e.art === 'treffer' && e.farbe === 'rot' && e.nachFinte,
@@ -65,7 +76,7 @@ export const LEKTIONEN = [
   },
   {
     titel: 'Flèche',
-    text: (t) => `Sturmangriff aus der Distanz: drücke ${t.fleche}.`,
+    text: (t) => `Sturmangriff aus der Distanz: ${t.druecke} ${t.fleche}.`,
     trainer: 'stehen',
     abstand: 240,
     ziel: trifftMit('fleche'),

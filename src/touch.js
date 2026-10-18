@@ -21,6 +21,9 @@ const KNOEPFE = {
   fleche: { x: 882, y: 318, r: 40, text: 'Flèche' },
 };
 const AKTIONEN = ['stoss', 'parade', 'tiefstoss', 'fleche'];
+
+// Beschriftung eines Knopfs, z. B. für Anleitungen im Training
+export const knopfText = (name) => KNOEPFE[name].text;
 // Etwas großzügiger als der gezeichnete Kreis, damit Daumen auch knapp daneben treffen
 const TOLERANZ = 1.2;
 
