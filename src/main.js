@@ -10,6 +10,7 @@ import PauseSzene from './szenen/PauseSzene.js';
 import SiegerSzene from './szenen/SiegerSzene.js';
 import { ladeSchrift } from './schrift.js';
 import { zentriereAlleSzenen } from './bildschirm.js';
+import { stummImHintergrund } from './hintergrund.js';
 
 // Auf dem Handy füllt das Spiel den ganzen Bildschirm, am Computer bleibt es bei 16:9 (siehe bildschirm.js)
 const handy = matchMedia('(pointer: coarse)').matches;
@@ -28,7 +29,13 @@ const config = {
   scene: [TitelSzene, StufenSzene, SteuerungSzene, EinstellungenSzene, TastenSzene, TrainingSzene, KampfSzene, PauseSzene, SiegerSzene],
 };
 
-ladeSchrift().then(() => zentriereAlleSzenen(new Phaser.Game(config)));
+ladeSchrift().then(() => {
+  const spiel = new Phaser.Game(config);
+  zentriereAlleSzenen(spiel);
+  spiel.events.once('ready', () => {
+    if (spiel.sound.context) stummImHintergrund(spiel.sound.context);
+  });
+});
 
 // Auf dem Handy beim ersten Antippen in den Vollbildmodus (quer) wechseln, falls der Browser das erlaubt
 if (handy && document.fullscreenEnabled) {

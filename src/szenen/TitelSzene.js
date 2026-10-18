@@ -17,7 +17,7 @@ export default class TitelSzene extends Phaser.Scene {
       .text(480, 185, 'Degenfechten', stil(28, '#9aa3b5'))
       .setOrigin(0.5);
 
-    // Auf dem Handy gibt es nur das Gefecht gegen den Computer – Training und 2 Spieler brauchen eine Tastatur
+    // Auf dem Handy fehlt nur „2 Spieler“ – zwei Spieler hätten an einem Handy zu wenig Platz
     const touch = istTouchGeraet(this);
     const eintraege = [
       { text: 'Training', aktion: () => this.scene.start('TrainingSzene') },
@@ -26,7 +26,7 @@ export default class TitelSzene extends Phaser.Scene {
       { text: 'Steuerung', aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
       { text: 'Einstellungen', aktion: () => this.scene.start('EinstellungenSzene') },
     ];
-    erzeugeMenue(this, 480, touch ? 280 : 260, touch ? eintraege.slice(2) : eintraege);
+    erzeugeMenue(this, 480, touch ? 270 : 260, touch ? eintraege.filter((e) => e.text !== '2 Spieler') : eintraege);
     musik.spiele('titel', this.sound.context);
 
     this.add

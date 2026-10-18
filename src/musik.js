@@ -2,8 +2,9 @@
 // Ein kleiner Sequenzer spielt Achtelnoten: Akkordfläche, Bass, Begleitfigur und (im Gefecht) Schlagzeug.
 import { einstellungen } from './einstellungen.js';
 
-// Grundpegel der Musik; der Regler „Musik“ in den Einstellungen skaliert ihn (0 bis 100 %)
-const GRUNDLAUTSTAERKE = 0.66;
+// Grundpegel der Musik; der Regler „Musik“ in den Einstellungen skaliert ihn (0 bis 100 %).
+// Gemessen: Selbst bei 100 % bleibt die lauteste Stelle (Gefecht) unter 0,45 – es übersteuert nichts.
+const GRUNDLAUTSTAERKE = 1.19;
 const VORLAUF = 0.25; // so viele Sekunden im Voraus werden Noten eingeplant
 const TAKT = 100; // ms zwischen zwei Planungsdurchläufen
 

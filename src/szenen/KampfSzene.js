@@ -92,6 +92,10 @@ export default class KampfSzene extends Phaser.Scene {
     // Antippen hält das Gefecht an
     this.pauseAngetippt = false;
     if (this.touch) pausenHinweis.setInteractive().on('pointerdown', () => (this.pauseAngetippt = true));
+    // Wer die App oder den Tab verlässt, findet das Gefecht beim Zurückkommen im Pausenmenü
+    const imHintergrund = () => (this.pauseAngetippt = true);
+    this.game.events.on('hidden', imHintergrund);
+    this.events.once('shutdown', () => this.game.events.off('hidden', imHintergrund));
     amRechtenRand(this, pausenHinweis, pausenHinweis.x);
 
     this.meldegeraet = new Meldegeraet(this);
