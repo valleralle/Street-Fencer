@@ -41,7 +41,7 @@ Beim ersten Start kann Windows warnen („Der Computer wurde durch Windows gesch
 
 ## Als Android-App
 
-Am einfachsten über GitHub: Jeder Push baut eine APK (*Actions → Android → Artifacts*). Für eine feste Version einen Tag setzen, z. B. `git tag v0.2.0 && git push --tags` – dann erscheint die APK als Release.
+Am einfachsten über GitHub: Jeder Push baut eine APK (*Actions → Android → Artifacts*). Für eine feste Version einen Tag setzen, z. B. `git tag v0.2.0 && git push --tags` – dann erscheint die APK als Release. Die Beschreibung des Release steht vorher in `docs/releases/v0.2.0.md`.
 
 Lokal (braucht Java 21 und das Android-SDK):
 
