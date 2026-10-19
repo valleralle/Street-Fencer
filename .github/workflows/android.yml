@@ -45,10 +45,6 @@ jobs:
           echo "VERSIONS_NAME=$name" >> "$GITHUB_ENV"
           echo "VERSIONS_CODE=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
 
-      # Immer derselbe Debug-Schlüssel, damit sich neue APKs über ältere installieren lassen
-      - name: Debug-Schlüssel bereitlegen
-        run: mkdir -p ~/.android && cp werkzeuge/android/debug.keystore ~/.android/debug.keystore
-
       - name: APK bauen
         run: |
           set -o pipefail
@@ -62,6 +58,18 @@ jobs:
           grep -iE "error|failed|what went wrong|exception" bau.log | head -20 | while IFS= read -r zeile; do
             echo "::error::${zeile}"
           done
+
+      # Jede APK muss mit dem Schlüssel aus dem Repo signiert sein – sonst lässt sie sich nicht über
+      # eine ältere installieren („App nicht installiert“)
+      - name: Signatur prüfen
+        run: |
+          erwartet=$(keytool -exportcert -keystore werkzeuge/android/debug.keystore -storepass android -alias androiddebugkey | sha256sum | cut -d' ' -f1)
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner"
+          "$apksigner" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk | tee signatur.txt
+          if ! grep -qi "SHA-256 digest: $erwartet" signatur.txt; then
+            echo "::error::APK ist nicht mit werkzeuge/android/debug.keystore signiert (erwartet $erwartet)"
+            exit 1
+          fi
 
       - name: APK benennen
         run: cp android/app/build/outputs/apk/debug/app-debug.apk "street-fencer-${VERSIONS_NAME}.apk"
