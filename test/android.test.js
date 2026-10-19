@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { querformat, vollbild, version } from '../werkzeuge/android/anpassen.mjs';
+import { querformat, vollbild, version, festerSchluessel } from '../werkzeuge/android/anpassen.mjs';
 
 const MANIFEST = `<application>
         <activity
@@ -30,4 +30,14 @@ test('Versionsname und -nummer landen im Gradle-Build', () => {
   assert.match(ergebnis, /versionCode 17/);
   assert.match(ergebnis, /versionName "0\.2\.0"/);
   assert.equal(version(gradle, {}), gradle);
+});
+
+test('Debug-Builds werden immer mit dem Schlüssel aus dem Repo signiert', () => {
+  const gradle = "android {\n    namespace = 'x'\n    buildTypes {\n        release {\n        }\n    }\n}";
+  const ergebnis = festerSchluessel(gradle, '/repo/werkzeuge/android/debug.keystore');
+  assert.match(ergebnis, /signingConfigs \{\n\s+debug \{\n\s+storeFile file\("\/repo\/werkzeuge\/android\/debug\.keystore"\)/);
+  assert.match(ergebnis, /keyAlias 'androiddebugkey'/);
+  assert.match(ergebnis, /buildTypes \{\n\s+debug \{\n\s+signingConfig signingConfigs\.debug/);
+  // Ein zweiter Durchlauf ändert nichts mehr
+  assert.equal(festerSchluessel(ergebnis), ergebnis);
 });

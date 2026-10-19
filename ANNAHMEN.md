@@ -114,3 +114,8 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **„fi“:** Pixelify Sans macht aus „fi“ ein Zeichen, das wie „A“ aussieht. `text()` setzt zwischen f und i ein unsichtbares Trennzeichen (Zero Width Non-Joiner); so steht „fight“, „first“, „finish“ richtig da.
 - Der Trainer heißt auf Englisch „the coach“ – ohne „he/she“.
 
+## Signatur der Android-App (v0.2.1)
+
+- Bis 0.2.0 fand Gradle auf den GitHub-Runnern den Debug-Schlüssel unter `~/.android` nicht und erzeugte bei jedem Build einen neuen – jede APK war anders signiert, Updates schlugen mit „App nicht installiert“ fehl. Jetzt trägt `werkzeuge/android/anpassen.mjs` den Schlüssel `werkzeuge/android/debug.keystore` direkt in die Gradle-Konfiguration ein, und der Android-Workflow bricht ab, wenn eine APK anders signiert ist.
+- Wer eine ältere APK installiert hat, muss einmal deinstallieren.
+
