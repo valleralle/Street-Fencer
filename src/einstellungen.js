@@ -23,8 +23,10 @@ export const AKTIONS_NAMEN = {
 // Diese Tasten bleiben für Pause und Menüs reserviert
 export const RESERVIERT = ['ESC', 'P', 'ENTER', 'SPACE'];
 
-// Der Schlüssel stammt noch aus der Zeit des Arbeitstitels „game_pilot“ – so bleiben gespeicherte Einstellungen erhalten
-const SCHLUESSEL = 'game_pilot.einstellungen';
+const SCHLUESSEL = 'street-fencer.einstellungen';
+// Unter diesem Schlüssel lagen die Einstellungen zur Zeit des Arbeitstitels „game_pilot“;
+// sie werden beim ersten Laden übernommen (siehe ladeEinstellungen)
+const ALTER_SCHLUESSEL = 'game_pilot.einstellungen';
 
 const kopie = (e) => JSON.parse(JSON.stringify(e));
 
@@ -32,7 +34,7 @@ const kopie = (e) => JSON.parse(JSON.stringify(e));
 export function ladeEinstellungen(speicher = globalThis.localStorage) {
   const e = kopie(STANDARD);
   try {
-    const gespeichert = JSON.parse(speicher?.getItem(SCHLUESSEL) ?? 'null');
+    const gespeichert = JSON.parse(speicher?.getItem(SCHLUESSEL) ?? uebernimmAlteEinstellungen(speicher) ?? 'null');
     if (!gespeichert) return e;
     for (const art of ['musik', 'effekte']) {
       if (typeof gespeichert[art] === 'number') e[art] = begrenze(gespeichert[art]);
@@ -47,6 +49,15 @@ export function ladeEinstellungen(speicher = globalThis.localStorage) {
     // Kein Speicher (z. B. privates Fenster) oder kaputte Daten: Standard verwenden
   }
   return e;
+}
+
+// Einmalig: Einstellungen vom alten Schlüssel unter den neuen verschieben. Liefert die alten Daten (oder null).
+function uebernimmAlteEinstellungen(speicher) {
+  const alt = speicher?.getItem(ALTER_SCHLUESSEL);
+  if (alt === null || alt === undefined) return null;
+  speicher.setItem(SCHLUESSEL, alt);
+  speicher.removeItem?.(ALTER_SCHLUESSEL);
+  return alt;
 }
 
 export function speichereEinstellungen(e, speicher = globalThis.localStorage) {

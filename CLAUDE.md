@@ -18,7 +18,6 @@ Jeder Push auf `main` veröffentlicht sofort die Browser-Version auf GitHub Page
 ## Fallstricke
 
 - `src/pixelart/fechterPosen.js` wird von `werkzeuge/pixelart-zeichnen.mjs` erzeugt: Posen im Zeichenskript ändern, dann `npm run pixelart:zeichnen`.
-- Der Speicherschlüssel `game_pilot.einstellungen` in `src/einstellungen.js` bleibt, bis es eine Migration gibt (Issue #9) – sonst sind gespeicherte Einstellungen weg.
 - Pixelify Sans macht aus „fi“ ein Zeichen, das wie „A“ aussieht, und 2/5 sehen aus wie Z/S (Issue #8): neue Texte im Spiel darauf prüfen.
 - Unter Windows mit PowerShell: Typografische Anführungszeichen („ “) beenden doppelt gequotete Strings – für Texte mit „…“ einfach gequotete Here-Strings (`@'…'@`) oder das Edit-Werkzeug verwenden.
 

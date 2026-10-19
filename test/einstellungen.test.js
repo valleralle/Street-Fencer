@@ -10,9 +10,13 @@ import {
   tastenName,
 } from '../src/einstellungen.js';
 
-function speicher() {
-  const daten = {};
-  return { getItem: (k) => daten[k] ?? null, setItem: (k, v) => (daten[k] = v) };
+function speicher(daten = {}) {
+  return {
+    daten,
+    getItem: (k) => daten[k] ?? null,
+    setItem: (k, v) => (daten[k] = v),
+    removeItem: (k) => delete daten[k],
+  };
 }
 
 test('ohne gespeicherte Einstellungen gilt der Standard', () => {
@@ -38,7 +42,30 @@ test('gespeicherte Einstellungen werden wieder geladen', () => {
 
 test('kaputte gespeicherte Daten werden ignoriert', () => {
   const s = speicher();
-  s.setItem('game_pilot.einstellungen', '{kein json');
+  s.setItem('street-fencer.einstellungen', '{kein json');
+  assert.deepEqual(ladeEinstellungen(s), STANDARD);
+});
+
+test('Einstellungen unter dem alten Schlüssel game_pilot werden übernommen', () => {
+  const s = speicher({ 'game_pilot.einstellungen': JSON.stringify({ musik: 0.2, tasten: { rot: { stoss: 'Q' } } }) });
+  const e = ladeEinstellungen(s);
+  assert.equal(e.musik, 0.2);
+  assert.equal(e.tasten.rot.stoss, 'Q');
+  assert.deepEqual(Object.keys(s.daten), ['street-fencer.einstellungen']);
+  speichereEinstellungen(e, s);
+  assert.equal(ladeEinstellungen(s).tasten.rot.stoss, 'Q');
+});
+
+test('gibt es beide Schlüssel, gilt der neue', () => {
+  const s = speicher({
+    'game_pilot.einstellungen': JSON.stringify({ musik: 0.2 }),
+    'street-fencer.einstellungen': JSON.stringify({ musik: 0.9 }),
+  });
+  assert.equal(ladeEinstellungen(s).musik, 0.9);
+});
+
+test('kaputte Daten unter dem alten Schlüssel ergeben den Standard', () => {
+  const s = speicher({ 'game_pilot.einstellungen': '{kein json' });
   assert.deepEqual(ladeEinstellungen(s), STANDARD);
 });
 
