@@ -86,3 +86,8 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Im **Hochformat** erscheint ein Hinweis, das Handy zu drehen. Im Browser versucht das Spiel beim ersten Antippen in den Vollbildmodus zu wechseln (klappt nicht in jedem Browser, z. B. nicht auf dem iPhone).
 - **Android-App** mit Capacitor 8, App-ID `de.valleralle.streetfencer`, fest im Querformat und ohne Statusleiste. Es ist eine **Debug-APK** – zum Selbstinstallieren gedacht, nicht für den Play Store.
 - `package-lock.json` enthält Capacitor noch nicht (ich konnte hier kein npm ausführen). Die Workflows nutzen deshalb `npm install` statt `npm ci`; beim nächsten lokalen `npm install` wird die Lock-Datei ergänzt – die bitte einchecken.
+
+## Ziffern (Issue #8)
+
+- In Pixelify Sans sahen 5 und 2 wie S und Z aus. Die Ziffern 0–9 und der Doppelpunkt kommen jetzt aus einer **eigenen kleinen Schrift** im selben 5 × 7-Raster und mit denselben Abständen. Sie ist in `index.html` als Teil der Schriftfamilie „Pixelify Sans“ nur für diese Zeichen eingebunden – so gilt sie für **jede Zahl im Spiel** (Punktestand, Uhr, Statistik, Lektionsnummer, Lautstärke), ohne dass ein Bildschirm geändert werden musste.
+- Die 5 hat einen geraden, eckigen Kopf, die 2 einen runden Bogen. Vorschau: `grafik/ziffern-vorschau.png`.

@@ -10,5 +10,6 @@ export const stil = (groesse, farbe = '#ffffff', extra = {}) => ({
 
 // Die Schrift muss geladen sein, bevor Phaser den ersten Text zeichnet
 export function ladeSchrift() {
-  return document.fonts.load(`16px ${SCHRIFT}`).catch(() => {});
+  // Auch die eigenen Ziffern laden (eigene Datei, siehe index.html)
+  return Promise.all([document.fonts.load(`16px ${SCHRIFT}`), document.fonts.load(`16px ${SCHRIFT}`, '0123456789:')]).catch(() => {});
 }

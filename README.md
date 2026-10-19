@@ -107,6 +107,7 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 - `src/schrift.js`, `public/schrift/` – Pixelschrift „Pixelify Sans“ (OFL-Lizenz)
 - `src/pixelart/fechterPosen.js` – die Pixelbilder der Fechter als Textraster
 - `werkzeuge/exe/` – baut die .exe (`baue-exe.mjs`) und das Startprogramm darin (`starter.cjs`)
+- `werkzeuge/ziffern.mjs` – baut aus den Pixel-Ziffern (`src/pixelart/ziffern.js`) die Ziffern-Schrift und `grafik/ziffern-vorschau.png`; `npm run ziffern`
 - `werkzeuge/symbol.mjs` – zeichnet das Programmsymbol, überall derselbe rote Fechter im Ausfall auf dunklem Grund: Browser-Tab, Homescreen, Android-App (`werkzeuge/android/res/`) und .exe; `npm run symbol`
 - `werkzeuge/png.mjs` – kleiner PNG-Schreiber für die Werkzeuge
 - `werkzeuge/pixelart-zeichnen.mjs` – zeichnet die Posen (`npm run pixelart:zeichnen`; überschreibt `fechterPosen.js`)
