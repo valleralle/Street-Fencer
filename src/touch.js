@@ -1,5 +1,6 @@
 import { stil } from './schrift.js';
 import { BREITE, HOEHE, rand } from './bildschirm.js';
+import { text } from './texte.js';
 
 // Touch-Steuerung fürs Handy: links zwei Knöpfe zum Gehen, rechts die Aktionen.
 // Liefert dieselbe Schnittstelle wie tastaturSteuerung (gehalten / gedrueckt), Tastatur geht weiterhin.
@@ -9,21 +10,21 @@ export function istTouchGeraet(szene) {
   return szene.sys.game.device.input.touch && matchMedia('(pointer: coarse)').matches;
 }
 
-// Lage der Knöpfe im Spielbild (960 × 540): x, y, Radius, Beschriftung.
+// Lage der Knöpfe im Spielbild (960 × 540): x, y, Radius; Beschriftung: zeichen oder Text in der eingestellten Sprache.
 // Ist der Bildschirm breiter oder höher (siehe bildschirm.js), bleiben die Knöpfe an den Ecken unten:
 // Gehen links unten, die Aktionen rechts unten.
 const KNOEPFE = {
-  links: { x: 85, y: 455, r: 60, text: '◀' },
-  rechts: { x: 225, y: 455, r: 60, text: '▶' },
-  stoss: { x: 868, y: 452, r: 62, text: 'Stoß' },
-  parade: { x: 735, y: 487, r: 46, text: 'Parade' },
-  tiefstoss: { x: 618, y: 492, r: 42, text: 'Tief' },
-  fleche: { x: 882, y: 318, r: 40, text: 'Flèche' },
+  links: { x: 85, y: 455, r: 60, zeichen: '◀' },
+  rechts: { x: 225, y: 455, r: 60, zeichen: '▶' },
+  stoss: { x: 868, y: 452, r: 62 },
+  parade: { x: 735, y: 487, r: 46 },
+  tiefstoss: { x: 618, y: 492, r: 42 },
+  fleche: { x: 882, y: 318, r: 40 },
 };
 const AKTIONEN = ['stoss', 'parade', 'tiefstoss', 'fleche'];
 
 // Beschriftung eines Knopfs, z. B. für Anleitungen im Training
-export const knopfText = (name) => KNOEPFE[name].text;
+export const knopfText = (name) => KNOEPFE[name].zeichen ?? text(`knopf.${name}`);
 // Etwas großzügiger als der gezeichnete Kreis, damit Daumen auch knapp daneben treffen
 const TOLERANZ = 1.2;
 
@@ -54,11 +55,12 @@ export function touchSteuerung(szene, tastatur) {
 
   for (const [name, k] of Object.entries(KNOEPFE)) {
     const kreis = szene.add.circle(k.x, k.y, k.r, 0xffffff, 0.12).setStrokeStyle(3, 0xffffff, 0.45);
-    const groesse = k.text.length > 2 ? Math.round(k.r * 0.42) : Math.round(k.r * 0.7);
-    const text = szene.add.text(k.x, k.y, k.text, stil(groesse, '#ffffff')).setOrigin(0.5).setAlpha(0.8);
+    const beschriftung = knopfText(name);
+    const groesse = beschriftung.length > 2 ? Math.round(k.r * 0.42) : Math.round(k.r * 0.7);
+    const schild = szene.add.text(k.x, k.y, beschriftung, stil(groesse, '#ffffff')).setOrigin(0.5).setAlpha(0.8);
     kreise[name] = kreis;
-    texte[name] = text;
-    objekte.push(kreis, text);
+    texte[name] = schild;
+    objekte.push(kreis, schild);
   }
 
   // Die Knöpfe liegen in der UI-Kamera, die um den Rand verschoben ist (siehe Kamera.js)

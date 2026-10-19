@@ -30,9 +30,9 @@ const SPIELWEISEN = {
 // Charakter des Computers für ein Gefecht: Vorliebe für die Spielweisen (Gewichte) und Geduld –
 // so lange wartet er in einer abwartenden Spielweise auf einen Angriff, dann greift er selbst an
 export const CHARAKTERE = {
-  angreifer: { name: 'Angreifer', gewichte: { angreifen: 4, abwarten: 1, distanz: 1 }, geduld: 2500 },
-  konterfechter: { name: 'Konterfechter', gewichte: { angreifen: 1, abwarten: 4, distanz: 1 }, geduld: 8000 },
-  taktiker: { name: 'Taktiker', gewichte: { angreifen: 1.5, abwarten: 1.5, distanz: 2 }, geduld: 5000 },
+  angreifer: { gewichte: { angreifen: 4, abwarten: 1, distanz: 1 }, geduld: 2500 },
+  konterfechter: { gewichte: { angreifen: 1, abwarten: 4, distanz: 1 }, geduld: 8000 },
+  taktiker: { gewichte: { angreifen: 1.5, abwarten: 1.5, distanz: 2 }, geduld: 5000 },
 };
 const ENDSPURT = 30_000; // so viel Restzeit gilt als „wenig“
 
@@ -45,6 +45,7 @@ const FLECHE_TREFFABSTAND = 130; // ab diesem Abstand trifft die Klinge der Flè
 
 import { AKTIONEN, FINTEN } from './Fechter.js';
 import { ENDLINIE_LINKS, ENDLINIE_RECHTS } from './kulisse.js';
+import { text } from './texte.js';
 
 const AN_DER_WAND = 140; // so nah an der eigenen Endlinie hört das Abwarten auf
 
@@ -90,8 +91,9 @@ export default class Computergegner {
     this.farbe = farbe;
   }
 
+  // Name des Charakters in der eingestellten Sprache (z. B. „Konterfechter“)
   get charakterName() {
-    return CHARAKTERE[this.charakter].name;
+    return text(`charakter.${this.charakter}`);
   }
 
   // Wie viele Treffer er vorne liegt (negativ: hinten); ohne Gefecht 0

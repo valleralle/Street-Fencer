@@ -1,4 +1,6 @@
 // Zählt während eines Gefechts mit, was jeder Fechter gemacht hat – für die Auswertung am Ende.
+import { text } from './texte.js';
+
 const leer = () => ({ angriffe: 0, finten: 0, treffer: 0, riposten: 0, paraden: 0, doppeltreffer: 0 });
 
 export default class Statistik {
@@ -42,13 +44,13 @@ export default class Statistik {
   zeilen() {
     const { rot, gruen } = this.werte;
     return [
-      ['Angriffe', rot.angriffe, gruen.angriffe],
-      ['Finten', rot.finten, gruen.finten],
-      ['Treffer', rot.treffer, gruen.treffer],
-      ['davon Riposten', rot.riposten, gruen.riposten],
-      ['Paraden', rot.paraden, gruen.paraden],
-      ['Doppeltreffer', rot.doppeltreffer, gruen.doppeltreffer],
-      ['Trefferquote', `${this.trefferquote('rot')} %`, `${this.trefferquote('gruen')} %`],
-    ].map(([name, r, g]) => [name, String(r), String(g)]);
+      ['angriffe', rot.angriffe, gruen.angriffe],
+      ['finten', rot.finten, gruen.finten],
+      ['treffer', rot.treffer, gruen.treffer],
+      ['riposten', rot.riposten, gruen.riposten],
+      ['paraden', rot.paraden, gruen.paraden],
+      ['doppeltreffer', rot.doppeltreffer, gruen.doppeltreffer],
+      ['trefferquote', `${this.trefferquote('rot')} %`, `${this.trefferquote('gruen')} %`],
+    ].map(([name, r, g]) => [text(`statistik.${name}`), String(r), String(g)]);
   }
 }

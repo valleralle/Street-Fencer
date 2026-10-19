@@ -18,7 +18,7 @@ Jeder Push auf `main` veröffentlicht sofort die Browser-Version auf GitHub Page
 ## Fallstricke
 
 - `src/pixelart/fechterPosen.js` wird von `werkzeuge/pixelart-zeichnen.mjs` erzeugt: Posen im Zeichenskript ändern, dann `npm run pixelart:zeichnen`.
-- Pixelify Sans macht aus „fi“ ein Zeichen, das wie „A“ aussieht: neue Texte im Spiel darauf prüfen.
+- Sichtbare Texte stehen nur in `src/texte.js` (Deutsch und Englisch) und kommen über `text('schluessel', { platzhalter })` in die Bildschirme. Neue Texte immer in beiden Sprachen eintragen – ein Test prüft das. `text()` trennt auch „fi“, das Pixelify Sans sonst wie „A“ zeichnet; Texte an `text()` vorbei können das nicht.
 - Ziffern kommen aus einer eigenen Schrift (`src/pixelart/ziffern.js` → `npm run ziffern` → `public/schrift/street-fencer-ziffern.ttf`), die in `index.html` für 0–9 und „:“ vor Pixelify Sans greift. Ziffern im Raster ändern, dann `npm run ziffern`.
 - Unter Windows mit PowerShell: Typografische Anführungszeichen („ “) beenden doppelt gequotete Strings – für Texte mit „…“ einfach gequotete Here-Strings (`@'…'@`) oder das Edit-Werkzeug verwenden.
 

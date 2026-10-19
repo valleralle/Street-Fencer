@@ -95,7 +95,8 @@ Menüs bedienst du mit ↑ / ↓ (oder W / S) und Enter, Werte änderst du mit �
 - `src/Computergegner.js` – der Computergegner; Stärke der Stufen in `STUFEN`
 - `src/Trainer.js`, `src/lektionen.js` – Gegner und Lektionen des Trainings
 - `src/Statistik.js` – zählt mit, was im Gefecht passiert
-- `src/einstellungen.js` – Lautstärken und Tastenbelegung
+- `src/einstellungen.js` – Lautstärken, Tastenbelegung und Sprache
+- `src/texte.js` – alle sichtbaren Texte auf Deutsch und Englisch
 - `src/steuerung.js` – Tastatursteuerung eines Fechters
 - `src/Menue.js` – Menü für alle Bildschirme
 - `src/kulisse.js` – Halle und Fechtbahn

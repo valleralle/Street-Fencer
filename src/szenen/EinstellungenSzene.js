@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
-import { einstellungen, aendereLautstaerke, speichereEinstellungen, setzeZurueck } from '../einstellungen.js';
+import { einstellungen, aendereLautstaerke, speichereEinstellungen, setzeZurueck, wechsleSprache } from '../einstellungen.js';
+import { text, farbname, wendeSpracheAufSeiteAn } from '../texte.js';
 import { musik } from '../musik.js';
 import { istTouchGeraet } from '../touch.js';
 
@@ -13,42 +14,50 @@ export default class EinstellungenSzene extends Phaser.Scene {
   }
 
   create() {
-    this.add.text(480, 80, 'Einstellungen', stil(56)).setOrigin(0.5);
+    this.add.text(480, 80, text('titel.einstellungen'), stil(56)).setOrigin(0.5);
     const touch = istTouchGeraet(this);
 
-    const lautstaerke = (art, name) => ({
-      text: () => `${name}: ${prozent(einstellungen[art])}`,
+    const lautstaerke = (art) => ({
+      text: () => text(`einstellungen.${art}`, { wert: prozent(einstellungen[art]) }),
       links: () => this.aendere(art, -1),
       rechts: () => this.aendere(art, 1),
     });
-    erzeugeMenue(this, 480, 180, [
-      lautstaerke('musik', 'Musik'),
-      lautstaerke('effekte', 'Effekte'),
+    // Sprachwechsel: der Bildschirm wird neu aufgebaut, damit alle Texte die neue Sprache zeigen
+    const sprache = (schritte) => () => {
+      wechsleSprache(einstellungen, schritte);
+      speichereEinstellungen(einstellungen);
+      wendeSpracheAufSeiteAn();
+      this.scene.restart();
+    };
+    erzeugeMenue(this, 480, 170, [
+      lautstaerke('musik'),
+      lautstaerke('effekte'),
+      { text: text('einstellungen.sprache', { wert: text(`sprache.${einstellungen.sprache}`) }), aktion: sprache(1), links: sprache(-1), rechts: sprache(1) },
       // Tastenbelegung nur, wenn es eine Tastatur gibt
       ...(touch
         ? []
         : [
-            { text: 'Tasten Rot', aktion: () => this.scene.start('TastenSzene', { farbe: 'rot' }) },
-            { text: 'Tasten Grün', aktion: () => this.scene.start('TastenSzene', { farbe: 'gruen' }) },
+            ...['rot', 'gruen'].map((farbe) => ({
+              text: text('einstellungen.tasten', { farbe: farbname(farbe) }),
+              aktion: () => this.scene.start('TastenSzene', { farbe }),
+            })),
           ]),
       {
-        text: 'Standard wiederherstellen',
+        text: text('einstellungen.standard'),
         aktion: () => {
           setzeZurueck(einstellungen);
           speichereEinstellungen(einstellungen);
           musik.aktualisiereLautstaerke();
         },
       },
-      { text: 'Zurück', aktion: () => this.scene.start('TitelSzene') },
+      { text: text('zurueck'), aktion: () => this.scene.start('TitelSzene') },
     ]);
 
     this.add
       .text(
         480,
         500,
-        touch
-          ? 'Lautstärke: links antippen = leiser, rechts = lauter'
-          : '↑ / ↓ wählen · Lautstärke mit A / D bzw. den Pfeiltasten · Esc zurück',
+        text(touch ? 'einstellungen.hinweisTouch' : 'einstellungen.hinweisTasten'),
         stil(16, '#5d6578'),
       )
       .setOrigin(0.5);

@@ -1,17 +1,19 @@
 import Phaser from 'phaser';
 import { stil } from '../schrift.js';
 import { FECHTERFARBEN } from '../farben.js';
-import { einstellungen, tastenName, AKTIONS_NAMEN } from '../einstellungen.js';
-import { istTouchGeraet } from '../touch.js';
+import { einstellungen, tastenName, aktionsName } from '../einstellungen.js';
+import { istTouchGeraet, knopfText } from '../touch.js';
+import { text } from '../texte.js';
 
 // Tabelle der aktuellen Tastenbelegung (siehe Einstellungen)
 function zeilen() {
   const { rot, gruen } = einstellungen.tasten;
-  const bewegen = (t) => `${tastenName(t.links)} / ${tastenName(t.rechts)}`.replace('Pfeil links / Pfeil rechts', 'Pfeil links / rechts');
+  const bewegen = (t) =>
+    t.links === 'LEFT' && t.rechts === 'RIGHT' ? text('taste.pfeileLinksRechts') : `${tastenName(t.links)} / ${tastenName(t.rechts)}`;
   return [
-    ['', 'Rot (links)', 'Grün (rechts)'],
-    ['Bewegen', bewegen(rot), bewegen(gruen)],
-    ...['stoss', 'parade', 'tiefstoss', 'fleche'].map((a) => [AKTIONS_NAMEN[a], tastenName(rot[a]), tastenName(gruen[a])]),
+    ['', text('steuerung.kopfRot'), text('steuerung.kopfGruen')],
+    [text('steuerung.bewegen'), bewegen(rot), bewegen(gruen)],
+    ...['stoss', 'parade', 'tiefstoss', 'fleche'].map((a) => [aktionsName(a), tastenName(rot[a]), tastenName(gruen[a])]),
   ];
 }
 
@@ -38,7 +40,7 @@ export default class SteuerungSzene extends Phaser.Scene {
       return;
     }
 
-    this.add.text(480, 44, 'Steuerung', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
+    this.add.text(480, 44, text('titel.steuerung'), { ...schrift, fontSize: '40px' }).setOrigin(0.5);
 
     const spalten = [250, 480, 720];
     const farben = ['#9aa3b5', FECHTERFARBEN.rot, FECHTERFARBEN.gruen];
@@ -53,27 +55,26 @@ export default class SteuerungSzene extends Phaser.Scene {
       .text(
         480,
         350,
-        'Ausfall = vorwärts + Stoß · Finte = beim Ausholen noch einmal Stoß\n' +
-          'Riposte = Stoß direkt nach einer gelungenen Parade\n' +
-          'Wer zuerst 5 Treffer hat, gewinnt · Esc oder P = Pause · Tasten ändern unter Einstellungen',
+        text('steuerung.regeln'),
         { ...schrift, fontSize: '19px', align: 'center', color: '#c8ccd4', lineSpacing: 8 },
       )
       .setOrigin(0.5, 0);
 
-    const weiter = this.danach === 'KampfSzene' ? 'Enter: Los geht’s!' : 'Enter: zurück';
+    const weiter = text(this.danach === 'KampfSzene' ? 'steuerung.losTasten' : 'steuerung.zurueckTasten');
     this.add.text(480, 480, weiter, { ...schrift, color: '#ffd166' }).setOrigin(0.5);
   }
 
   // Erklärung der Knöpfe am Bildschirm (siehe touch.js)
   zeigeTouch(schrift) {
-    this.add.text(480, 50, 'Steuerung', { ...schrift, fontSize: '40px' }).setOrigin(0.5);
+    this.add.text(480, 50, text('titel.steuerung'), { ...schrift, fontSize: '40px' }).setOrigin(0.5);
+    const knopf = Object.fromEntries(['links', 'rechts', 'stoss', 'parade', 'tiefstoss', 'fleche'].map((n) => [n, knopfText(n)]));
     const zeilen = [
-      ['◀ ▶ (links unten)', 'gehen'],
-      ['Stoß', 'zustechen'],
-      ['▶ halten + Stoß', 'Ausfall'],
-      ['Parade', 'Stoß abwehren'],
-      ['Tief', 'Tiefstoß – unter der Parade durch'],
-      ['Flèche', 'Sturmangriff aus der Distanz'],
+      [text('steuerung.touchGehenKnopf', knopf), text('steuerung.touchGehen')],
+      [knopf.stoss, text('steuerung.touchStoss')],
+      [text('steuerung.touchAusfallKnopf', knopf), text('steuerung.touchAusfall')],
+      [knopf.parade, text('steuerung.touchParade')],
+      [knopf.tiefstoss, text('steuerung.touchTief')],
+      [knopf.fleche, text('steuerung.touchFleche')],
     ];
     zeilen.forEach(([knopf, wirkung], z) => {
       this.add.text(400, 115 + z * 40, knopf, { ...schrift, color: FECHTERFARBEN.rot }).setOrigin(1, 0.5);
@@ -83,13 +84,11 @@ export default class SteuerungSzene extends Phaser.Scene {
       .text(
         480,
         370,
-        'Finte = während des Ausholens noch einmal Stoß\n' +
-          'Riposte = Stoß direkt nach einer gelungenen Parade\n' +
-          'Du bist Rot (links) · wer zuerst 5 Treffer hat, gewinnt · ❚❚ oben rechts = Pause',
+        text('steuerung.touchRegeln'),
         { ...schrift, fontSize: '19px', align: 'center', color: '#c8ccd4', lineSpacing: 8 },
       )
       .setOrigin(0.5, 0);
-    const weiter = this.danach === 'KampfSzene' ? 'Antippen: Los geht’s!' : 'Antippen: zurück';
+    const weiter = text(this.danach === 'KampfSzene' ? 'steuerung.losTouch' : 'steuerung.zurueckTouch');
     this.add.text(480, 490, weiter, { ...schrift, color: '#ffd166' }).setOrigin(0.5);
   }
 }

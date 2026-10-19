@@ -106,3 +106,11 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Geduld:** Wartet er vergeblich auf einen Angriff, greift er selbst an (Angreifer nach 2,5 s, Taktiker 5 s, Konterfechter 8 s); an der eigenen Endlinie wartet er nie.
 - **Charakter** pro Gefecht zufällig: Angreifer, Konterfechter oder Taktiker – oben links angezeigt („Grün: Konterfechter“).
 - **Schwer** reagiert jetzt nach 145 statt 150 ms und antwortet zu 93 statt 92 % richtig – sonst wäre er durch die neuen Spielweisen kaum noch stärker als Mittel gewesen.
+
+## Sprachen (Issue #12)
+
+- **Deutsch und Englisch.** Alle sichtbaren Texte stehen in `src/texte.js`; die Bildschirme holen sie über `text()`. Englische Fachbegriffe wie im englischsprachigen Fechten (épée, touch, lunge, parry, flèche, piste, scoring box, priority …), siehe auch `CONTEXT.md`. Das Kommando „En garde – Prêts ? – Allez !“ bleibt französisch.
+- **Erster Start:** Spricht der Browser Englisch, startet das Spiel auf Englisch, sonst auf Deutsch. In den Einstellungen lässt sich die Sprache jederzeit wechseln (wird gespeichert); „Standard wiederherstellen“ lässt die Sprache, wie sie ist.
+- **„fi“:** Pixelify Sans macht aus „fi“ ein Zeichen, das wie „A“ aussieht. `text()` setzt zwischen f und i ein unsichtbares Trennzeichen (Zero Width Non-Joiner); so steht „fight“, „first“, „finish“ richtig da.
+- Der Trainer heißt auf Englisch „the coach“ – ohne „he/she“.
+

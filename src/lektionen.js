@@ -1,85 +1,84 @@
 // Die Lektionen des Trainings. Der Spieler ficht als Rot gegen den Trainer (Grün).
-//   text(t)  – Anleitung; t = Bedienung des Spielers (siehe bedienung: t.stoss = 'F' bzw. „Stoß“)
+//   titel, text(t), tipp – aus dem Wörterbuch; t = Bedienung des Spielers (siehe bedienung)
 //   trainer  – 'stehen' oder 'angreifen' (siehe Trainer.js)
 //   abstand  – Abstand der Fechter zu Beginn
 //   ziel(e)  – true, wenn das Ereignis e die Lektion erfüllt
-//   tipp     – Hinweis, wenn man mit einer anderen Aktion trifft
+//   tipp     – Hinweis, wenn man mit einer anderen Aktion trifft (nicht jede Lektion hat einen)
 // Ereignisse: { art: 'bewegt', strecke }, { art: 'parade', farbe }, { art: 'treffer', farbe, aktion, nachFinte }
 import { knopfText } from './touch.js';
+import { text, WOERTERBUECHER } from './texte.js';
 
 // Namen und Verben für die Anleitungen: an der Tastatur die Tasten (tasten = { stoss: 'F', … }),
-// auf dem Handy die Knöpfe am Bildschirm
+// auf dem Handy die Knöpfe am Bildschirm – jeweils in der eingestellten Sprache
 export function bedienung(tasten, touch = false) {
-  if (!touch) return { ...tasten, druecke: 'drücke', Druecke: 'Drücke', druecken: 'drücken' };
-  const knopf = (name) => (['links', 'rechts'].includes(name) ? knopfText(name) : `„${knopfText(name)}“`);
+  const verben = (art) => ({
+    druecke: text(`bedienung.${art}`),
+    Druecke: text(`bedienung.${art[0].toUpperCase()}${art.slice(1)}`),
+    druecken: text(`bedienung.${art}n`),
+  });
+  if (!touch) return { ...tasten, ...verben('druecke') };
+  const knopf = (name) => (['links', 'rechts'].includes(name) ? knopfText(name) : text('zitat', { text: knopfText(name) }));
   const namen = Object.fromEntries(['links', 'rechts', 'stoss', 'parade', 'tiefstoss', 'fleche'].map((n) => [n, knopf(n)]));
-  return { ...namen, druecke: 'tippe', Druecke: 'Tippe', druecken: 'tippen' };
+  return { ...namen, ...verben('tippe') };
+}
+
+// Eine Lektion: Titel, Anleitung und Tipp kommen aus dem Wörterbuch (texte.js, Schlüssel lektion.<id>.…)
+function lektion(id, eigenschaften) {
+  return {
+    id,
+    get titel() {
+      return text(`lektion.${id}.titel`);
+    },
+    text: (t) => text(`lektion.${id}.text`, t),
+    get tipp() {
+      const schluessel = `lektion.${id}.tipp`;
+      return schluessel in WOERTERBUECHER.de ? text(schluessel) : undefined;
+    },
+    ...eigenschaften,
+  };
 }
 
 const trifftMit = (aktion) => (e) => e.art === 'treffer' && e.farbe === 'rot' && e.aktion === aktion;
 
 export const LEKTIONEN = [
-  {
-    titel: 'Bewegen',
-    text: (t) => `Gehe mit ${t.rechts} vor und mit ${t.links} zurück.`,
+  lektion('bewegen', {
     trainer: 'stehen',
     abstand: 256,
     ziel: (e) => e.art === 'bewegt' && e.strecke >= 200,
-  },
-  {
-    titel: 'Stoß',
-    text: (t) => `Gehe nah heran und stoße mit ${t.stoss}.`,
+  }),
+  lektion('stoss', {
     trainer: 'stehen',
     abstand: 256,
     ziel: trifftMit('stoss'),
-    tipp: 'Diesmal nur ein einfacher Stoß – ohne vorwärts zu drücken.',
-  },
-  {
-    titel: 'Ausfall',
-    text: (t) => `Aus größerer Entfernung: ${t.rechts} halten und dabei ${t.stoss} ${t.druecken}.`,
+  }),
+  lektion('ausfall', {
     trainer: 'stehen',
     abstand: 200,
     ziel: trifftMit('ausfall'),
-    tipp: 'Halte beim Stoß gleichzeitig vorwärts gedrückt.',
-  },
-  {
-    titel: 'Parade',
-    text: (t) => `Der Trainer greift an. ${t.Druecke} ${t.parade}, sobald er ausholt.`,
+  }),
+  lektion('parade', {
     trainer: 'angreifen',
     abstand: 180,
     ziel: (e) => e.art === 'parade' && e.farbe === 'rot',
-  },
-  {
-    titel: 'Riposte',
-    text: (t) => `Pariere mit ${t.parade} und stoße direkt danach mit ${t.stoss} zurück.`,
+  }),
+  lektion('riposte', {
     trainer: 'angreifen',
     abstand: 180,
     ziel: trifftMit('riposte'),
-    tipp: 'Stoße gleich nach der gelungenen Parade.',
-  },
-  {
-    titel: 'Finte',
-    text: (t) =>
-      `Der Trainer pariert jeden Angriff. Täusche ihn: ${t.druecke} ${t.stoss} dreimal im Rhythmus – ausholen, abbrechen, zustoßen.`,
+  }),
+  lektion('finte', {
     trainer: 'pariert',
     abstand: 120,
     ziel: (e) => e.art === 'treffer' && e.farbe === 'rot' && e.nachFinte,
-    tipp: 'Nicht zu schnell: der echte Stoß muss nach seiner Parade kommen.',
-  },
-  {
-    titel: 'Tiefstoß',
-    text: (t) => `Tauche mit ${t.tiefstoss} unter dem Stoß des Trainers weg.`,
+  }),
+  lektion('tiefstoss', {
     trainer: 'angreifen',
     abstand: 180,
     ziel: trifftMit('tiefstoss'),
-    tipp: 'Warte, bis er ausholt, und tauche dann ab.',
-  },
-  {
-    titel: 'Flèche',
-    text: (t) => `Sturmangriff aus der Distanz: ${t.druecke} ${t.fleche}.`,
+  }),
+  lektion('fleche', {
     trainer: 'stehen',
     abstand: 240,
     ziel: trifftMit('fleche'),
-    tipp: 'Für die Flèche brauchst du Anlauf – geh erst etwas zurück.',
-  },
+  }),
 ];
