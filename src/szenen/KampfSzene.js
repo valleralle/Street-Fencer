@@ -5,7 +5,7 @@ import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
 import Meldegeraet from '../Meldegeraet.js';
 import Kamera from '../Kamera.js';
-import { amRechtenRand } from '../bildschirm.js';
+import { amRechtenRand, amLinkenRand } from '../bildschirm.js';
 import { halteAbstand } from '../abstand.js';
 import Funken from '../Funken.js';
 import Statistik from '../Statistik.js';
@@ -98,6 +98,12 @@ export default class KampfSzene extends Phaser.Scene {
     this.events.once('shutdown', () => this.game.events.off('hidden', imHintergrund));
     amRechtenRand(this, pausenHinweis, pausenHinweis.x);
 
+    // Charakter des Computergegners für dieses Gefecht, oben links
+    const charakter = this.computer
+      ? this.add.text(10, 10, `Grün: ${this.computer.charakterName}`, stil(this.touch ? 20 : 16, TEXTFARBEN.gruen)).setOrigin(0, 0)
+      : null;
+    if (charakter) amLinkenRand(this, charakter, charakter.x);
+
     this.meldegeraet = new Meldegeraet(this);
     this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
     this.meldung = this.add.text(480, 218, '', stil(48)).setOrigin(0.5);
@@ -105,6 +111,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.kamera = new Kamera(this, [
       ...this.meldegeraet.objekte,
       pausenHinweis,
+      ...(charakter ? [charakter] : []),
       this.hinweis,
       this.meldung,
       ...(this.touch?.objekte ?? []),
@@ -119,6 +126,7 @@ export default class KampfSzene extends Phaser.Scene {
 
   neuesGefecht(zeit) {
     this.gefecht = new Gefecht();
+    this.computer?.kenneGefecht(this.gefecht, 'gruen');
     this.statistik = new Statistik();
     this.zeigeStand();
     this.starteKommando(zeit);
