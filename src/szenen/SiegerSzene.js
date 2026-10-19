@@ -5,8 +5,7 @@ import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
 import { musik } from '../musik.js';
 import { texturName } from '../pixelart/namen.js';
 import { MITTE_X, BREITE as BILD_BREITE } from '../pixelart/fechterPosen.js';
-
-const NAMEN = { rot: 'Rot', gruen: 'Grün' };
+import { text, farbname } from '../texte.js';
 
 // Liegt über der KampfSzene, wenn das Gefecht entschieden ist: Sieger, Endstand, Statistik
 export default class SiegerSzene extends Phaser.Scene {
@@ -27,7 +26,7 @@ export default class SiegerSzene extends Phaser.Scene {
     this.add.rectangle(480, 270, 3 * 960, 3 * 540, 0x10141c, 0.92);
     musik.spiele('titel', this.sound.context);
 
-    this.add.text(480, 56, `${NAMEN[this.sieger]} gewinnt!`, stil(56, TEXTFARBEN[this.sieger])).setOrigin(0.5);
+    this.add.text(480, 56, text('sieger.gewinnt', { farbe: farbname(this.sieger) }), stil(56, TEXTFARBEN[this.sieger])).setOrigin(0.5);
     this.add.text(480, 110, `${this.stand.rot} : ${this.stand.gruen}`, stil(32)).setOrigin(0.5);
 
     // Der Sieger groß in seiner Jubelpose; Grün schaut wie im Gefecht nach links
@@ -41,7 +40,7 @@ export default class SiegerSzene extends Phaser.Scene {
 
     // Statistik als Tabelle
     const spalten = [460, 700, 820];
-    const kopf = [['', 'Rot', 'Grün']];
+    const kopf = [['', farbname('rot'), farbname('gruen')]];
     [...kopf, ...this.statistik].forEach((zeile, z) => {
       zeile.forEach((zelle, s) => {
         const farbe = z === 0 ? ['#ffffff', TEXTFARBEN.rot, TEXTFARBEN.gruen][s] : s === 0 ? '#9aa3b5' : '#ffffff';
@@ -54,8 +53,8 @@ export default class SiegerSzene extends Phaser.Scene {
       650,
       430,
       [
-        { text: 'Revanche', aktion: () => this.revanche() },
-        { text: 'Zurück zum Titel', aktion: () => this.zumTitel() },
+        { text: text('sieger.revanche'), aktion: () => this.revanche() },
+        { text: text('zurueckZumTitel'), aktion: () => this.zumTitel() },
       ],
       { abstand: 42 },
     );

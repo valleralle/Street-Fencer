@@ -95,6 +95,8 @@ export function ganzesGefecht(steuerungRot, steuerungGruen, startwert = 1) {
   rot.zuruecksetzen();
   gruen.zuruecksetzen();
   const g = new Gefecht(zufall(startwert));
+  steuerungRot.kenneGefecht?.(g, 'rot');
+  steuerungGruen.kenneGefecht?.(g, 'gruen');
   let t = 0;
   let ersterTreffer = null;
   let treffer = { rot: false, gruen: false };

@@ -3,6 +3,7 @@ import erzeugeMenue from '../Menue.js';
 import { stil } from '../schrift.js';
 import { musik } from '../musik.js';
 import { istTouchGeraet } from '../touch.js';
+import { text } from '../texte.js';
 
 export default class TitelSzene extends Phaser.Scene {
   constructor() {
@@ -14,23 +15,23 @@ export default class TitelSzene extends Phaser.Scene {
       .text(480, 120, 'Street Fencer', stil(72))
       .setOrigin(0.5);
     this.add
-      .text(480, 185, 'Degenfechten', stil(28, '#9aa3b5'))
+      .text(480, 185, text('titel.untertitel'), stil(28, '#9aa3b5'))
       .setOrigin(0.5);
 
     // Auf dem Handy fehlt nur „2 Spieler“ – zwei Spieler hätten an einem Handy zu wenig Platz
     const touch = istTouchGeraet(this);
     const eintraege = [
-      { text: 'Training', aktion: () => this.scene.start('TrainingSzene') },
-      { text: '2 Spieler', aktion: () => this.starteGefecht('zwei') },
-      { text: 'Gegen Computer', aktion: () => this.scene.start('StufenSzene') },
-      { text: 'Steuerung', aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
-      { text: 'Einstellungen', aktion: () => this.scene.start('EinstellungenSzene') },
+      { text: text('titel.training'), aktion: () => this.scene.start('TrainingSzene') },
+      { text: text('titel.zweiSpieler'), aktion: () => this.starteGefecht('zwei'), nurTastatur: true },
+      { text: text('titel.computer'), aktion: () => this.scene.start('StufenSzene') },
+      { text: text('titel.steuerung'), aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
+      { text: text('titel.einstellungen'), aktion: () => this.scene.start('EinstellungenSzene') },
     ];
-    erzeugeMenue(this, 480, touch ? 270 : 260, touch ? eintraege.filter((e) => e.text !== '2 Spieler') : eintraege);
+    erzeugeMenue(this, 480, touch ? 270 : 260, touch ? eintraege.filter((e) => !e.nurTastatur) : eintraege);
     musik.spiele('titel', this.sound.context);
 
     this.add
-      .text(480, 500, touch ? 'Antippen zum Auswählen' : '↑ / ↓ wählen · Enter bestätigen', stil(18, '#5d6578'))
+      .text(480, 500, text(touch ? 'titel.hinweisTouch' : 'titel.hinweisTasten'), stil(18, '#5d6578'))
       .setOrigin(0.5);
   }
 

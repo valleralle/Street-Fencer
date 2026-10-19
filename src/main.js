@@ -11,6 +11,9 @@ import SiegerSzene from './szenen/SiegerSzene.js';
 import { ladeSchrift } from './schrift.js';
 import { zentriereAlleSzenen } from './bildschirm.js';
 import { stummImHintergrund } from './hintergrund.js';
+import { wendeSpracheAufSeiteAn } from './texte.js';
+
+wendeSpracheAufSeiteAn();
 
 // Auf dem Handy füllt das Spiel den ganzen Bildschirm, am Computer bleibt es bei 16:9 (siehe bildschirm.js)
 const handy = matchMedia('(pointer: coarse)').matches;

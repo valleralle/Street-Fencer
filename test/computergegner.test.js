@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import Computergegner, { STUFEN } from '../src/Computergegner.js';
 import { ganzesGefecht, passiverSpieler, draufgaenger, zufall, fernsteuerung, zweiFechter, BILD } from './hilfen.js';
 
-const GEFECHTE = 30;
+const GEFECHTE = 100; // genug, damit der Zufall die Rangfolge der Stufen nicht verwischt
 
 // Anteil der Gefechte, die Grün (der zweite Computergegner bzw. die zweite Steuerung) gewinnt
 function siegquote(rotErzeugen, gruenErzeugen) {

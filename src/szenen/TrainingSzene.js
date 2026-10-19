@@ -14,6 +14,7 @@ import { einstellungen, tastenName } from '../einstellungen.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN } from '../farben.js';
 import { stil } from '../schrift.js';
+import { text } from '../texte.js';
 import { musik } from '../musik.js';
 
 const PAUSE_NACH_TREFFER = 1300;
@@ -44,8 +45,8 @@ export default class TrainingSzene extends Phaser.Scene {
     this.funken = new Funken(this);
 
     const zurueck = this.touch
-      ? this.add.text(944, 14, 'Zurück', stil(24, '#9aa3b5')).setOrigin(1, 0).setPadding(14)
-      : this.add.text(950, 10, 'Esc: zurück zum Titel', stil(16, '#5d6578')).setOrigin(1, 0);
+      ? this.add.text(944, 14, text('zurueck'), stil(24, '#9aa3b5')).setOrigin(1, 0).setPadding(14)
+      : this.add.text(950, 10, text('training.zurueckTasten'), stil(16, '#5d6578')).setOrigin(1, 0);
     if (this.touch) zurueck.setInteractive().on('pointerdown', () => this.scene.start('TitelSzene'));
     amRechtenRand(this, zurueck, zurueck.x);
     const ui = [
@@ -71,7 +72,7 @@ export default class TrainingSzene extends Phaser.Scene {
     this.lektion = LEKTIONEN[nummer];
     const tasten = Object.fromEntries(Object.entries(einstellungen.tasten.rot).map(([a, t]) => [a, tastenName(t)]));
     const t = bedienung(tasten, Boolean(this.touch));
-    this.nummer.setText(`Training · Lektion ${nummer + 1} von ${LEKTIONEN.length}`);
+    this.nummer.setText(text('training.nummer', { nummer: nummer + 1, gesamt: LEKTIONEN.length }));
     this.titel.setText(this.lektion.titel);
     this.anleitung.setText(this.lektion.text(t));
     this.rueckmeldung.setText('');
@@ -138,19 +139,19 @@ export default class TrainingSzene extends Phaser.Scene {
 
   melde(ereignis) {
     if (this.lektion.ziel(ereignis)) {
-      this.rueckmeldung.setColor('#7fd18b').setText('Gut gemacht!');
+      this.rueckmeldung.setColor('#7fd18b').setText(text('training.gut'));
       if (ereignis.art === 'treffer') this.gruen.zeigePose('getroffen');
       this.geschafft = true;
       this.pauseBis = this.szenenZeit + PAUSE_NACH_ERFOLG;
     } else if (ereignis.art === 'parade' && ereignis.farbe === 'gruen' && this.lektion.trainer === 'pariert') {
-      this.rueckmeldung.setColor('#ffd166').setText('Pariert! ' + this.lektion.tipp);
+      this.rueckmeldung.setColor('#ffd166').setText(text('training.pariert', { tipp: this.lektion.tipp ?? '' }));
       this.geschafft = false;
       this.pauseBis = this.szenenZeit + PAUSE_NACH_TREFFER;
     } else if (ereignis.art === 'treffer') {
       const getroffen = ereignis.farbe === 'gruen';
       this.rueckmeldung
         .setColor(getroffen ? FECHTERFARBEN.rot : '#ffd166')
-        .setText(getroffen ? 'Getroffen – noch einmal!' : this.lektion.tipp ?? 'Noch einmal!');
+        .setText(getroffen ? text('training.getroffen') : this.lektion.tipp ?? text('training.nochmal'));
       (getroffen ? this.rot : this.gruen).zeigePose('getroffen');
       this.geschafft = false;
       this.pauseBis = this.szenenZeit + PAUSE_NACH_TREFFER;
@@ -173,10 +174,8 @@ export default class TrainingSzene extends Phaser.Scene {
     this.pauseBis = null;
     this.rot.zeigePose('jubel');
     this.nummer.setText('');
-    this.titel.setText('Training abgeschlossen!');
-    this.anleitung.setText(
-      `Jetzt bist du bereit für ein Gefecht.\n${this.touch ? 'Antippen: zurück zum Titel' : 'Enter oder Esc: zurück zum Titel'}`,
-    );
+    this.titel.setText(text('training.fertig'));
+    this.anleitung.setText(text('training.bereit', { weiter: text(this.touch ? 'training.weiterTouch' : 'training.weiterTasten') }));
     this.rueckmeldung.setText('');
     this.input.keyboard.once('keydown-ENTER', () => this.scene.start('TitelSzene'));
     // Kurz warten, damit ein letztes Antippen der Knöpfe nicht gleich zum Titel springt

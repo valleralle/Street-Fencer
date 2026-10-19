@@ -22,6 +22,13 @@
         src: url('./schrift/pixelify-sans-latin-400-normal.woff2') format('woff2');
         font-weight: 400;
       }
+      /* Eigene Ziffern (Issue #8): gehören zur selben Schriftfamilie, greifen aber nur für 0–9 und „:“ */
+      @font-face {
+        font-family: 'Pixelify Sans';
+        src: url('./schrift/street-fencer-ziffern.ttf') format('truetype');
+        font-weight: 400;
+        unicode-range: U+0030-003A;
+      }
       html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
       /* Kein Scrollen, Zoomen oder Markieren beim Spielen mit den Fingern */
       body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
@@ -48,7 +55,7 @@
   </head>
   <body>
     <div id="spiel"></div>
-    <div id="drehen"><span>⟳</span>Bitte das Handy quer halten</div>
+    <div id="drehen"><span>⟳</span><div class="text">Bitte das Handy quer halten</div></div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

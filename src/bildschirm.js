@@ -17,9 +17,12 @@ export function zentriereKameras(szene) {
   for (const kamera of szene.cameras.cameras) kamera.setScroll(-r.x, -r.y);
 }
 
-// Hält ein Objekt am rechten Bildschirmrand: x ist die Lage im 960 breiten Bild
-export function amRechtenRand(szene, objekt, x) {
-  const setze = () => objekt.setX(x + rand(szene).x);
+// Hält ein Objekt am rechten bzw. linken Bildschirmrand: x ist die Lage im 960 breiten Bild
+export const amRechtenRand = (szene, objekt, x) => amRand(szene, objekt, x, 1);
+export const amLinkenRand = (szene, objekt, x) => amRand(szene, objekt, x, -1);
+
+function amRand(szene, objekt, x, seite) {
+  const setze = () => objekt.setX(x + seite * rand(szene).x);
   setze();
   szene.scale.on('resize', setze);
   szene.events.once('shutdown', () => szene.scale.off('resize', setze));

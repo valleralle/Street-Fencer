@@ -5,11 +5,12 @@ import { erzeugeFechterTexturen } from '../pixelart/texturen.js';
 import { zeichneHalle, ENDLINIE_LINKS, ENDLINIE_RECHTS, STARTLINIE_ROT, STARTLINIE_GRUEN } from '../kulisse.js';
 import Meldegeraet from '../Meldegeraet.js';
 import Kamera from '../Kamera.js';
-import { amRechtenRand } from '../bildschirm.js';
+import { amRechtenRand, amLinkenRand } from '../bildschirm.js';
 import { halteAbstand } from '../abstand.js';
 import Funken from '../Funken.js';
 import Statistik from '../Statistik.js';
 import { stil } from '../schrift.js';
+import { text, farbname } from '../texte.js';
 import { tastaturSteuerung } from '../steuerung.js';
 import { istTouchGeraet, touchSteuerung } from '../touch.js';
 import Computergegner from '../Computergegner.js';
@@ -20,7 +21,6 @@ import { musik } from '../musik.js';
 
 
 
-const NAMEN = { rot: 'Rot', gruen: 'Grün' };
 
 // Treffer, die so kurz nacheinander landen, zählen als Doppeltreffer
 const DOPPELTREFFER_FENSTER = 100;
@@ -88,7 +88,7 @@ export default class KampfSzene extends Phaser.Scene {
 
     const pausenHinweis = this.touch
       ? this.add.text(944, 14, '❚❚', stil(30, '#9aa3b5')).setOrigin(1, 0).setPadding(14)
-      : this.add.text(950, 10, 'Esc / P: Pause', stil(16, '#5d6578')).setOrigin(1, 0);
+      : this.add.text(950, 10, text('kampf.pause'), stil(16, '#5d6578')).setOrigin(1, 0);
     // Antippen hält das Gefecht an
     this.pauseAngetippt = false;
     if (this.touch) pausenHinweis.setInteractive().on('pointerdown', () => (this.pauseAngetippt = true));
@@ -98,6 +98,14 @@ export default class KampfSzene extends Phaser.Scene {
     this.events.once('shutdown', () => this.game.events.off('hidden', imHintergrund));
     amRechtenRand(this, pausenHinweis, pausenHinweis.x);
 
+    // Charakter des Computergegners für dieses Gefecht, oben links
+    const charakter = this.computer
+      ? this.add
+          .text(10, 10, text('kampf.charakter', { farbe: farbname('gruen'), charakter: this.computer.charakterName }), stil(this.touch ? 20 : 16, TEXTFARBEN.gruen))
+          .setOrigin(0, 0)
+      : null;
+    if (charakter) amLinkenRand(this, charakter, charakter.x);
+
     this.meldegeraet = new Meldegeraet(this);
     this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
     this.meldung = this.add.text(480, 218, '', stil(48)).setOrigin(0.5);
@@ -105,6 +113,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.kamera = new Kamera(this, [
       ...this.meldegeraet.objekte,
       pausenHinweis,
+      ...(charakter ? [charakter] : []),
       this.hinweis,
       this.meldung,
       ...(this.touch?.objekte ?? []),
@@ -119,6 +128,7 @@ export default class KampfSzene extends Phaser.Scene {
 
   neuesGefecht(zeit) {
     this.gefecht = new Gefecht();
+    this.computer?.kenneGefecht(this.gefecht, 'gruen');
     this.statistik = new Statistik();
     this.zeigeStand();
     this.starteKommando(zeit);
@@ -227,7 +237,7 @@ export default class KampfSzene extends Phaser.Scene {
     const ereignis = this.gefecht.zeitVergeht(delta);
     this.zeigeStand();
     if (ereignis === 'ende') {
-      this.meldung.setColor('#ffffff').setText('Zeit !');
+      this.meldung.setColor('#ffffff').setText(text('kampf.zeit'));
       this.zeigeJubel();
       this.phase = 'treffer';
       this.phaseStart = zeit;
@@ -267,12 +277,12 @@ export default class KampfSzene extends Phaser.Scene {
     const ergebnis = this.gefecht.werteAus(this.treffer);
     if (this.treffer.rot && this.treffer.gruen) this.statistik.doppeltreffer();
     if (ergebnis === 'gestrichen') {
-      this.meldung.setColor('#ffffff').setText('Doppeltreffer – gestrichen');
+      this.meldung.setColor('#ffffff').setText(text('kampf.doppeltrefferGestrichen'));
     } else if (ergebnis === 'doppeltreffer') {
-      this.meldung.setColor('#ffffff').setText('Doppeltreffer!');
+      this.meldung.setColor('#ffffff').setText(text('kampf.doppeltreffer'));
     } else {
       const farbe = this.treffer.rot ? 'rot' : 'gruen';
-      this.meldung.setColor(TEXTFARBEN[farbe]).setText(`Treffer ${NAMEN[farbe]}!`);
+      this.meldung.setColor(TEXTFARBEN[farbe]).setText(text('kampf.treffer', { farbe: farbname(farbe) }));
       this.fechter(farbe === 'rot' ? 'gruen' : 'rot').zeigePose('getroffen');
     }
     this.zeigeJubel();
@@ -304,7 +314,7 @@ export default class KampfSzene extends Phaser.Scene {
     const sekunden = Math.ceil(restzeit / 1000);
     this.meldegeraet.zeige(stand, `${Math.floor(sekunden / 60)}:${String(sekunden % 60).padStart(2, '0')}`);
     if (verlaengerung) {
-      this.hinweis.setColor(TEXTFARBEN[vorteil]).setText(`Verlängerung · Vorteil ${NAMEN[vorteil]}`);
+      this.hinweis.setColor(TEXTFARBEN[vorteil]).setText(text('kampf.verlaengerung', { farbe: farbname(vorteil) }));
     }
   }
 

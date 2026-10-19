@@ -67,7 +67,7 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 ## Name und .exe
 
 - **Neuer Name „Street Fencer“** im Titelbildschirm, Browser-Tab, README, Glossar und `package.json` (`street-fencer`). Das GitHub-Repo heißt inzwischen `Street-Fencer` (Browser-Adresse https://valleralle.github.io/Street-Fencer/); der lokale Projektordner kann weiter `game_pilot` heißen.
-- Der **Speicherschlüssel der Einstellungen** bleibt `game_pilot.einstellungen`, damit gespeicherte Lautstärken und Tasten erhalten bleiben. Die Entscheidungsnotiz erwähnt `game_pilot` weiter als damaligen Arbeitstitel.
+- Der **Speicherschlüssel der Einstellungen** heißt `street-fencer.einstellungen`. Einstellungen unter dem alten Schlüssel `game_pilot.einstellungen` werden beim ersten Start übernommen, dann wird der alte Schlüssel gelöscht. Die Entscheidungsnotiz ADR 0001 nennt „Street Fencer (damals game_pilot)“.
 - **.exe mit eingebautem Node** (Node „Single Executable Application“): Sie enthält das gebaute Spiel, startet einen kleinen Webserver nur auf diesem Rechner (`127.0.0.1`) und öffnet den Standardbrowser. Deshalb ist sie etwa 90 MB groß.
 - **Feste Adresse** `http://127.0.0.1:41730`, weil der Browser Einstellungen pro Adresse speichert. Ein zweiter Start öffnet nur das laufende Spiel.
 - Die .exe ist **nicht signiert** – Windows SmartScreen kann beim ersten Start warnen. Ihr Programmsymbol ist derselbe rote Fechter wie im Browser-Tab und in der Android-App (`npm run symbol`).
@@ -86,3 +86,31 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Im **Hochformat** erscheint ein Hinweis, das Handy zu drehen. Im Browser versucht das Spiel beim ersten Antippen in den Vollbildmodus zu wechseln (klappt nicht in jedem Browser, z. B. nicht auf dem iPhone).
 - **Android-App** mit Capacitor 8, App-ID `de.valleralle.streetfencer`, fest im Querformat und ohne Statusleiste. Es ist eine **Debug-APK** – zum Selbstinstallieren gedacht, nicht für den Play Store.
 - `package-lock.json` enthält Capacitor noch nicht (ich konnte hier kein npm ausführen). Die Workflows nutzen deshalb `npm install` statt `npm ci`; beim nächsten lokalen `npm install` wird die Lock-Datei ergänzt – die bitte einchecken.
+
+## Ziffern (Issue #8)
+
+- In Pixelify Sans sahen 5 und 2 wie S und Z aus. Die Ziffern 0–9 und der Doppelpunkt kommen jetzt aus einer **eigenen kleinen Schrift** im selben 5 × 7-Raster und mit denselben Abständen. Sie ist in `index.html` als Teil der Schriftfamilie „Pixelify Sans“ nur für diese Zeichen eingebunden – so gilt sie für **jede Zahl im Spiel** (Punktestand, Uhr, Statistik, Lektionsnummer, Lautstärke), ohne dass ein Bildschirm geändert werden musste.
+- Die 5 hat einen geraden, eckigen Kopf, die 2 einen runden Bogen. Vorschau: `grafik/ziffern-vorschau.png`.
+
+## Flèche gegen den Computer (Issue #10)
+
+- Ursache, warum stur nur Flèchen fast immer gewann: Der Computer griff während der anlaufenden Flèche oft selbst an (und konnte dann nicht parieren), und er plante seine Parade fest zum Zeitpunkt der ersten Schätzung – lief er der Flèche entgegen, kam sie früher.
+- Jetzt: Bei einer anlaufenden Flèche greift er nicht an und geht nicht vor; die Ankunft wird in jedem Bild neu geschätzt. Schätzt er falsch ein, weicht er nach seiner Reaktionszeit zurück (aus der Nähe sticht er wie bisher manchmal zurück).
+- Die Flèche selbst ist unverändert – auch für 2 Spieler. Der Test `test/fleche-balance.test.js` hält fest: stur nur Flèchen ist gegen keine Stufe mehr als 15 Prozentpunkte besser als stur nur Stöße.
+
+## Spielweisen des Computers (Issue #13)
+
+- **Spielweisen:** *Angreifen* (wie bisher), *Abwarten* (knapp außerhalb der Reichweite, auf Angriffe antworten) und *Distanz halten* (weiter weg, zurückweichen, nur Gelegenheiten nutzen). Dazu *Gleichzeitig* – nur in Führung: nah dranbleiben und in die Vorbereitung des Gegners hinein angreifen, damit es einen Doppeltreffer gibt.
+- **Wahl:** alle 2–6 Sekunden und nach jedem Treffer. Mit der Wahrscheinlichkeit `taktik` (Leicht 0,15, Mittel 0,55, Schwer 0,95) nach Stand und Restzeit – vorne eher abwarten bzw. auf Doppeltreffer spielen, vorne mit wenig Zeit auf Zeit spielen, hinten angreifen –, sonst nach Charakter. Wer wenig taktisch ficht (Leicht), greift eher planlos an.
+- **Doppeltreffer-Taktik** nie bei 4:4 und nie in der Verlängerung (dort würde ein Doppeltreffer gestrichen). Im Rückstand stößt Schwer nicht mehr blind zurück. Weil er im Rückstand aber mehr angreift, entstehen gegen einen angriffslustigen Spieler im Rückstand trotzdem viele Doppeltreffer – das Ticket wollte beides (mehr angreifen, Doppeltreffer meiden), was sich gegen so einen Spieler nicht ganz verträgt.
+- **Geduld:** Wartet er vergeblich auf einen Angriff, greift er selbst an (Angreifer nach 2,5 s, Taktiker 5 s, Konterfechter 8 s); an der eigenen Endlinie wartet er nie.
+- **Charakter** pro Gefecht zufällig: Angreifer, Konterfechter oder Taktiker – oben links angezeigt („Grün: Konterfechter“).
+- **Schwer** reagiert jetzt nach 145 statt 150 ms und antwortet zu 93 statt 92 % richtig – sonst wäre er durch die neuen Spielweisen kaum noch stärker als Mittel gewesen.
+
+## Sprachen (Issue #12)
+
+- **Deutsch und Englisch.** Alle sichtbaren Texte stehen in `src/texte.js`; die Bildschirme holen sie über `text()`. Englische Fachbegriffe wie im englischsprachigen Fechten (épée, touch, lunge, parry, flèche, piste, scoring box, priority …), siehe auch `CONTEXT.md`. Das Kommando „En garde – Prêts ? – Allez !“ bleibt französisch.
+- **Erster Start:** Spricht der Browser Englisch, startet das Spiel auf Englisch, sonst auf Deutsch. In den Einstellungen lässt sich die Sprache jederzeit wechseln (wird gespeichert); „Standard wiederherstellen“ lässt die Sprache, wie sie ist.
+- **„fi“:** Pixelify Sans macht aus „fi“ ein Zeichen, das wie „A“ aussieht. `text()` setzt zwischen f und i ein unsichtbares Trennzeichen (Zero Width Non-Joiner); so steht „fight“, „first“, „finish“ richtig da.
+- Der Trainer heißt auf Englisch „the coach“ – ohne „he/she“.
+
