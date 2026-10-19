@@ -91,3 +91,9 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 
 - In Pixelify Sans sahen 5 und 2 wie S und Z aus. Die Ziffern 0–9 und der Doppelpunkt kommen jetzt aus einer **eigenen kleinen Schrift** im selben 5 × 7-Raster und mit denselben Abständen. Sie ist in `index.html` als Teil der Schriftfamilie „Pixelify Sans“ nur für diese Zeichen eingebunden – so gilt sie für **jede Zahl im Spiel** (Punktestand, Uhr, Statistik, Lektionsnummer, Lautstärke), ohne dass ein Bildschirm geändert werden musste.
 - Die 5 hat einen geraden, eckigen Kopf, die 2 einen runden Bogen. Vorschau: `grafik/ziffern-vorschau.png`.
+
+## Flèche gegen den Computer (Issue #10)
+
+- Ursache, warum stur nur Flèchen fast immer gewann: Der Computer griff während der anlaufenden Flèche oft selbst an (und konnte dann nicht parieren), und er plante seine Parade fest zum Zeitpunkt der ersten Schätzung – lief er der Flèche entgegen, kam sie früher.
+- Jetzt: Bei einer anlaufenden Flèche greift er nicht an und geht nicht vor; die Ankunft wird in jedem Bild neu geschätzt. Schätzt er falsch ein, weicht er nach seiner Reaktionszeit zurück (aus der Nähe sticht er wie bisher manchmal zurück).
+- Die Flèche selbst ist unverändert – auch für 2 Spieler. Der Test `test/fleche-balance.test.js` hält fest: stur nur Flèchen ist gegen keine Stufe mehr als 15 Prozentpunkte besser als stur nur Stöße.
