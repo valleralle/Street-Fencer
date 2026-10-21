@@ -145,3 +145,11 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Es zählen nur Gefechte gegen den Computer (der Spieler ist Rot) und das Training. „Sieg nach 0:3“ heißt: irgendwann drei Treffer hinten gelegen. „Treffer nach Finte“: ein Treffer bis eine Sekunde nach einer Finte (wie in der Lektion).
 - Gespeichert unter `street-fencer.erfolge`: wann jeder Erfolg erreicht wurde und die Zähler (Gefechte, parierte Flèchen, Riposten). `hatErfolg(id)` fragt das für spätere Freischaltungen (#28) ab.
 - Nebenbei: Pixelify Sans macht auch aus „fl“ ein Zeichen wie „A“ (z. B. „flèche“ im englischen Text); `text()` trennt jetzt auch „fl“.
+
+## Training mit Medaillen und Reaktionstest (Issue #24)
+
+- **Übersicht:** „Training“ im Titelmenü führt jetzt zu einer Übersicht: alle Lektionen nacheinander (wie bisher), jede Lektion einzeln mit bester Medaille und Bestzeit, und der Reaktionstest Parade mit Bestwert. Esc bzw. „Zurück“ im Training führt zur Übersicht.
+- **Medaillen** nach der Zeit vom Beginn der Lektion bis zum Erfolg, auch über misslungene Versuche hinweg. Jede geschaffte Lektion bekommt mindestens Bronze. Grenzen (Gold bis / Silber bis): Bewegen 3,5/10,5 s, Stoß 3,5/10,5 s, Ausfall 3,0/9,0 s, Parade 4,5/13,5 s, Riposte 4,5/13,5 s, Finte 3,5/10,5 s, Tiefstoß 5,0/15,0 s, Flèche 3,5/10,5 s. Gold = Zeit des Test-Spielers (`test/trainingsspieler.js`, Reaktionszeit 220 ms) plus 2,5 s zum Lesen, aufgerundet auf halbe Sekunden; Silber = dreimal so lang.
+- **Reaktionstest Parade:** Der Trainer greift 10-mal an, mit 0,7 bis 3,0 s Pause dazwischen. Ein Angriff, der ohne Parade endet (getroffen oder ausgewichen), zählt als nicht pariert. Reaktionszeit = vom Beginn des Ausholens bis zum Drücken der Parade. Besser ist, wer mehr pariert, bei Gleichstand die kürzere mittlere Reaktionszeit.
+- Der Erfolg „Ausgebildet“ (#23) gilt jetzt, sobald jede Lektion einmal geschafft ist – auch einzeln geübt.
+- Gespeichert unter `street-fencer.training`.

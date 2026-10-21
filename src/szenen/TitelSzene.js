@@ -21,7 +21,7 @@ export default class TitelSzene extends Phaser.Scene {
     // Auf dem Handy fehlt nur „2 Spieler“ – zwei Spieler hätten an einem Handy zu wenig Platz
     const touch = istTouchGeraet(this);
     const eintraege = [
-      { text: text('titel.training'), aktion: () => this.scene.start('TrainingSzene') },
+      { text: text('titel.training'), aktion: () => this.scene.start('TrainingsUebersichtSzene') },
       { text: text('titel.zweiSpieler'), aktion: () => this.starteGefecht('zwei'), nurTastatur: true },
       { text: text('titel.computer'), aktion: () => this.scene.start('StufenSzene') },
       { text: text('titel.fortschritt'), aktion: () => this.scene.start('FortschrittSzene') },

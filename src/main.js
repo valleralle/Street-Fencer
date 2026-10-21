@@ -10,6 +10,7 @@ import PauseSzene from './szenen/PauseSzene.js';
 import SiegerSzene from './szenen/SiegerSzene.js';
 import FortschrittSzene from './szenen/FortschrittSzene.js';
 import ErfolgeSzene from './szenen/ErfolgeSzene.js';
+import TrainingsUebersichtSzene from './szenen/TrainingsUebersichtSzene.js';
 import { ladeSchrift } from './schrift.js';
 import { zentriereAlleSzenen } from './bildschirm.js';
 import { stummImHintergrund } from './hintergrund.js';
@@ -31,7 +32,7 @@ const config = {
     mode: handy ? Phaser.Scale.EXPAND : Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [TitelSzene, StufenSzene, SteuerungSzene, EinstellungenSzene, TastenSzene, TrainingSzene, KampfSzene, PauseSzene, SiegerSzene, FortschrittSzene, ErfolgeSzene],
+  scene: [TitelSzene, StufenSzene, SteuerungSzene, EinstellungenSzene, TastenSzene, TrainingSzene, KampfSzene, PauseSzene, SiegerSzene, FortschrittSzene, ErfolgeSzene, TrainingsUebersichtSzene],
 };
 
 ladeSchrift().then(() => {
