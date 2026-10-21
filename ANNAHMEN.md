@@ -119,3 +119,9 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Bis 0.2.0 fand Gradle auf den GitHub-Runnern den Debug-Schlüssel unter `~/.android` nicht und erzeugte bei jedem Build einen neuen – jede APK war anders signiert, Updates schlugen mit „App nicht installiert“ fehl. Jetzt trägt `werkzeuge/android/anpassen.mjs` den Schlüssel `werkzeuge/android/debug.keystore` direkt in die Gradle-Konfiguration ein, und der Android-Workflow bricht ab, wenn eine APK anders signiert ist.
 - Wer eine ältere APK installiert hat, muss einmal deinstallieren.
 
+
+## Mensur des Computers (Issue #22)
+
+- **Verzögert:** Der Computer sieht die Bewegung des Gegners erst nach seiner Reaktionszeit (Leicht 400, Mittel 260, Schwer 145 ms) und zieht erst nach, wenn die Mensur mehr als seine Toleranz von seinem Wunsch abweicht (Leicht 30, Mittel 18, Schwer 8 px) – dann bis zum Wunschabstand. Geht man auf ihn zu, schrumpft die Mensur so um mindestens 80/50/28 px, bevor er zurückweicht.
+- **Vorausschau:** Eine Bewegung, die er schon sieht, rechnet er ein Stück weiter (`antizipation` Leicht 0,4, Mittel 0,6, Schwer 0,9). Ohne sie lief er in einen gleichmäßig herankommenden Gegner hinein, weil er ihn noch weit weg sah – vor allem Schwer wurde dadurch schwächer als Mittel. Einen plötzlichen Antritt oder Richtungswechsel bemerkt er trotzdem erst nach seiner Reaktionszeit.
+- **Balance:** Wer stur vorgeht und stößt, gewinnt jetzt öfter (Stoß-Spammer gegen Leicht/Mittel/Schwer etwa 83/70/33 % statt 65/39/30 %) – genau das ist der Effekt des Tickets: man kann ihm die Mensur stehlen. Die Rangfolge der Stufen und die Flèche-Balance bleiben, alle bisherigen Tests sind grün.
