@@ -131,3 +131,10 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Aufgezeichnet werden die letzten 3 Sekunden Spielzeit; abgespielt werden die 2 Sekunden vor dem entscheidenden Treffer und der kurze Nachlauf danach, mit 35 % Tempo (gut 6 Sekunden). Danach bleibt das letzte Bild 0,8 Sekunden stehen, dann kommt der Siegerbildschirm.
 - Die Beschriftung zählt die Aktionen bis zum Treffer auf („Rot: Finte → Ausfall“). Ein abgebrochener Angriff erscheint als „Finte“; wer nichts getan hat, bekommt „keine Aktion“.
 - Überspringen: Antippen, Enter, Esc oder P (P ist sonst Pause – während der Wiederholung gibt es keine Pause).
+
+## Wertungszahl (Issue #26)
+
+- Elo-Formel mit K = 32; Start 1000, Computer Leicht 900, Mittel 1200, Schwer 1500. Gewertet wird jedes Gefecht gegen den Computer (auch Revanchen), nicht der Modus 2 Spieler.
+- **Ränge:** Anfänger unter 1050, Vereinsfechter ab 1050, Landesklasse ab 1200, Bundesklasse ab 1350, Meister ab 1500. Meister wird also nur, wer Schwer regelmäßig schlägt.
+- **Trefferquote** auf dem Bildschirm „Fortschritt“ ist der Anteil der eigenen an allen Treffern der letzten 20 Gefechte (die Trefferquote im Gefecht – Treffer je Angriff – wird nicht gespeichert).
+- Der Verlauf (Datum, Stufe, Sieg, Treffer, Gegentreffer, Wertung danach) liegt unter `street-fencer.wertung`; kaputte Einträge werden beim Laden verworfen.

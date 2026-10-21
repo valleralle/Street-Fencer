@@ -19,6 +19,7 @@ import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
 import { einstellungen, aktionsName } from '../einstellungen.js';
 import { musik } from '../musik.js';
 import Aufzeichnung, { aktionsFolge } from '../Aufzeichnung.js';
+import { ladeVerlauf, speichereVerlauf, trageEin, aufstieg } from '../Wertung.js';
 
 // Treffer, die so kurz nacheinander landen, zählen als Doppeltreffer
 const DOPPELTREFFER_FENSTER = 100;
@@ -378,7 +379,22 @@ export default class KampfSzene extends Phaser.Scene {
     this.phase = 'ende';
     this.phaseStart = zeit;
     this.scene.pause();
-    this.scene.launch('SiegerSzene', { sieger, stand, modus: this.modus, stufe: this.stufe, statistik: this.statistik.zeilen() });
+    this.scene.launch('SiegerSzene', {
+      sieger,
+      stand,
+      modus: this.modus,
+      stufe: this.stufe,
+      statistik: this.statistik.zeilen(),
+      wertung: this.modus === 'computer' ? this.werteFuerWertung() : null,
+    });
+  }
+
+  // Gegen den Computer zählt das Gefecht für die Wertungszahl des Spielers (Rot, Issue #26)
+  werteFuerWertung() {
+    const { sieger, stand } = this.gefecht;
+    const e = trageEin(ladeVerlauf(), { stufe: this.stufe, sieg: sieger === 'rot', treffer: stand.rot, gegentreffer: stand.gruen });
+    speichereVerlauf(e.verlauf);
+    return { aenderung: e.aenderung, neu: e.neu, aufstieg: aufstieg(e) };
   }
 
   zeigeStand() {

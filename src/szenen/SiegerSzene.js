@@ -19,6 +19,7 @@ export default class SiegerSzene extends Phaser.Scene {
     this.modus = daten.modus;
     this.stufe = daten.stufe;
     this.statistik = daten.statistik ?? [];
+    this.wertung = daten.wertung ?? null;
   }
 
   create() {
@@ -28,6 +29,14 @@ export default class SiegerSzene extends Phaser.Scene {
 
     this.add.text(480, 56, text('sieger.gewinnt', { farbe: farbname(this.sieger) }), stil(56, TEXTFARBEN[this.sieger])).setOrigin(0.5);
     this.add.text(480, 110, `${this.stand.rot} : ${this.stand.gruen}`, stil(32)).setOrigin(0.5);
+
+    // Gegen den Computer: Änderung der Wertungszahl und ggf. Aufstieg (Issue #26)
+    if (this.wertung) {
+      const { aenderung, neu, aufstieg } = this.wertung;
+      const zeilen = [text('sieger.wertung', { aenderung: aenderung >= 0 ? `+${aenderung}` : `−${-aenderung}`, wertung: neu })];
+      if (aufstieg) zeilen.push(text('sieger.aufstieg', { rang: text(`rang.${aufstieg}`) }));
+      this.add.text(190, 150, zeilen, stil(20, aufstieg ? '#ffd166' : '#c8ccd4')).setOrigin(0.5, 0).setAlign('center').setLineSpacing(4);
+    }
 
     // Der Sieger groß in seiner Jubelpose; Grün schaut wie im Gefecht nach links
     const mitte = (MITTE_X + 0.5) / BILD_BREITE;
