@@ -87,8 +87,9 @@ export function schlagabtausch({ abstand, aktionRot, zeitRot = 0, aktionGruen, z
   return ereignisse;
 }
 
-// Ein ganzes Gefecht zwischen zwei Steuerungen (mit denke()-Methode); liefert das Gefecht am Ende
-export function ganzesGefecht(steuerungRot, steuerungGruen, startwert = 1) {
+// Ein ganzes Gefecht zwischen zwei Steuerungen (mit denke()-Methode); liefert das Gefecht am Ende.
+// nachJedemBild(t, rot, gruen) läuft nach jedem Bild (z. B. für eine Aufzeichnung).
+export function ganzesGefecht(steuerungRot, steuerungGruen, startwert = 1, nachJedemBild = null) {
   const { rot, gruen } = zweiFechter(256, steuerungRot, steuerungGruen);
   rot.startX = 352;
   gruen.startX = 608;
@@ -122,6 +123,7 @@ export function ganzesGefecht(steuerungRot, steuerungGruen, startwert = 1) {
         ersterTreffer ??= t;
       }
     }
+    nachJedemBild?.(t, rot, gruen);
     if (ersterTreffer !== null && t - ersterTreffer >= 100) {
       g.werteAus(treffer);
       treffer = { rot: false, gruen: false };

@@ -303,19 +303,9 @@ export default class Fechter {
     this.riposteBis = this.jetzt + RIPOSTE_FENSTER;
   }
 
-  zeichne() {
-    if (!this.bild) return;
-    this.bild.setPosition(this.x, BODEN_Y).setTexture(texturName(this.name, this.pose));
-
-    // Schatten auf der Fechtbahn: ein flaches Oval unter den Schuhen
-    const [von, bis] = SCHUH_SPALTEN[this.pose].map((s) => this.x + this.richtung * this.bildAbstand(s));
-    const links = Math.min(von, bis) - 4;
-    const breite = Math.abs(bis - von) + 8;
-    this.schatten.clear().fillStyle(0x000000, 0.35);
-    this.schatten.fillRect(links + 4, BODEN_Y - 4, breite - 8, 2).fillRect(links, BODEN_Y - 2, breite, 4).fillRect(links + 4, BODEN_Y + 2, breite - 8, 2);
-
-    // Degen im Pixelstil: von der Hand bis zur Spitze aus Quadraten mit Bildpixelgröße
-    const g = this.klinge;
+  // Alles, was zum Zeichnen nötig ist, als einfaches Objekt – für die Wiederholung (Issue #29) aufgezeichnet.
+  // aktion/aktionStart/finten beschreiben, was er gerade tut, für die Beschriftung.
+  momentaufnahme() {
     const h = this.hand;
     const s = { ...this.spitze };
     // Die Klinge endet am Körper des Gegners, statt durch ihn hindurchzugehen
@@ -325,6 +315,24 @@ export default class Fechter {
       const durch = this.richtung * (s.x - kante) > 0;
       if (vorKante && durch && s.y >= f.oben && s.y <= f.unten) s.x = kante;
     }
+    return { x: this.x, pose: this.pose, hand: h, spitze: s, aktion: this.aktion, aktionStart: this.aktionStart, finten: this.finten };
+  }
+
+  // Zeichnet den Fechter; mit einer Momentaufnahme so, wie er damals stand
+  zeichne(bild = null) {
+    if (!this.bild) return;
+    const { x, pose, hand: h, spitze: s } = bild ?? this.momentaufnahme();
+    this.bild.setPosition(x, BODEN_Y).setTexture(texturName(this.name, pose));
+
+    // Schatten auf der Fechtbahn: ein flaches Oval unter den Schuhen
+    const [von, bis] = SCHUH_SPALTEN[pose].map((spalte) => x + this.richtung * this.bildAbstand(spalte));
+    const links = Math.min(von, bis) - 4;
+    const breite = Math.abs(bis - von) + 8;
+    this.schatten.clear().fillStyle(0x000000, 0.35);
+    this.schatten.fillRect(links + 4, BODEN_Y - 4, breite - 8, 2).fillRect(links, BODEN_Y - 2, breite, 4).fillRect(links + 4, BODEN_Y + 2, breite - 8, 2);
+
+    // Degen im Pixelstil: von der Hand bis zur Spitze aus Quadraten mit Bildpixelgröße
+    const g = this.klinge;
     const pixel = (x, y) =>
       g.fillRect(Math.floor(x / MASSSTAB) * MASSSTAB, Math.floor(y / MASSSTAB) * MASSSTAB, MASSSTAB, MASSSTAB);
     g.clear();

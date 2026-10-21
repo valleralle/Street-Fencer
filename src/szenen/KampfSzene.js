@@ -16,11 +16,9 @@ import { istTouchGeraet, touchSteuerung } from '../touch.js';
 import Computergegner from '../Computergegner.js';
 import { signalton, klingenschlag, luftzug } from '../klang.js';
 import { FECHTERFARBEN as TEXTFARBEN } from '../farben.js';
-import { einstellungen } from '../einstellungen.js';
+import { einstellungen, aktionsName } from '../einstellungen.js';
 import { musik } from '../musik.js';
-
-
-
+import Aufzeichnung, { aktionsFolge } from '../Aufzeichnung.js';
 
 // Treffer, die so kurz nacheinander landen, zählen als Doppeltreffer
 const DOPPELTREFFER_FENSTER = 100;
@@ -30,13 +28,18 @@ const PAUSE_NACH_TREFFER = 1500;
 const ZEITLUPE_TEMPO = 0.25;
 const ZEITLUPE_NACHLAUF = 700;
 
+// Wiederholung des entscheidenden Treffers (Issue #29): so viel Spielzeit vor dem Treffer, so langsam,
+// und so lange bleibt das letzte Bild stehen, bevor der Siegerbildschirm kommt
+const WIEDERHOLUNG_VORLAUF = 2000;
+const WIEDERHOLUNG_TEMPO = 0.35;
+const WIEDERHOLUNG_STANDBILD = 800;
 
 // Ablauf des Kommandos in Millisekunden; bei „Allez !“ geht es los
 const EN_GARDE = 700;
 const PRETS = 1400;
 const ALLEZ_SICHTBAR = 600;
 
-// Phasen der Szene: 'kommando' → 'gefecht' → 'treffer' → 'kommando' … → 'ende'
+// Phasen der Szene: 'kommando' → 'gefecht' → 'treffer' → 'kommando' … → ('wiederholung' →) 'ende'
 export default class KampfSzene extends Phaser.Scene {
   constructor() {
     super('KampfSzene');
@@ -109,6 +112,14 @@ export default class KampfSzene extends Phaser.Scene {
     this.meldegeraet = new Meldegeraet(this);
     this.hinweis = this.add.text(480, 166, '', stil(20, '#c8ccd4')).setOrigin(0.5, 0);
     this.meldung = this.add.text(480, 218, '', stil(48)).setOrigin(0.5);
+    // Wiederholung: Überschrift, Aktionen beider Fechter, Hinweis zum Überspringen
+    this.wiederholungText = this.add.text(480, 162, '', stil(this.touch ? 22 : 18, '#c8ccd4')).setOrigin(0.5, 0).setAlign('center').setLineSpacing(6);
+    this.ueberspringenText = this.add.text(480, 520, '', stil(this.touch ? 20 : 16, '#9aa3b5')).setOrigin(0.5, 1);
+    this.aufzeichnung = new Aufzeichnung(WIEDERHOLUNG_VORLAUF + 1000);
+    this.ueberspringenTaste = this.input.keyboard.addKey('ENTER');
+    this.input.on('pointerdown', () => {
+      if (this.phase === 'wiederholung') this.ueberspringen = true;
+    });
 
     this.kamera = new Kamera(this, [
       ...this.meldegeraet.objekte,
@@ -116,6 +127,8 @@ export default class KampfSzene extends Phaser.Scene {
       ...(charakter ? [charakter] : []),
       this.hinweis,
       this.meldung,
+      this.wiederholungText,
+      this.ueberspringenText,
       ...(this.touch?.objekte ?? []),
     ]);
 
@@ -130,6 +143,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.gefecht = new Gefecht();
     this.computer?.kenneGefecht(this.gefecht, 'gruen');
     this.statistik = new Statistik();
+    this.entscheidenderTreffer = null;
     this.zeigeStand();
     this.starteKommando(zeit);
   }
@@ -140,6 +154,7 @@ export default class KampfSzene extends Phaser.Scene {
     this.treffer = { rot: false, gruen: false };
     this.ersterTrefferZeit = null;
     this.zeitlupe = false;
+    this.aufzeichnung.leere();
     this.schalteLampe('rot', false);
     this.schalteLampe('gruen', false);
     this.phase = 'kommando';
@@ -165,6 +180,7 @@ export default class KampfSzene extends Phaser.Scene {
       if (seit >= ALLEZ_SICHTBAR && this.meldung.text === 'Allez !') this.meldung.setText('');
       this.spielZeit += spielDelta;
       this.fechte(zeit, spielDelta);
+      this.nimmAuf();
     } else if (this.phase === 'treffer') {
       if (seit < ZEITLUPE_NACHLAUF) {
         this.spielZeit += spielDelta;
@@ -172,11 +188,21 @@ export default class KampfSzene extends Phaser.Scene {
         rot.aktualisiere(this.spielZeit, spielDelta, gruen, false);
         gruen.aktualisiere(this.spielZeit, spielDelta, rot, false);
         this.halteAbstand(...vorher);
+        this.nimmAuf();
       }
       if (seit >= PAUSE_NACH_TREFFER) {
-        if (this.gefecht.sieger) this.beende(zeit);
-        else this.starteKommando(zeit);
+        if (!this.gefecht.sieger) this.starteKommando(zeit);
+        else if (this.entscheidenderTreffer !== null) this.starteWiederholung(zeit);
+        else this.beende(zeit);
       }
+    }
+
+    if (this.phase === 'wiederholung') {
+      const bild = this.spieleWiederholung(zeit, delta);
+      this.kamera.folge(delta, bild.rot, bild.gruen);
+      rot.zeichne(bild.rot);
+      gruen.zeichne(bild.gruen);
+      return;
     }
 
     if (this.pauseGedrueckt() && this.phase !== 'ende') {
@@ -287,6 +313,7 @@ export default class KampfSzene extends Phaser.Scene {
     }
     this.zeigeJubel();
     this.zeigeStand();
+    this.entscheidenderTreffer = this.gefecht.sieger ? this.ersterTrefferZeit : null;
     this.phase = 'treffer';
     this.phaseStart = zeit;
   }
@@ -298,6 +325,51 @@ export default class KampfSzene extends Phaser.Scene {
   // Ist das Gefecht entschieden, jubelt der Sieger
   zeigeJubel() {
     if (this.gefecht.sieger) this.fechter(this.gefecht.sieger).zeigePose('jubel');
+  }
+
+  // Hält den Zustand beider Fechter für die Wiederholung fest; ändert am Gefecht nichts
+  nimmAuf() {
+    this.aufzeichnung.nimmAuf(this.spielZeit, {
+      rot: this.fechterRot.momentaufnahme(),
+      gruen: this.fechterGruen.momentaufnahme(),
+    });
+  }
+
+  // Spielt die letzten Sekunden vor dem entscheidenden Treffer in Zeitlupe ab – nur aus der Aufzeichnung
+  starteWiederholung(zeit) {
+    this.bilder = this.aufzeichnung.ab(this.entscheidenderTreffer - WIEDERHOLUNG_VORLAUF);
+    this.wiedergabeZeit = this.bilder[0].zeit;
+    this.ueberspringen = false;
+    this.pauseGedrueckt();
+    Phaser.Input.Keyboard.JustDown(this.ueberspringenTaste);
+    this.phase = 'wiederholung';
+    this.phaseStart = zeit;
+    this.meldung.setText('');
+    this.hinweis.setText('');
+    const bisTreffer = this.bilder.filter((b) => b.zeit <= this.entscheidenderTreffer);
+    const zeile = (farbe) => {
+      const folge = aktionsFolge(bisTreffer, farbe).map(aktionsName).join(' → ');
+      return text('wiederholung.folge', { farbe: farbname(farbe), folge: folge || text('wiederholung.nichts') });
+    };
+    this.wiederholungText.setText([text('wiederholung.titel'), zeile('rot'), zeile('gruen')]);
+    this.ueberspringenText.setText(text(this.touch ? 'wiederholung.ueberspringenTouch' : 'wiederholung.ueberspringen'));
+  }
+
+  // Liefert das Bild der Aufzeichnung, das jetzt zu zeigen ist; am Ende oder beim Überspringen
+  // folgt der Siegerbildschirm
+  spieleWiederholung(zeit, delta) {
+    this.wiedergabeZeit += delta * WIEDERHOLUNG_TEMPO;
+    const bilder = this.bilder;
+    const bild = bilder.findLast((b) => b.zeit <= this.wiedergabeZeit) ?? bilder[0];
+    const ende = bilder.at(-1).zeit + WIEDERHOLUNG_STANDBILD * WIEDERHOLUNG_TEMPO;
+    const uebersprungen = this.ueberspringen || this.pauseGedrueckt() || Phaser.Input.Keyboard.JustDown(this.ueberspringenTaste);
+    if (uebersprungen || this.wiedergabeZeit >= ende) {
+      this.wiederholungText.setText('');
+      this.ueberspringenText.setText('');
+      this.beende(zeit);
+      return bilder.at(-1);
+    }
+    return bild;
   }
 
   beende(zeit) {
