@@ -20,6 +20,7 @@ export default class SiegerSzene extends Phaser.Scene {
     this.stufe = daten.stufe;
     this.statistik = daten.statistik ?? [];
     this.wertung = daten.wertung ?? null;
+    this.erfolge = daten.erfolge ?? [];
   }
 
   create() {
@@ -46,6 +47,11 @@ export default class SiegerSzene extends Phaser.Scene {
       .setOrigin(gruen ? 1 - mitte : mitte, 1)
       .setScale(5)
       .setFlipX(gruen);
+
+    // Neu erreichte Erfolge (Issue #23) unter dem Sieger, höchstens drei, dazu „… und n weitere“
+    const erfolge = this.erfolge.slice(0, 3).map((id) => text('erfolge.neu', { titel: text(`erfolg.${id}.titel`) }));
+    if (this.erfolge.length > 3) erfolge.push(text('erfolge.weitere', { anzahl: this.erfolge.length - 3 }));
+    if (erfolge.length) this.add.text(190, 452, erfolge, stil(18, '#ffd166')).setOrigin(0.5, 0).setAlign('center').setLineSpacing(2);
 
     // Statistik als Tabelle
     const spalten = [460, 700, 820];

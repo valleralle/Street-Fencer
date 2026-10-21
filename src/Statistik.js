@@ -1,7 +1,8 @@
 // Zählt während eines Gefechts mit, was jeder Fechter gemacht hat – für die Auswertung am Ende.
 import { text } from './texte.js';
 
-const leer = () => ({ angriffe: 0, finten: 0, treffer: 0, riposten: 0, paraden: 0, doppeltreffer: 0 });
+// flechenPariert, trefferNachFinte und tiefstossTreffer stehen nicht in der Tabelle – sie zählen für die Erfolge
+const leer = () => ({ angriffe: 0, finten: 0, treffer: 0, riposten: 0, paraden: 0, doppeltreffer: 0, flechenPariert: 0, trefferNachFinte: 0, tiefstossTreffer: 0 });
 
 export default class Statistik {
   constructor() {
@@ -18,15 +19,20 @@ export default class Statistik {
     this.werte[farbe].finten++;
   }
 
-  // farbe hat erfolgreich pariert
-  parade(farbe) {
+  // farbe hat erfolgreich pariert; angriff = was pariert wurde (z. B. 'fleche')
+  parade(farbe, angriff) {
     this.werte[farbe].paraden++;
+    if (angriff === 'fleche') this.werte[farbe].flechenPariert++;
   }
 
-  // farbe hat getroffen; aktion = womit (z. B. 'riposte'). Zählt auch Treffer in Doppeltreffern.
-  treffer(farbe, aktion) {
-    this.werte[farbe].treffer++;
-    if (aktion === 'riposte') this.werte[farbe].riposten++;
+  // farbe hat getroffen; aktion = womit (z. B. 'riposte'), nachFinte = kurz nach einer Finte.
+  // Zählt auch Treffer in Doppeltreffern.
+  treffer(farbe, aktion, nachFinte = false) {
+    const w = this.werte[farbe];
+    w.treffer++;
+    if (aktion === 'riposte') w.riposten++;
+    if (aktion === 'tiefstoss') w.tiefstossTreffer++;
+    if (nachFinte) w.trefferNachFinte++;
   }
 
   doppeltreffer() {

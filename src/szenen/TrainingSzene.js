@@ -16,6 +16,7 @@ import { FECHTERFARBEN } from '../farben.js';
 import { stil } from '../schrift.js';
 import { text } from '../texte.js';
 import { musik } from '../musik.js';
+import { ladeErfolge, speichereErfolge, pruefe } from '../Erfolge.js';
 
 const PAUSE_NACH_TREFFER = 1300;
 const PAUSE_NACH_ERFOLG = 1800;
@@ -176,7 +177,10 @@ export default class TrainingSzene extends Phaser.Scene {
     this.nummer.setText('');
     this.titel.setText(text('training.fertig'));
     this.anleitung.setText(text('training.bereit', { weiter: text(this.touch ? 'training.weiterTouch' : 'training.weiterTasten') }));
-    this.rueckmeldung.setText('');
+    // Erfolg „Ausgebildet“ (Issue #23)
+    const { daten, neu } = pruefe(ladeErfolge(), { art: 'training', abgeschlossen: true });
+    speichereErfolge(daten);
+    this.rueckmeldung.setColor('#ffd166').setText(neu.map((id) => text('erfolge.neu', { titel: text(`erfolg.${id}.titel`) })).join('\n'));
     this.input.keyboard.once('keydown-ENTER', () => this.scene.start('TitelSzene'));
     // Kurz warten, damit ein letztes Antippen der Knöpfe nicht gleich zum Titel springt
     if (this.touch) this.time.delayedCall(800, () => this.input.once('pointerdown', () => this.scene.start('TitelSzene')));

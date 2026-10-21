@@ -19,10 +19,11 @@ test('alle Platzhalter eines Textes kommen in beiden Sprachen vor', () => {
   }
 });
 
-test('„fi“ wird getrennt, damit die Pixelschrift keine Ligatur daraus macht – sonst bleibt alles gleich', () => {
+test('„fi“ und „fl“ werden getrennt, damit die Pixelschrift keine Ligatur daraus macht – sonst bleibt alles gleich', () => {
   assert.equal(ohneFi('fight first finish'), 'f‌ight f‌irst f‌inish');
   assert.equal(ohneFi(ohneFi('fi')), 'f‌i');
   assert.equal(ohneFi('Treffer – Flèche'), 'Treffer – Flèche');
+  assert.equal(ohneFi('the flèche'), 'the f‌lèche'); // „fl“ ebenso
   assert.ok(!/fi/.test(text('steuerung.touchRegeln', {}, 'en')), 'die Texte kommen schon getrennt');
 });
 

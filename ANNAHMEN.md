@@ -138,3 +138,10 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Ränge:** Anfänger unter 1050, Vereinsfechter ab 1050, Landesklasse ab 1200, Bundesklasse ab 1350, Meister ab 1500. Meister wird also nur, wer Schwer regelmäßig schlägt.
 - **Trefferquote** auf dem Bildschirm „Fortschritt“ ist der Anteil der eigenen an allen Treffern der letzten 20 Gefechte (die Trefferquote im Gefecht – Treffer je Angriff – wird nicht gespeichert).
 - Der Verlauf (Datum, Stufe, Sieg, Treffer, Gegentreffer, Wertung danach) liegt unter `street-fencer.wertung`; kaputte Einträge werden beim Laden verworfen.
+
+## Erfolge (Issue #23)
+
+- 15 Erfolge in vier Gruppen: **Erste Schritte** (erster Treffer, erster Sieg, Training abgeschlossen), **Technik** (Sieg mit Riposte als letztem Treffer, Treffer nach Finte, Tiefstoß-Treffer gegen Schwer, 10 parierte Flèchen, 25 Riposten-Treffer), **Leistung** (Sieg gegen Schwer, 5:0 gegen Schwer, Sieg in der Verlängerung, Sieg nach 0:3) und **Ausdauer** (10/50/100 Gefechte gegen den Computer).
+- Es zählen nur Gefechte gegen den Computer (der Spieler ist Rot) und das Training. „Sieg nach 0:3“ heißt: irgendwann drei Treffer hinten gelegen. „Treffer nach Finte“: ein Treffer bis eine Sekunde nach einer Finte (wie in der Lektion).
+- Gespeichert unter `street-fencer.erfolge`: wann jeder Erfolg erreicht wurde und die Zähler (Gefechte, parierte Flèchen, Riposten). `hatErfolg(id)` fragt das für spätere Freischaltungen (#28) ab.
+- Nebenbei: Pixelify Sans macht auch aus „fl“ ein Zeichen wie „A“ (z. B. „flèche“ im englischen Text); `text()` trennt jetzt auch „fl“.

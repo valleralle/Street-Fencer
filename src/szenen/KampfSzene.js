@@ -20,6 +20,7 @@ import { einstellungen, aktionsName } from '../einstellungen.js';
 import { musik } from '../musik.js';
 import Aufzeichnung, { aktionsFolge } from '../Aufzeichnung.js';
 import { ladeVerlauf, speichereVerlauf, trageEin, aufstieg } from '../Wertung.js';
+import { ladeErfolge, speichereErfolge, pruefe } from '../Erfolge.js';
 
 // Treffer, die so kurz nacheinander landen, zählen als Doppeltreffer
 const DOPPELTREFFER_FENSTER = 100;
@@ -145,6 +146,8 @@ export default class KampfSzene extends Phaser.Scene {
     this.computer?.kenneGefecht(this.gefecht, 'gruen');
     this.statistik = new Statistik();
     this.entscheidenderTreffer = null;
+    this.letzterTreffer = { rot: null, gruen: null };
+    this.groessterRueckstand = 0;
     this.zeigeStand();
     this.starteKommando(zeit);
   }
@@ -277,15 +280,16 @@ export default class KampfSzene extends Phaser.Scene {
   pruefeStoss(angreifer, gegner, farbe, zeit) {
     const ergebnis = angreifer.pruefeStoss(gegner);
     if (ergebnis === 'pariert') {
+      this.statistik.parade(gegner.name, angreifer.aktion);
       angreifer.wurdePariert();
       gegner.paradeGelungen();
       klingenschlag(this.sound.context);
-      this.statistik.parade(gegner.name);
       // Funken dort, wo die Klingen aufeinandertreffen: kurz vor dem Parierenden, auf Höhe der Spitze
       this.funken.spruehe(gegner.vorderkante + gegner.richtung * 22, angreifer.spitze.y, gegner.richtung);
     } else if (ergebnis === 'treffer') {
       this.treffer[farbe] = true;
-      this.statistik.treffer(farbe, angreifer.aktion);
+      this.statistik.treffer(farbe, angreifer.aktion, angreifer.nachFinte);
+      this.letzterTreffer[farbe] = angreifer.aktion;
       this.schalteLampe(farbe, true);
       if (this.ersterTrefferZeit === null) {
         this.ersterTrefferZeit = zeit;
@@ -302,6 +306,8 @@ export default class KampfSzene extends Phaser.Scene {
 
   werteTrefferAus(zeit) {
     const ergebnis = this.gefecht.werteAus(this.treffer);
+    this.groessterRueckstand = Math.max(this.groessterRueckstand, this.gefecht.stand.gruen - this.gefecht.stand.rot);
+    if (!this.treffer.rot) this.letzterTreffer.rot = null; // zählt nur, wenn Rot den letzten Treffer gesetzt hat
     if (this.treffer.rot && this.treffer.gruen) this.statistik.doppeltreffer();
     if (ergebnis === 'gestrichen') {
       this.meldung.setColor('#ffffff').setText(text('kampf.doppeltrefferGestrichen'));
@@ -386,7 +392,25 @@ export default class KampfSzene extends Phaser.Scene {
       stufe: this.stufe,
       statistik: this.statistik.zeilen(),
       wertung: this.modus === 'computer' ? this.werteFuerWertung() : null,
+      erfolge: this.modus === 'computer' ? this.pruefeErfolge() : [],
     });
+  }
+
+  // Gegen den Computer: neue Erfolge freischalten (Issue #23); liefert ihre ids
+  pruefeErfolge() {
+    const { sieger, stand, verlaengerung } = this.gefecht;
+    const { daten, neu } = pruefe(ladeErfolge(), {
+      art: 'gefecht',
+      stufe: this.stufe,
+      sieg: sieger === 'rot',
+      stand: { ...stand },
+      verlaengerung,
+      letzterTreffer: this.letzterTreffer.rot,
+      groessterRueckstand: this.groessterRueckstand,
+      statistik: { ...this.statistik.werte.rot },
+    });
+    speichereErfolge(daten);
+    return neu;
   }
 
   // Gegen den Computer zählt das Gefecht für die Wertungszahl des Spielers (Rot, Issue #26)
