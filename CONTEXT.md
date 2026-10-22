@@ -38,6 +38,11 @@ Die zwei Lampen im Meldegerät in den Farben der Fechter, von denen jede mit ein
 _Vermeiden_: Anzeige, Lampe (allein), Scoreboard
 _Englisch_: scoring lights
 
+**Mensur**:
+Der Abstand zwischen den beiden Fechtern. Wer die Mensur hält, bleibt knapp außerhalb der Reichweite des Gegners; wer sie „stiehlt“, kommt unbemerkt näher.
+_Vermeiden_: Distanz (als Fachbegriff), Range
+_Englisch_: distance
+
 ### Aktionen
 
 **Grundstellung**:

@@ -8,10 +8,12 @@
 //   taktik          – wie oft er seine Spielweise nach Spielstand und Restzeit wählt statt nach Laune,
 //                     und wie oft er in Führung auf Doppeltreffer spielt (0 bis 1)
 //   bedenkzeit      – Millisekunden, bis er seine Spielweise wieder überdenkt
+//   toleranz        – so viele Pixel darf die Mensur von seinem Wunsch abweichen, bevor er nachzieht
+//   antizipation    – wie weit er eine Bewegung des Gegners, die er sieht, vorausdenkt (0 bis 1)
 export const STUFEN = {
-  leicht: { reaktion: 400, treffsicherheit: 0.45, angriffslust: 0.3, durchschaut: 0, finten: 0, taktik: 0.15, bedenkzeit: 6000 },
-  mittel: { reaktion: 260, treffsicherheit: 0.65, angriffslust: 0.5, durchschaut: 0.4, finten: 0.15, taktik: 0.55, bedenkzeit: 3500 },
-  schwer: { reaktion: 145, treffsicherheit: 0.93, angriffslust: 0.7, durchschaut: 0.8, finten: 0.3, taktik: 0.95, bedenkzeit: 2000 },
+  leicht: { reaktion: 400, treffsicherheit: 0.45, angriffslust: 0.3, durchschaut: 0, finten: 0, taktik: 0.15, bedenkzeit: 6000, toleranz: 30, antizipation: 0.4 },
+  mittel: { reaktion: 260, treffsicherheit: 0.65, angriffslust: 0.5, durchschaut: 0.4, finten: 0.15, taktik: 0.55, bedenkzeit: 3500, toleranz: 18, antizipation: 0.6 },
+  schwer: { reaktion: 145, treffsicherheit: 0.93, angriffslust: 0.7, durchschaut: 0.8, finten: 0.3, taktik: 0.95, bedenkzeit: 2000, toleranz: 8, antizipation: 0.9 },
 };
 
 // Spielweisen (Issue #13): angreifen – wie bisher von sich aus angreifen; abwarten – knapp außerhalb
@@ -49,6 +51,7 @@ import { text } from './texte.js';
 
 const AN_DER_WAND = 140; // so nah an der eigenen Endlinie hört das Abwarten auf
 
+const BLICK = 100; // aus so vielen Millisekunden Bewegung schätzt er das Tempo des Gegners
 const DENKPAUSE = 200; // so oft überlegt er, ob er selbst angreift
 const ANGRIFFE = ['stoss', 'ausfall', 'riposte', 'fleche'];
 const REICHWEITEN = { stoss: STOSS_REICHWEITE, riposte: STOSS_REICHWEITE, ausfall: AUSFALL_REICHWEITE, fleche: FLECHE_REICHWEITE };
@@ -74,6 +77,8 @@ export default class Computergegner {
     this.gesehen = null;
     this.ausgenutzt = null;
     this.flecheAbwehr = null;
+    this.gegnerVerlauf = []; // [zeit, x] des Gegners – er sieht dessen Bewegung erst nach seiner Reaktionszeit
+    this.gehtNach = null; // 'vor' / 'zurueck', solange er die Mensur gerade nachzieht
   }
 
   // Schnittstelle einer Steuerung (siehe steuerung.js)
@@ -224,14 +229,22 @@ export default class Computergegner {
       }
     }
 
-    // Abstand halten: knapp außerhalb der Reichweite des Gegners, mit wechselndem Rhythmus
+    // Abstand halten: knapp außerhalb der Reichweite des Gegners, mit wechselndem Rhythmus.
+    // Er sieht die Bewegung des Gegners erst nach seiner Reaktionszeit (Issue #22) und zieht erst nach,
+    // wenn die Mensur mehr als seine Toleranz abweicht – dann aber bis zum Wunschabstand.
     if (jetzt >= this.naechsterAbstandswechsel) {
       const [nah, fern] = weise.abstand;
       this.wunschAbstand = nah + this.zufall() * (fern - nah);
       this.naechsterAbstandswechsel = jetzt + 600 + this.zufall() * 1000;
     }
-    this.halte[vor] = !ich.aktion && !flecheKommt && abstand > this.wunschAbstand + 8;
-    this.halte[zurueck] = !ich.aktion && abstand < this.wunschAbstand - 8;
+    const gesehen = this.gesehenerAbstand(jetzt, ich, gegner);
+    const abweichung = gesehen - this.wunschAbstand;
+    if (ich.aktion) this.gehtNach = null;
+    else if (abweichung > this.werte.toleranz) this.gehtNach = 'vor';
+    else if (abweichung < -this.werte.toleranz) this.gehtNach = 'zurueck';
+    else if ((this.gehtNach === 'vor' && abweichung <= 0) || (this.gehtNach === 'zurueck' && abweichung >= 0)) this.gehtNach = null;
+    this.halte[vor] = !ich.aktion && !flecheKommt && this.gehtNach === 'vor';
+    this.halte[zurueck] = !ich.aktion && this.gehtNach === 'zurueck';
     // Hat er die Flèche bemerkt, aber keine Abwehr geplant, weicht er wenigstens aus – oft läuft sie dann ins Leere
     if (flecheKommt && !this.flecheAbwehr && !ich.aktion && jetzt >= gegner.aktionStart + reaktion) {
       this.halte[vor] = false;
@@ -250,6 +263,21 @@ export default class Computergegner {
       this.gedrueckteTasten.add(p.taste);
     }
     this.geplant = this.geplant.filter((p) => p.zeit > jetzt);
+  }
+
+  // Mensur, wie er sie wahrnimmt: seine eigene Position jetzt, die des Gegners von vor seiner Reaktionszeit.
+  // Wer das Gefecht liest (antizipation), rechnet eine Bewegung, die er schon sieht, ein Stück weiter –
+  // einen plötzlichen Antritt oder Richtungswechsel bemerkt aber auch er erst mit Verzögerung.
+  gesehenerAbstand(jetzt, ich, gegner) {
+    const verzug = this.werte.reaktion;
+    const verlauf = this.gegnerVerlauf;
+    verlauf.push([jetzt, gegner.x]);
+    while (verlauf.length > 1 && verlauf[1][0] <= jetzt - verzug - BLICK) verlauf.shift();
+    const gesehen = verlauf.findLast(([zeit]) => zeit <= jetzt - verzug) ?? verlauf[0];
+    const davor = verlauf[0];
+    const tempo = gesehen[0] > davor[0] ? (gesehen[1] - davor[1]) / (gesehen[0] - davor[0]) : 0;
+    const geschaetzt = gesehen[1] + tempo * (jetzt - gesehen[0]) * this.werte.antizipation;
+    return Math.abs(geschaetzt - ich.x);
   }
 
   reagiere(jetzt, gegner, abstand) {

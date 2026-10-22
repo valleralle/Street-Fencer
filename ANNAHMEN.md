@@ -119,3 +119,37 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - Bis 0.2.0 fand Gradle auf den GitHub-Runnern den Debug-Schlüssel unter `~/.android` nicht und erzeugte bei jedem Build einen neuen – jede APK war anders signiert, Updates schlugen mit „App nicht installiert“ fehl. Jetzt trägt `werkzeuge/android/anpassen.mjs` den Schlüssel `werkzeuge/android/debug.keystore` direkt in die Gradle-Konfiguration ein, und der Android-Workflow bricht ab, wenn eine APK anders signiert ist.
 - Wer eine ältere APK installiert hat, muss einmal deinstallieren.
 
+
+## Mensur des Computers (Issue #22)
+
+- **Verzögert:** Der Computer sieht die Bewegung des Gegners erst nach seiner Reaktionszeit (Leicht 400, Mittel 260, Schwer 145 ms) und zieht erst nach, wenn die Mensur mehr als seine Toleranz von seinem Wunsch abweicht (Leicht 30, Mittel 18, Schwer 8 px) – dann bis zum Wunschabstand. Geht man auf ihn zu, schrumpft die Mensur so um mindestens 80/50/28 px, bevor er zurückweicht.
+- **Vorausschau:** Eine Bewegung, die er schon sieht, rechnet er ein Stück weiter (`antizipation` Leicht 0,4, Mittel 0,6, Schwer 0,9). Ohne sie lief er in einen gleichmäßig herankommenden Gegner hinein, weil er ihn noch weit weg sah – vor allem Schwer wurde dadurch schwächer als Mittel. Einen plötzlichen Antritt oder Richtungswechsel bemerkt er trotzdem erst nach seiner Reaktionszeit.
+- **Balance:** Wer stur vorgeht und stößt, gewinnt jetzt öfter (Stoß-Spammer gegen Leicht/Mittel/Schwer etwa 83/70/33 % statt 65/39/30 %) – genau das ist der Effekt des Tickets: man kann ihm die Mensur stehlen. Die Rangfolge der Stufen und die Flèche-Balance bleiben, alle bisherigen Tests sind grün.
+
+## Wiederholung am Gefechtsende (Issue #29)
+
+- Aufgezeichnet werden die letzten 3 Sekunden Spielzeit; abgespielt werden die 2 Sekunden vor dem entscheidenden Treffer und der kurze Nachlauf danach, mit 35 % Tempo (gut 6 Sekunden). Danach bleibt das letzte Bild 0,8 Sekunden stehen, dann kommt der Siegerbildschirm.
+- Die Beschriftung zählt die Aktionen bis zum Treffer auf („Rot: Finte → Ausfall“). Ein abgebrochener Angriff erscheint als „Finte“; wer nichts getan hat, bekommt „keine Aktion“.
+- Überspringen: Antippen, Enter, Esc oder P (P ist sonst Pause – während der Wiederholung gibt es keine Pause).
+
+## Wertungszahl (Issue #26)
+
+- Elo-Formel mit K = 32; Start 1000, Computer Leicht 900, Mittel 1200, Schwer 1500. Gewertet wird jedes Gefecht gegen den Computer (auch Revanchen), nicht der Modus 2 Spieler.
+- **Ränge:** Anfänger unter 1050, Vereinsfechter ab 1050, Landesklasse ab 1200, Bundesklasse ab 1350, Meister ab 1500. Meister wird also nur, wer Schwer regelmäßig schlägt.
+- **Trefferquote** auf dem Bildschirm „Fortschritt“ ist der Anteil der eigenen an allen Treffern der letzten 20 Gefechte (die Trefferquote im Gefecht – Treffer je Angriff – wird nicht gespeichert).
+- Der Verlauf (Datum, Stufe, Sieg, Treffer, Gegentreffer, Wertung danach) liegt unter `street-fencer.wertung`; kaputte Einträge werden beim Laden verworfen.
+
+## Erfolge (Issue #23)
+
+- 15 Erfolge in vier Gruppen: **Erste Schritte** (erster Treffer, erster Sieg, Training abgeschlossen), **Technik** (Sieg mit Riposte als letztem Treffer, Treffer nach Finte, Tiefstoß-Treffer gegen Schwer, 10 parierte Flèchen, 25 Riposten-Treffer), **Leistung** (Sieg gegen Schwer, 5:0 gegen Schwer, Sieg in der Verlängerung, Sieg nach 0:3) und **Ausdauer** (10/50/100 Gefechte gegen den Computer).
+- Es zählen nur Gefechte gegen den Computer (der Spieler ist Rot) und das Training. „Sieg nach 0:3“ heißt: irgendwann drei Treffer hinten gelegen. „Treffer nach Finte“: ein Treffer bis eine Sekunde nach einer Finte (wie in der Lektion).
+- Gespeichert unter `street-fencer.erfolge`: wann jeder Erfolg erreicht wurde und die Zähler (Gefechte, parierte Flèchen, Riposten). `hatErfolg(id)` fragt das für spätere Freischaltungen (#28) ab.
+- Nebenbei: Pixelify Sans macht auch aus „fl“ ein Zeichen wie „A“ (z. B. „flèche“ im englischen Text); `text()` trennt jetzt auch „fl“.
+
+## Training mit Medaillen und Reaktionstest (Issue #24)
+
+- **Übersicht:** „Training“ im Titelmenü führt jetzt zu einer Übersicht: alle Lektionen nacheinander (wie bisher), jede Lektion einzeln mit bester Medaille und Bestzeit, und der Reaktionstest Parade mit Bestwert. Esc bzw. „Zurück“ im Training führt zur Übersicht.
+- **Medaillen** nach der Zeit vom Beginn der Lektion bis zum Erfolg, auch über misslungene Versuche hinweg. Jede geschaffte Lektion bekommt mindestens Bronze. Grenzen (Gold bis / Silber bis): Bewegen 3,5/10,5 s, Stoß 3,5/10,5 s, Ausfall 3,0/9,0 s, Parade 4,5/13,5 s, Riposte 4,5/13,5 s, Finte 3,5/10,5 s, Tiefstoß 5,0/15,0 s, Flèche 3,5/10,5 s. Gold = Zeit des Test-Spielers (`test/trainingsspieler.js`, Reaktionszeit 220 ms) plus 2,5 s zum Lesen, aufgerundet auf halbe Sekunden; Silber = dreimal so lang.
+- **Reaktionstest Parade:** Der Trainer greift 10-mal an, mit 0,7 bis 3,0 s Pause dazwischen. Ein Angriff, der ohne Parade endet (getroffen oder ausgewichen), zählt als nicht pariert. Reaktionszeit = vom Beginn des Ausholens bis zum Drücken der Parade. Besser ist, wer mehr pariert, bei Gleichstand die kürzere mittlere Reaktionszeit.
+- Der Erfolg „Ausgebildet“ (#23) gilt jetzt, sobald jede Lektion einmal geschafft ist – auch einzeln geübt.
+- Gespeichert unter `street-fencer.training`.

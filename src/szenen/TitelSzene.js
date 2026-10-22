@@ -21,13 +21,15 @@ export default class TitelSzene extends Phaser.Scene {
     // Auf dem Handy fehlt nur „2 Spieler“ – zwei Spieler hätten an einem Handy zu wenig Platz
     const touch = istTouchGeraet(this);
     const eintraege = [
-      { text: text('titel.training'), aktion: () => this.scene.start('TrainingSzene') },
+      { text: text('titel.training'), aktion: () => this.scene.start('TrainingsUebersichtSzene') },
       { text: text('titel.zweiSpieler'), aktion: () => this.starteGefecht('zwei'), nurTastatur: true },
       { text: text('titel.computer'), aktion: () => this.scene.start('StufenSzene') },
+      { text: text('titel.fortschritt'), aktion: () => this.scene.start('FortschrittSzene') },
+      { text: text('titel.erfolge'), aktion: () => this.scene.start('ErfolgeSzene') },
       { text: text('titel.steuerung'), aktion: () => this.scene.start('SteuerungSzene', { danach: 'TitelSzene' }) },
       { text: text('titel.einstellungen'), aktion: () => this.scene.start('EinstellungenSzene') },
     ];
-    erzeugeMenue(this, 480, touch ? 270 : 260, touch ? eintraege.filter((e) => !e.nurTastatur) : eintraege);
+    erzeugeMenue(this, 480, touch ? 240 : 232, touch ? eintraege.filter((e) => !e.nurTastatur) : eintraege, { abstand: touch ? 40 : 36 });
     musik.spiele('titel', this.sound.context);
 
     this.add
