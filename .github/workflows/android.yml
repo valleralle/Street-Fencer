@@ -1,6 +1,8 @@
 # Android-App: baut bei jedem Push eine APK (unter „Actions“ → Lauf → Artifacts herunterladen).
-# Ein Tag wie v0.2.0 erzeugt zusätzlich ein GitHub-Release mit der APK zum Herunterladen;
-# die Beschreibung kommt aus docs/releases/v0.2.0.md (falls vorhanden).
+# Release: Kommt auf main eine Version aus package.json an, zu der es noch keinen Tag gibt, und liegen
+# dafür Release-Notizen in docs/releases/v<Version>.md, legt der Lauf Tag und Release v<Version> selbst
+# an und hängt die APK an (siehe werkzeuge/android/release.mjs). Ein von Hand gesetzter Tag v* erzeugt
+# ebenfalls ein Release.
 name: Android
 
 on:
@@ -34,10 +36,17 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm test
 
-      # Version: beim Tag dessen Name (v0.2.0 → 0.2.0), sonst die aus package.json plus Laufnummer
+      # Neue Version auf main mit Release-Notizen? Dann setzt das Skript RELEASE_TAG und NOTIZEN.
+      - name: Release fällig?
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node werkzeuge/android/release.mjs
+
+      # Version: beim Release dessen Name (v0.2.0 → 0.2.0), sonst die aus package.json plus Laufnummer
       - name: Version bestimmen
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+          if [[ -n "$RELEASE_TAG" ]]; then
+            name="${RELEASE_TAG#v}"
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             name="${GITHUB_REF_NAME#v}"
           else
             name="$(node -p "require('./package.json').version")-build.${GITHUB_RUN_NUMBER}"
@@ -86,9 +95,12 @@ jobs:
           datei="docs/releases/${GITHUB_REF_NAME}.md"
           [ -f "$datei" ] && echo "NOTIZEN=$datei" >> "$GITHUB_ENV" || true
 
-      - if: startsWith(github.ref, 'refs/tags/v')
+      # Legt den Tag an (beim Release von main aus) bzw. nimmt den gesetzten, und hängt die APK an
+      - if: env.RELEASE_TAG != '' || startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          name: Street Fencer ${{ github.ref_name }}
+          tag_name: ${{ env.RELEASE_TAG || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: Street Fencer ${{ env.RELEASE_TAG || github.ref_name }}
           body_path: ${{ env.NOTIZEN }}
           files: street-fencer-*.apk

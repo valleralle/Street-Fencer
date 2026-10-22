@@ -153,3 +153,9 @@ selbst entschieden. Alles lässt sich ändern – sag einfach, was anders sein s
 - **Reaktionstest Parade:** Der Trainer greift 10-mal an, mit 0,7 bis 3,0 s Pause dazwischen. Ein Angriff, der ohne Parade endet (getroffen oder ausgewichen), zählt als nicht pariert. Reaktionszeit = vom Beginn des Ausholens bis zum Drücken der Parade. Besser ist, wer mehr pariert, bei Gleichstand die kürzere mittlere Reaktionszeit.
 - Der Erfolg „Ausgebildet“ (#23) gilt jetzt, sobald jede Lektion einmal geschafft ist – auch einzeln geübt.
 - Gespeichert unter `street-fencer.training`.
+
+## Releases automatisch
+
+- Ein Release entsteht durch einen PR, der die Version in `package.json` erhöht und `docs/releases/v<Version>.md` mitbringt. Nach dem Merge legt der Android-Workflow Tag und Release selbst an; Tippfehler beim Tag (v0.0.2, v0.4.0) sind so ausgeschlossen.
+- Ohne Release-Notizen gibt es kein Release, nur die übliche Test-APK – so löst eine versehentlich erhöhte Version nichts aus.
+- Von Hand gesetzte Tags `v*` funktionieren weiterhin.

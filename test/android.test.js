@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { querformat, vollbild, version, festerSchluessel } from '../werkzeuge/android/anpassen.mjs';
+import { faelligesRelease, notizenDatei, tagsAus } from '../werkzeuge/android/release.mjs';
 
 const MANIFEST = `<application>
         <activity
@@ -40,4 +41,18 @@ test('Debug-Builds werden immer mit dem Schlüssel aus dem Repo signiert', () =>
   assert.match(ergebnis, /buildTypes \{\n\s+debug \{\n\s+signingConfig signingConfigs\.debug/);
   // Ein zweiter Durchlauf ändert nichts mehr
   assert.equal(festerSchluessel(ergebnis), ergebnis);
+});
+
+test('ein Release ist fällig, wenn die Version neu ist und Release-Notizen vorliegen', () => {
+  const tags = ['v0.1.0', 'v0.2.0', 'v0.3.0'];
+  assert.deepEqual(faelligesRelease({ version: '0.4.0', vorhandeneTags: tags, notizenVorhanden: true }), { tag: 'v0.4.0', grund: null });
+  assert.equal(faelligesRelease({ version: '0.3.0', vorhandeneTags: tags, notizenVorhanden: true }).tag, null);
+  assert.equal(faelligesRelease({ version: '0.4.0', vorhandeneTags: tags, notizenVorhanden: false }).tag, null);
+  assert.equal(notizenDatei('v0.4.0'), 'docs/releases/v0.4.0.md');
+});
+
+test('die Tags werden aus git ls-remote gelesen', () => {
+  const ausgabe = 'abc\trefs/tags/v0.1.0\ndef\trefs/tags/v0.2.0\nghi\trefs/tags/v0.2.0^{}\n';
+  assert.deepEqual(tagsAus(ausgabe), ['v0.1.0', 'v0.2.0']);
+  assert.deepEqual(tagsAus(''), []);
 });
